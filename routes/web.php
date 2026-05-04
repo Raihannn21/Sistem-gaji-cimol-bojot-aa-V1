@@ -3,53 +3,87 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 
-// dashboard pages
+// Dashboard
 Route::get('/', function () {
     return view('pages.dashboard.ecommerce', ['title' => 'E-commerce Dashboard']);
 })->name('dashboard');
 
-// calender pages
-Route::get('/calendar', function () {
-    return view('pages.calender', ['title' => 'Calendar']);
-})->name('calendar');
+Route::get('/dashboard/payroll', function () {
+    return view('pages.dashboard.payroll', ['title' => 'Payroll Analytics']);
+})->name('dashboard.payroll');
 
-// profile pages
-Route::get('/profile', function () {
-    return view('pages.profile', ['title' => 'Profile']);
-})->name('profile');
+// Manajemen Karyawan
+Route::prefix('employees')->group(function () {
+    Route::get('/', function () {
+        return view('pages.employees.index', ['title' => 'Data Karyawan']);
+    })->name('employees.index');
+    
+    Route::get('/status', function () {
+        return view('pages.employees.status', ['title' => 'Resign & SPHK']);
+    })->name('employees.status');
+    
+    Route::get('/import-export', function () {
+        return view('pages.employees.import-export', ['title' => 'Import & Export']);
+    })->name('employees.import-export');
+});
 
-// form pages
-Route::get('/form-elements', function () {
-    return view('pages.form.form-elements', ['title' => 'Form Elements']);
-})->name('form-elements');
+// Payroll PHL
+Route::prefix('payroll/phl')->group(function () {
+    Route::get('/periods', function () {
+        return view('pages.payroll.phl.periods', ['title' => 'Periode Gaji PHL']);
+    })->name('payroll.phl.periods');
+    
+    Route::get('/attendance', function () {
+        return view('pages.payroll.phl.attendance', ['title' => 'Absensi & Lembur PHL']);
+    })->name('payroll.phl.attendance');
+    
+    Route::get('/generate', function () {
+        return view('pages.payroll.phl.generate', ['title' => 'Generate Payroll PHL']);
+    })->name('payroll.phl.generate');
+});
 
-// tables pages
-Route::get('/basic-tables', function () {
-    return view('pages.tables.basic-tables', ['title' => 'Basic Tables']);
-})->name('basic-tables');
+// Payroll PKWT
+Route::prefix('payroll/pkwt')->group(function () {
+    Route::get('/components', function () {
+        return view('pages.payroll.pkwt.components', ['title' => 'Tunjangan & Potongan PKWT']);
+    })->name('payroll.pkwt.components');
+    
+    Route::get('/overtime', function () {
+        return view('pages.payroll.pkwt.overtime', ['title' => 'Lembur & Risiko PKWT']);
+    })->name('payroll.pkwt.overtime');
+    
+    Route::get('/generate', function () {
+        return view('pages.payroll.pkwt.generate', ['title' => 'Generate Payroll PKWT']);
+    })->name('payroll.pkwt.generate');
+});
 
-// pages
+// Laporan
+Route::prefix('reports')->group(function () {
+    Route::get('/monthly', function () {
+        return view('pages.reports.monthly', ['title' => 'Rekap Bulanan']);
+    })->name('reports.monthly');
+    
+    Route::get('/employee', function () {
+        return view('pages.reports.employee', ['title' => 'Laporan Individu']);
+    })->name('reports.employee');
+    
+    Route::get('/summary', function () {
+        return view('pages.reports.summary', ['title' => 'Rekap PHL & PKWT']);
+    })->name('reports.summary');
+});
 
-Route::get('/blank', function () {
-    return view('pages.blank', ['title' => 'Blank']);
-})->name('blank');
+// Pengaturan
+Route::prefix('settings')->group(function () {
+    Route::get('/roles', function () {
+        return view('pages.settings.roles', ['title' => 'User & Role']);
+    })->name('settings.roles');
+    
+    Route::get('/smtp', function () {
+        return view('pages.settings.smtp', ['title' => 'Konfigurasi SMTP']);
+    })->name('settings.smtp');
+});
 
-// error pages
-Route::get('/error-404', function () {
-    return view('pages.errors.error-404', ['title' => 'Error 404']);
-})->name('error-404');
-
-// chart pages
-Route::get('/line-chart', function () {
-    return view('pages.chart.line-chart', ['title' => 'Line Chart']);
-})->name('line-chart');
-
-Route::get('/bar-chart', function () {
-    return view('pages.chart.bar-chart', ['title' => 'Bar Chart']);
-})->name('bar-chart');
-
-
-// authentication pages
+// Authentication (Existing)
 Route::get('/signin', function () {
     return view('pages.auth.signin', ['title' => 'Sign In']);
 })->name('signin');
@@ -58,30 +92,14 @@ Route::get('/signup', function () {
     return view('pages.auth.signup', ['title' => 'Sign Up']);
 })->name('signup');
 
-// ui elements pages
-Route::get('/alerts', function () {
-    return view('pages.ui-elements.alerts', ['title' => 'Alerts']);
-})->name('alerts');
+// Other basic pages
+Route::get('/profile', function () {
+    return view('pages.profile', ['title' => 'Profile']);
+})->name('profile');
 
-Route::get('/avatars', function () {
-    return view('pages.ui-elements.avatars', ['title' => 'Avatars']);
-})->name('avatars');
-
-Route::get('/badge', function () {
-    return view('pages.ui-elements.badges', ['title' => 'Badges']);
-})->name('badges');
-
-Route::get('/buttons', function () {
-    return view('pages.ui-elements.buttons', ['title' => 'Buttons']);
-})->name('buttons');
-
-Route::get('/image', function () {
-    return view('pages.ui-elements.images', ['title' => 'Images']);
-})->name('images');
-
-Route::get('/videos', function () {
-    return view('pages.ui-elements.videos', ['title' => 'Videos']);
-})->name('videos');
+Route::get('/error-404', function () {
+    return view('pages.errors.error-404', ['title' => 'Error 404']);
+})->name('error-404');
 
 
 
