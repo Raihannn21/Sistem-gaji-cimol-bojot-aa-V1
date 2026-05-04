@@ -12,38 +12,34 @@ class MenuHelper
                 'name' => 'Dashboard',
                 'subItems' => [
                     ['name' => 'Ecommerce', 'path' => '/'],
+                    ['name' => 'Payroll Analytics', 'path' => '/dashboard/payroll'],
                 ],
-            ],
-            [
-                'icon' => 'calendar',
-                'name' => 'Calendar',
-                'path' => '/calendar',
             ],
             [
                 'icon' => 'user-profile',
-                'name' => 'User Profile',
-                'path' => '/profile',
-            ],
-            [
-                'name' => 'Forms',
-                'icon' => 'forms',
+                'name' => 'Manajemen Karyawan',
                 'subItems' => [
-                    ['name' => 'Form Elements', 'path' => '/form-elements', 'pro' => false],
+                    ['name' => 'Data Karyawan', 'path' => '/employees'],
+                    ['name' => 'Resign & SPHK', 'path' => '/employees/status'],
+                    ['name' => 'Import & Export', 'path' => '/employees/import-export'],
                 ],
             ],
             [
-                'name' => 'Tables',
                 'icon' => 'tables',
+                'name' => 'Payroll PHL',
                 'subItems' => [
-                    ['name' => 'Basic Tables', 'path' => '/basic-tables', 'pro' => false]
+                    ['name' => 'Periode Gaji', 'path' => '/payroll/phl/periods'],
+                    ['name' => 'Absensi & Lembur', 'path' => '/payroll/phl/attendance'],
+                    ['name' => 'Generate Payroll', 'path' => '/payroll/phl/generate'],
                 ],
             ],
             [
-                'name' => 'Pages',
-                'icon' => 'pages',
+                'icon' => 'forms',
+                'name' => 'Payroll PKWT',
                 'subItems' => [
-                    ['name' => 'Blank Page', 'path' => '/blank', 'pro' => false],
-                    ['name' => '404 Error', 'path' => '/error-404', 'pro' => false]
+                    ['name' => 'Tunjangan & Potongan', 'path' => '/payroll/pkwt/components'],
+                    ['name' => 'Lembur & Risiko', 'path' => '/payroll/pkwt/overtime'],
+                    ['name' => 'Generate Payroll', 'path' => '/payroll/pkwt/generate'],
                 ],
             ],
         ];
@@ -54,22 +50,19 @@ class MenuHelper
         return [
             [
                 'icon' => 'charts',
-                'name' => 'Charts',
+                'name' => 'Laporan',
                 'subItems' => [
-                    ['name' => 'Line Chart', 'path' => '/line-chart', 'pro' => false],
-                    ['name' => 'Bar Chart', 'path' => '/bar-chart', 'pro' => false]
+                    ['name' => 'Rekap Bulanan', 'path' => '/reports/monthly'],
+                    ['name' => 'Laporan Individu', 'path' => '/reports/employee'],
+                    ['name' => 'Rekap PHL & PKWT', 'path' => '/reports/summary'],
                 ],
             ],
             [
                 'icon' => 'ui-elements',
-                'name' => 'UI Elements',
+                'name' => 'Pengaturan',
                 'subItems' => [
-                    ['name' => 'Alerts', 'path' => '/alerts', 'pro' => false],
-                    ['name' => 'Avatar', 'path' => '/avatars', 'pro' => false],
-                    ['name' => 'Badge', 'path' => '/badge', 'pro' => false],
-                    ['name' => 'Buttons', 'path' => '/buttons', 'pro' => false],
-                    ['name' => 'Images', 'path' => '/image', 'pro' => false],
-                    ['name' => 'Videos', 'path' => '/videos', 'pro' => false],
+                    ['name' => 'User & Role', 'path' => '/settings/roles'],
+                    ['name' => 'Konfigurasi SMTP', 'path' => '/settings/smtp'],
                 ],
             ],
             [
