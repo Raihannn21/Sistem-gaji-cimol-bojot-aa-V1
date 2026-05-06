@@ -2,8 +2,6 @@
 
 @section('content')
     <div class="mx-auto max-w-screen-2xl" x-data="{ showImportModal: false }">
-        <x-common.page-breadcrumb :pageName="$title" />
-
         <div class="space-y-6">
             <!-- Header Actions (Identical to Periods Template) -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

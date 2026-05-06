@@ -9,8 +9,6 @@
             { id: 3, month: 'Mei', year: '2025', status: 'Locked', total_employees: 115, total_amount: 'Rp 431.250.000', created_at: '2025-05-01' }
         ]
     }">
-        <x-common.page-breadcrumb :pageName="$title" />
-
         <div class="space-y-6">
             <!-- Header Actions -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

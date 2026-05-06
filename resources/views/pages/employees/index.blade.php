@@ -33,11 +33,14 @@
             return classes[status] || 'bg-gray-50 text-gray-700 dark:bg-gray-500/15 dark:text-gray-400';
         }
     }">
-        <x-common.page-breadcrumb :pageName="$title" />
-
         <div class="space-y-6">
-            <!-- Header Actions -->
+            <!-- Header Actions (Standardized with Title & Description) -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Manajemen Karyawan</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Kelola data induk, status, dan informasi detail karyawan.</p>
+                </div>
+                
                 <div class="flex flex-wrap items-center gap-3">
                     <div class="relative group">
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-colors group-focus-within:text-brand-500">
