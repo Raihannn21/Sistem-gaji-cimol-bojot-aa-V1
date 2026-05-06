@@ -31,8 +31,8 @@
         x-transition:enter-end="opacity-100 transform scale-100" x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 transform scale-100"
         x-transition:leave-end="opacity-0 transform scale-95">
-
-        <!-- Close Button -->
+            
+            <!-- Close Button -->
         @if ($showCloseButton)
             <button @click="open = false"
                 class="absolute right-3 top-3 z-999 flex h-9.5 w-9.5 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 sm:h-11 sm:w-11">
@@ -43,12 +43,12 @@
                         fill="currentColor" />
                 </svg>
             </button>
-        @endif
+            @endif
 
         <!-- Modal Body -->
         <div>
-            {{ $slot }}
-        </div>
+                {{ $slot }}
+            </div>
     </div>
 </div>
 

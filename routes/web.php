@@ -32,14 +32,30 @@ Route::prefix('payroll/phl')->group(function () {
     Route::get('/periods', function () {
         return view('pages.payroll.phl.periods', ['title' => 'Periode Gaji PHL']);
     })->name('payroll.phl.periods');
+
+    Route::get('/periods/{id}', function ($id) {
+        return view('pages.payroll.phl.period-detail', ['title' => 'Detail Periode Gaji PHL', 'id' => $id]);
+    })->name('payroll.phl.periods.show');
     
-    Route::get('/attendance', function () {
-        return view('pages.payroll.phl.attendance', ['title' => 'Absensi & Lembur PHL']);
-    })->name('payroll.phl.attendance');
-    
+    Route::get('/import', function () {
+        return view('pages.payroll.phl.import', ['title' => 'Import Absensi PHL']);
+    })->name('payroll.phl.import');
+
+    Route::get('/overtime', function () {
+        return view('pages.payroll.phl.overtime', ['title' => 'Input Lembur PHL']);
+    })->name('payroll.phl.overtime');
+
+    Route::get('/risk-allowance', function () {
+        return view('pages.payroll.phl.risk-allowance', ['title' => 'Tunjangan Risiko PHL']);
+    })->name('payroll.phl.risk-allowance');
+
     Route::get('/generate', function () {
         return view('pages.payroll.phl.generate', ['title' => 'Generate Payroll PHL']);
     })->name('payroll.phl.generate');
+
+    Route::get('/slips', function () {
+        return view('pages.payroll.phl.slips', ['title' => 'Slip Gaji PHL']);
+    })->name('payroll.phl.slips');
 });
 
 // Payroll PKWT

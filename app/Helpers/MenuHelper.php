@@ -29,8 +29,11 @@ class MenuHelper
                 'name' => 'Payroll PHL',
                 'subItems' => [
                     ['name' => 'Periode Gaji', 'path' => '/payroll/phl/periods'],
-                    ['name' => 'Absensi & Lembur', 'path' => '/payroll/phl/attendance'],
+                    ['name' => 'Import Absensi', 'path' => '/payroll/phl/import'],
+                    ['name' => 'Input Lembur', 'path' => '/payroll/phl/overtime'],
+                    ['name' => 'Tunjangan Risiko', 'path' => '/payroll/phl/risk-allowance'],
                     ['name' => 'Generate Payroll', 'path' => '/payroll/phl/generate'],
+                    ['name' => 'Slip Gaji', 'path' => '/payroll/phl/slips'],
                 ],
             ],
             [
