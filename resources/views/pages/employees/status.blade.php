@@ -13,7 +13,16 @@
 @endphp
 
 @section('content')
-    <div class="mx-auto max-w-screen-2xl" x-data="{ showModal: false }">
+    <div class="mx-auto max-w-screen-2xl" x-data="{ 
+        showModal: false,
+        showDetailModal: false,
+        selectedItem: {},
+        getStatusClass(type) {
+            return type === 'Resign' 
+                ? 'bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500' 
+                : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400';
+        }
+    }">
         <x-common.page-breadcrumb :pageName="$title" />
 
         <div class="space-y-6">
@@ -84,5 +93,6 @@
 
         <!-- Modal Components -->
         <x-employee.status-modal />
+        <x-employee.status-detail-modal />
     </div>
 @endsection
