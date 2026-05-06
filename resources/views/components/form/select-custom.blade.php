@@ -51,7 +51,7 @@ class="relative w-full"
             x-transition:leave="transition ease-in duration-75"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            class="absolute left-0 mt-2 w-full rounded-xl border border-gray-200 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900 z-[99999]"
+            class="absolute left-0 mt-2 w-full rounded-xl border border-gray-200 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900 z-50 bg-white"
             x-cloak
         >
             <div class="max-h-60 overflow-y-auto custom-scrollbar bg-white dark:bg-gray-900">
