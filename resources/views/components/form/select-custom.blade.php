@@ -13,6 +13,8 @@
         this.selected = value;
         this.label = text;
         this.open = false;
+        // Kirim event agar modal bisa mendeteksi perubahan
+        this.$dispatch('change-' + '{{ $name }}', value);
     }
 }" 
 class="relative w-full"
@@ -60,19 +62,3 @@ class="relative w-full"
         </div>
     </div>
 </div>
-
-<style>
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #E5E7EB;
-        border-radius: 10px;
-    }
-    .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #374151;
-    }
-</style>
