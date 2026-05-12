@@ -1,8 +1,8 @@
 <div x-data="{
     employees: [
-        { id: 1, name: 'Ahmad Fauzi', nrp: '123456', role: 'Staff IT', status: 'Aktif', team: 'T01', location: 'HO', salary: '5.000.000', bank: 'BCA - 1234567890' },
-        { id: 2, name: 'Siti Aminah', nrp: '123457', role: 'HR Admin', status: 'Aktif', team: 'T02', location: 'Site A', salary: '4.500.000', bank: 'BCA - 0987654321' },
-        { id: 3, name: 'Budi Santoso', nrp: '123458', role: 'Operator', status: 'Resign', team: 'T03', location: 'Site B', salary: '4.000.000', bank: 'Mandiri - 1122334455' },
+        { id: 1, name: 'Ahmad Fauzi', emp_no: 'EMP001', id_no: 'ID1001', nik: '3201234567890001', role: 'PHL', status: 'Aktif', team: 'T01', location: 'HO', salary: '5.000.000', bank_name: 'BCA', bank_account: '1234567890', email: 'ahmad@example.com', phone: '08123456789' },
+        { id: 2, name: 'Siti Aminah', emp_no: 'EMP002', id_no: 'ID1002', nik: '3201234567890002', role: 'PKWT', status: 'Aktif', team: 'T02', location: 'Site A', salary: '4.500.000', bank_name: 'BCA', bank_account: '0987654321', email: 'siti@example.com', phone: '08129876543' },
+        { id: 3, name: 'Budi Santoso', emp_no: 'EMP003', id_no: 'ID1003', nik: '3201234567890003', role: 'PHL', status: 'Resign', team: 'T03', location: 'Site B', salary: '4.000.000', bank_name: 'Mandiri', bank_account: '1122334455', email: 'budi@example.com', phone: '08125566778' },
     ],
     getStatusClass(status) {
         const classes = {
@@ -19,7 +19,7 @@
                 <thead>
                     <tr class="border-b border-gray-100 dark:border-gray-800">
                         <th class="px-5 py-3 text-left">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Nama / NRP</p>
+                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Nama / Emp No</p>
                         </th>
                         <th class="px-5 py-3 text-left">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Jabatan</p>
@@ -48,7 +48,7 @@
                                 <div class="flex items-center gap-3">
                                     <div>
                                         <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90" x-text="emp.name"></span>
-                                        <span class="block text-gray-500 text-theme-xs dark:text-gray-400" x-text="emp.nrp"></span>
+                                        <span class="block text-gray-500 text-theme-xs dark:text-gray-400" x-text="'Emp: ' + emp.emp_no"></span>
                                     </div>
                                 </div>
                             </td>
@@ -68,7 +68,8 @@
                                 <p class="text-gray-500 text-theme-sm dark:text-gray-400" x-text="'Rp ' + emp.salary"></p>
                             </td>
                             <td class="px-5 py-4">
-                                <p class="text-gray-500 text-theme-sm dark:text-gray-400" x-text="emp.bank"></p>
+                                <p class="text-gray-800 text-theme-sm dark:text-white/90 font-medium" x-text="emp.bank_name"></p>
+                                <p class="text-gray-500 text-theme-xs dark:text-gray-400" x-text="emp.bank_account"></p>
                             </td>
                             <td class="px-5 py-4">
                                 <div class="flex items-center justify-center gap-2">
