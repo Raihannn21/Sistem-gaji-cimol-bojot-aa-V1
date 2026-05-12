@@ -2,6 +2,7 @@
 
 <template x-teleport="body">
     <div x-show="showEditModal" 
+         @change-jabatan.window="selectedEmployee.role = $event.detail"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
@@ -11,9 +12,9 @@
          class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" 
          x-cloak>
         
-        <!-- Modal Box: Style Standardized -->
+        <!-- Modal Box: Fixed Height 480px -->
         <div @click.away="showEditModal = false" 
-             class="relative flex flex-col w-full max-w-2xl h-auto max-h-[480px] rounded-3xl bg-white shadow-xl dark:bg-gray-900 overflow-hidden border border-gray-100 dark:border-gray-800">
+             class="relative flex flex-col w-full max-w-2xl h-[480px] rounded-3xl bg-white shadow-xl dark:bg-gray-900 overflow-hidden border border-gray-100 dark:border-gray-800">
             
             <!-- Close Button -->
             <button @click="showEditModal = false" class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 z-50">
@@ -27,14 +28,14 @@
 
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar bg-white dark:bg-gray-900">
-                <form id="editEmployeeForm" class="space-y-4">
+                <form id="editEmployeeForm" class="space-y-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                         <x-form.input label="Nama Lengkap" x-model="selectedEmployee.name" />
                         <x-form.input label="Emp No" x-model="selectedEmployee.emp_no" />
                         <x-form.input label="No. ID" x-model="selectedEmployee.id_no" />
                         <x-form.input label="NIK" x-model="selectedEmployee.nik" />
 
-                        <x-form.select-custom label="Jabatan" name="jabatan" x-model="selectedEmployee.role">
+                        <x-form.select-custom label="Jabatan" name="jabatan">
                             <x-form.select-item value="PHL">PHL</x-form.select-item>
                             <x-form.select-item value="PKWT">PKWT</x-form.select-item>
                         </x-form.select-custom>
@@ -44,9 +45,27 @@
                         <x-form.input label="Nomor Tim" x-model="selectedEmployee.team" />
                         <x-form.input label="Lokasi" x-model="selectedEmployee.location" />
                         <x-form.input label="Gaji Pokok" type="number" x-model="selectedEmployee.salary" />
-                        
                         <x-form.input label="Nama Bank" x-model="selectedEmployee.bank_name" />
                         <x-form.input label="Nomor Rekening" x-model="selectedEmployee.bank_account" />
+                    </div>
+
+                    <!-- Input Khusus PHL -->
+                    <div x-show="selectedEmployee.role === 'PHL'" x-transition class="pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
+                        <h4 class="text-sm font-bold text-brand-500 mb-4 italic">Data Khusus PHL:</h4>
+                        <div class="grid grid-cols-1 gap-4">
+                            <x-form.input label="Tunjangan Risiko" type="number" x-model="selectedEmployee.risk_allowance" />
+                        </div>
+                    </div>
+
+                    <!-- Input Khusus PKWT -->
+                    <div x-show="selectedEmployee.role === 'PKWT'" x-transition class="pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
+                        <h4 class="text-sm font-bold text-brand-500 mb-4 italic">Data Khusus PKWT:</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                            <x-form.input label="Potongan" type="number" x-model="selectedEmployee.deduction" />
+                            <x-form.input label="Bpjs Kesehatan" type="number" x-model="selectedEmployee.bpjs_health" />
+                            <x-form.input label="Bpjs TK" type="number" x-model="selectedEmployee.bpjs_tk" />
+                            <x-form.input label="PPH 21" type="number" x-model="selectedEmployee.pph21" />
+                        </div>
                     </div>
                 </form>
             </div>

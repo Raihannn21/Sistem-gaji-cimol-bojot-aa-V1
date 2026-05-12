@@ -9,9 +9,9 @@
          class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" 
          x-cloak>
         
-        <!-- Modal Box: Rounded 3XL -->
+        <!-- Modal Box: Ukuran Dikunci 480px agar bisa Scroll -->
         <div @click.away="showDetailModal = false" 
-             class="relative flex flex-col w-full max-w-md h-auto max-h-[480px] rounded-3xl bg-white shadow-xl dark:bg-gray-900 overflow-hidden border border-gray-100 dark:border-gray-800">
+             class="relative flex flex-col w-full max-w-md h-[480px] rounded-3xl bg-white shadow-xl dark:bg-gray-900 overflow-hidden border border-gray-100 dark:border-gray-800">
             
             <!-- Close Button -->
             <button @click="showDetailModal = false" class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6 z-50">
@@ -23,7 +23,7 @@
                 <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Profil Karyawan</h3>
             </div>
 
-            <!-- Content -->
+            <!-- Content: Scrollable Area -->
             <div class="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar bg-white dark:bg-gray-900">
                 <div class="flex flex-col items-center text-center">
                     <div class="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500/10 text-brand-500 mb-3">
@@ -35,6 +35,7 @@
                 </div>
 
                 <div class="mt-6 space-y-3">
+                    <!-- Standard Fields -->
                     <template x-for="field in [
                         { label: 'Emp No', value: selectedEmployee.emp_no },
                         { label: 'No. ID', value: selectedEmployee.id_no || '-' },
@@ -52,6 +53,30 @@
                             <span class="text-[11px] font-bold text-gray-800 dark:text-white" x-text="field.value"></span>
                         </div>
                     </template>
+
+                    <!-- Conditional: PHL Details -->
+                    <div x-show="selectedEmployee.role === 'PHL'" class="mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
+                        <div class="flex justify-between pb-2">
+                            <span class="text-[11px] text-brand-500 font-bold uppercase tracking-wider italic">Tunjangan Risiko</span>
+                            <span class="text-[11px] font-bold text-gray-800 dark:text-white" x-text="'Rp ' + (selectedEmployee.risk_allowance || 0)"></span>
+                        </div>
+                    </div>
+
+                    <!-- Conditional: PKWT Details -->
+                    <div x-show="selectedEmployee.role === 'PKWT'" class="mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-gray-800 space-y-2">
+                        <p class="text-[10px] font-bold text-brand-500 uppercase italic">Potongan & BPJS PKWT:</p>
+                        <template x-for="field in [
+                            { label: 'Potongan', value: selectedEmployee.deduction },
+                            { label: 'BPJS Kesehatan', value: selectedEmployee.bpjs_health },
+                            { label: 'BPJS TK', value: selectedEmployee.bpjs_tk },
+                            { label: 'PPH 21', value: selectedEmployee.pph21 }
+                        ]">
+                            <div class="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800 last:border-0">
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400" x-text="field.label"></span>
+                                <span class="text-[11px] font-bold text-gray-800 dark:text-white" x-text="'Rp ' + (field.value || 0)"></span>
+                            </div>
+                        </template>
+                    </div>
                 </div>
             </div>
 
