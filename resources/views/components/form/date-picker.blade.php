@@ -6,6 +6,7 @@
     'placeholder' => 'Select date',
     'name' => null,
     'dateFormat' => 'Y-m-d',
+    'static' => false,
 ])
 
 <div x-data="{
@@ -14,7 +15,7 @@
         this.$nextTick(() => {
             this.flatpickrInstance = flatpickr(this.$refs.dateInput, {
                 mode: '{{ $mode }}',
-                static: true,
+                static: {{ $static ? 'true' : 'false' }},
                 monthSelectorType: 'static',
                 dateFormat: '{{ $dateFormat }}',
                 defaultDate: {{ $defaultDate ? (is_array($defaultDate) ? json_encode($defaultDate) : "'" . $defaultDate . "'") : 'null' }},
