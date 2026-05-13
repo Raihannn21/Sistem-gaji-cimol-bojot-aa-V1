@@ -59,3 +59,15 @@
         </span>
     </div>
 </div>
+
+<style>
+    .flatpickr-calendar {
+        z-index: 99999999 !important;
+    }
+    
+    .dark .flatpickr-calendar {
+        background: #111827;
+        border-color: #1f2937;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+</style>
