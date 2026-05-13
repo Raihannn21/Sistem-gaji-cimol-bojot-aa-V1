@@ -29,11 +29,7 @@ class MenuHelper
             [
                 'icon' => 'forms',
                 'name' => 'Payroll PKWT',
-                'subItems' => [
-                    ['name' => 'Tunjangan & Potongan', 'path' => '/payroll/pkwt/components'],
-                    ['name' => 'Lembur & Risiko', 'path' => '/payroll/pkwt/overtime'],
-                    ['name' => 'Generate Payroll', 'path' => '/payroll/pkwt/generate'],
-                ],
+                'path' => '/payroll/pkwt/periods',
             ],
         ];
     }

@@ -8,7 +8,6 @@
         showRiskModal: false,
         showOthersModal: false,
         showDetailModal: false,
-        showEditRiskModal: false,
         showSlipModal: false,
         showConfirmModal: false,
         selectedEmployee: {},
@@ -23,15 +22,15 @@
             setTimeout(() => {
                 this.processing = false;
                 this.showConfirmModal = false;
-                alert('Payroll berhasil digenerate!');
+                alert('Payroll PKWT berhasil digenerate!');
             }, 2000);
         }
     }">
         <div class="space-y-6">
-            <!-- Header Actions (Standardized with Template DNA) -->
+            <!-- Header Actions -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center gap-4">
-                    <a href="{{ url('/payroll/phl/periods') }}" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm border border-gray-200 text-gray-500 hover:text-brand-500 transition-colors dark:bg-white/[0.03] dark:border-gray-800">
+                    <a href="{{ url('/payroll/pkwt/periods') }}" class="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm border border-gray-200 text-gray-500 hover:text-brand-500 transition-colors dark:bg-white/[0.03] dark:border-gray-800">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     </a>
                     <div>
@@ -39,7 +38,7 @@
                             <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Juli 2025</h2>
                             <span class="rounded-full bg-green-50 px-2.5 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/15 dark:text-green-500 uppercase tracking-wider">Aktif</span>
                         </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Pusat kendali penggajian PHL (Security, Driver, & Helper).</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Pusat kendali penggajian PKWT (Karyawan Kontrak).</p>
                     </div>
                 </div>
                 
@@ -53,7 +52,7 @@
                 </div>
             </div>
 
-            <!-- Tab Navigation (Standardized Subtle Style) -->
+            <!-- Tab Navigation -->
             <div class="flex items-center gap-1 overflow-x-auto no-scrollbar rounded-2xl border border-gray-200 bg-white p-1.5 dark:border-gray-800 dark:bg-white/[0.03] shadow-sm">
                 <button @click="activeTab = 'overview'" :class="activeTab === 'overview' ? 'bg-gray-100 text-brand-600 dark:bg-white/10 dark:text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'" class="flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all whitespace-nowrap px-4">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
@@ -81,25 +80,22 @@
                 </button>
             </div>
 
-            <!-- Tab Content Wrapper (Standard Spacing) -->
+            <!-- Tab Content Wrapper -->
             <div class="min-h-[400px]">
-                @include('pages.payroll.phl.tabs._overview')
-                @include('pages.payroll.phl.tabs._attendance')
-                @include('pages.payroll.phl.tabs._overtime')
-                @include('pages.payroll.phl.tabs._risk')
-                @include('pages.payroll.phl.tabs._others')
-                @include('pages.payroll.phl.tabs._slips')
+                @include('pages.payroll.pkwt.tabs._overview')
+                @include('pages.payroll.pkwt.tabs._attendance')
+                @include('pages.payroll.pkwt.tabs._overtime')
+                @include('pages.payroll.pkwt.tabs._risk')
+                @include('pages.payroll.pkwt.tabs._others')
+                @include('pages.payroll.pkwt.tabs._slips')
             </div>
 
-            <!-- Modal Components (Consolidated) -->
+            <!-- Modals (Synced with PHL) -->
             <x-payroll.phl.overtime-modal />
             <x-payroll.phl.overtime-detail-modal />
-            <x-payroll.phl.overtime-edit-modal />
             <x-payroll.phl.risk-allowance-modal />
-            <x-payroll.phl.risk-allowance-detail-modal />
-            <x-payroll.phl.risk-allowance-edit-modal />
-            <x-payroll.phl.generate-confirm-modal />
             <x-payroll.others-modal />
+            <x-payroll.phl.generate-confirm-modal />
             <x-payroll.phl.payslip-modal />
         </div>
     </div>

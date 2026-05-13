@@ -42,17 +42,13 @@ Route::prefix('payroll/phl')->group(function () {
 
 // Payroll PKWT
 Route::prefix('payroll/pkwt')->group(function () {
-    Route::get('/components', function () {
-        return view('pages.payroll.pkwt.components', ['title' => 'Tunjangan & Potongan PKWT']);
-    })->name('payroll.pkwt.components');
-    
-    Route::get('/overtime', function () {
-        return view('pages.payroll.pkwt.overtime', ['title' => 'Lembur & Risiko PKWT']);
-    })->name('payroll.pkwt.overtime');
-    
-    Route::get('/generate', function () {
-        return view('pages.payroll.pkwt.generate', ['title' => 'Generate Payroll PKWT']);
-    })->name('payroll.pkwt.generate');
+    Route::get('/periods', function () {
+        return view('pages.payroll.pkwt.periods', ['title' => 'Periode Gaji PKWT']);
+    })->name('payroll.pkwt.periods');
+
+    Route::get('/periods/{id}', function ($id) {
+        return view('pages.payroll.pkwt.period-detail', ['title' => 'Detail Periode Gaji PKWT', 'id' => $id]);
+    })->name('payroll.pkwt.periods.show');
 });
 
 // Laporan
