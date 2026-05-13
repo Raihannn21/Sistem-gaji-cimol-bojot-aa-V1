@@ -17,7 +17,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 scale-100"
              x-transition:leave-end="opacity-0 scale-95"
-             class="relative w-full max-w-xl rounded-3xl bg-white p-6 shadow-xl dark:bg-gray-900 sm:p-8">
+             class="relative w-full max-w-xl rounded-3xl bg-white p-6 shadow-xl dark:bg-gray-900 sm:p-8 max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             <!-- Close Button -->
             <button @click="showModal = false" class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6">
@@ -27,47 +27,26 @@
             </button>
 
             <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Buka Periode Gaji Baru</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Pilih bulan dan tahun untuk mengaktifkan periode penggajian Pekerja Harian Lepas (PHL).</p>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Tentukan rentang tanggal untuk mengaktifkan periode penggajian Pekerja Harian Lepas (PHL).</p>
 
-            <form class="mt-8 space-y-5">
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    <!-- Bulan -->
-                    <div>
-                        <label class="mb-2.5 block font-medium text-gray-700 dark:text-gray-400 text-sm">Pilih Bulan</label>
-                        <x-form.select-custom 
-                            name="month" 
-                            placeholder="Pilih Bulan"
-                            :options="[
-                                ['label' => 'Januari', 'value' => '01'],
-                                ['label' => 'Februari', 'value' => '02'],
-                                ['label' => 'Maret', 'value' => '03'],
-                                ['label' => 'April', 'value' => '04'],
-                                ['label' => 'Mei', 'value' => '05'],
-                                ['label' => 'Juni', 'value' => '06'],
-                                ['label' => 'Juli', 'value' => '07'],
-                                ['label' => 'Agustus', 'value' => '08'],
-                                ['label' => 'September', 'value' => '09'],
-                                ['label' => 'Oktober', 'value' => '10'],
-                                ['label' => 'November', 'value' => '11'],
-                                ['label' => 'Desember', 'value' => '12']
-                            ]"
-                        />
-                    </div>
+            <form class="mt-8 space-y-5 pb-60">
+                <!-- Judul Periode -->
+                <x-form.input 
+                    label="Judul Periode" 
+                    name="title" 
+                    placeholder="Contoh: Gaji PHL Juli 2025"
+                    required 
+                />
 
-                    <!-- Tahun -->
-                    <div>
-                        <label class="mb-2.5 block font-medium text-gray-700 dark:text-gray-400 text-sm">Pilih Tahun</label>
-                        <x-form.select-custom 
-                            name="year" 
-                            placeholder="Pilih Tahun"
-                            :options="[
-                                ['label' => '2024', 'value' => '2024'],
-                                ['label' => '2025', 'value' => '2025'],
-                                ['label' => '2026', 'value' => '2026']
-                            ]"
-                        />
-                    </div>
-                </div>
+                <!-- Rentang Tanggal -->
+                <x-form.date-picker 
+                    name="date_range" 
+                    label="Rentang Tanggal" 
+                    placeholder="Pilih Rentang Tanggal" 
+                    mode="range"
+                    :static="true"
+                    required 
+                />
 
                 <div class="rounded-xl bg-brand-50 p-4 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
                     <div class="flex gap-3">

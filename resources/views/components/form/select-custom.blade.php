@@ -57,6 +57,18 @@ class="relative w-full"
             x-cloak
         >
             <div class="max-h-60 overflow-y-auto custom-scrollbar bg-white dark:bg-gray-900">
+                @if(!empty($options))
+                    @foreach($options as $option)
+                        <button 
+                            type="button"
+                            @click="select('{{ $option['value'] }}', '{{ $option['label'] }}')"
+                            class="flex w-full items-center rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 transition-colors"
+                            :class="selected === '{{ $option['value'] }}' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-500 font-medium' : ''"
+                        >
+                            {{ $option['label'] }}
+                        </button>
+                    @endforeach
+                @endif
                 {{ $slot }}
             </div>
         </div>
