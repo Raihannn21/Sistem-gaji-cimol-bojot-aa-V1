@@ -2,6 +2,24 @@
 
 <template x-teleport="body">
     <div x-show="showEditModal" 
+         x-data="{ 
+            formatCurrency(el) {
+                if (!el) return;
+                let val = el.value.toString().replace(/\D/g, '');
+                if (val === '') {
+                    el.value = '';
+                    return;
+                }
+                el.value = new Intl.NumberFormat('id-ID').format(val);
+            },
+            formatAllCurrency() {
+                this.$nextTick(() => {
+                    const inputs = this.$el.querySelectorAll('[data-currency]');
+                    inputs.forEach(input => this.formatCurrency(input));
+                });
+            }
+         }"
+         x-init="$watch('showEditModal', value => value && formatAllCurrency())"
          @change-jabatan.window="selectedEmployee.role = $event.detail"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
@@ -12,7 +30,7 @@
          class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" 
          x-cloak>
         
-        <!-- Modal Box: Fixed Height 480px -->
+        <!-- Modal Box -->
         <div @click.away="showEditModal = false" 
              class="relative flex flex-col w-full max-w-2xl h-[480px] rounded-3xl bg-white shadow-xl dark:bg-gray-900 overflow-hidden border border-gray-100 dark:border-gray-800">
             
@@ -44,7 +62,9 @@
                         <x-form.input label="No. Telepon" x-model="selectedEmployee.phone" />
                         <x-form.input label="Nomor Tim" x-model="selectedEmployee.team" />
                         <x-form.input label="Lokasi" x-model="selectedEmployee.location" />
-                        <x-form.input label="Gaji Pokok" type="number" x-model="selectedEmployee.salary" />
+                        
+                        <x-form.input label="Gaji Pokok" prefix="Rp" data-currency x-model="selectedEmployee.salary" @input="formatCurrency($event.target)" />
+                        
                         <x-form.input label="Nama Bank" x-model="selectedEmployee.bank_name" />
                         <x-form.input label="Nomor Rekening" x-model="selectedEmployee.bank_account" />
                     </div>
@@ -53,7 +73,7 @@
                     <div x-show="selectedEmployee.role === 'PHL'" x-transition class="pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
                         <h4 class="text-sm font-bold text-brand-500 mb-4 italic">Data Khusus PHL:</h4>
                         <div class="grid grid-cols-1 gap-4">
-                            <x-form.input label="Tunjangan Risiko" type="number" x-model="selectedEmployee.risk_allowance" />
+                            <x-form.input label="Tunjangan Risiko" prefix="Rp" data-currency x-model="selectedEmployee.risk_allowance" @input="formatCurrency($event.target)" />
                         </div>
                     </div>
 
@@ -61,10 +81,10 @@
                     <div x-show="selectedEmployee.role === 'PKWT'" x-transition class="pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
                         <h4 class="text-sm font-bold text-brand-500 mb-4 italic">Data Khusus PKWT:</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                            <x-form.input label="Potongan" type="number" x-model="selectedEmployee.deduction" />
-                            <x-form.input label="Bpjs Kesehatan" type="number" x-model="selectedEmployee.bpjs_health" />
-                            <x-form.input label="Bpjs TK" type="number" x-model="selectedEmployee.bpjs_tk" />
-                            <x-form.input label="PPH 21" type="number" x-model="selectedEmployee.pph21" />
+                            <x-form.input label="Potongan" prefix="Rp" data-currency x-model="selectedEmployee.deduction" @input="formatCurrency($event.target)" />
+                            <x-form.input label="Bpjs Kesehatan" prefix="Rp" data-currency x-model="selectedEmployee.bpjs_health" @input="formatCurrency($event.target)" />
+                            <x-form.input label="Bpjs TK" prefix="Rp" data-currency x-model="selectedEmployee.bpjs_tk" @input="formatCurrency($event.target)" />
+                            <x-form.input label="PPH 21" prefix="Rp" data-currency x-model="selectedEmployee.pph21" @input="formatCurrency($event.target)" />
                         </div>
                     </div>
                 </form>
