@@ -1,17 +1,243 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto max-w-screen-2xl">
+    <div class="mx-auto max-w-screen-2xl p-4 md:p-6" x-data="{ 
+        selectedMonth: 'Juli', 
+        selectedYear: '2025',
+        showExportDropdown: false 
+    }">
         <x-common.page-breadcrumb :pageName="$title" />
 
-        <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div class="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-                <h3 class="font-medium text-black dark:text-white">
-                    {{ $title }}
-                </h3>
+        <!-- Header Action Section -->
+        <div class="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight italic uppercase">
+                    Rekapitulasi Gaji Bulanan
+                </h2>
+                <p class="text-sm text-gray-500 font-medium mt-1">
+                    Visualisasi dan rincian pengeluaran payroll untuk periode <span class="text-brand-600 font-bold" x-text="selectedMonth + ' ' + selectedYear"></span>
+                </p>
             </div>
-            <div class="p-6.5">
-                <p>Halaman {{ $title }} sedang dalam tahap pengembangan (Slicing).</p>
+
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- Month/Year Picker -->
+                <div class="flex items-center gap-2 rounded-xl border border-gray-200 bg-white p-1.5 dark:border-gray-800 dark:bg-white/[0.03]">
+                    <select x-model="selectedMonth" class="bg-transparent text-xs font-bold text-gray-700 outline-none dark:text-gray-400 cursor-pointer px-2">
+                        <option>Januari</option>
+                        <option>Februari</option>
+                        <option>Maret</option>
+                        <option>April</option>
+                        <option>Mei</option>
+                        <option>Juni</option>
+                        <option>Juli</option>
+                    </select>
+                    <div class="h-4 w-px bg-gray-200 dark:bg-gray-700"></div>
+                    <select x-model="selectedYear" class="bg-transparent text-xs font-bold text-gray-700 outline-none dark:text-gray-400 cursor-pointer px-2">
+                        <option>2024</option>
+                        <option>2025</option>
+                    </select>
+                </div>
+
+                <!-- Export Button -->
+                <div class="relative">
+                    <x-ui.button variant="primary" @click="showExportDropdown = !showExportDropdown" className="flex items-center gap-2 shadow-lg shadow-brand-500/20">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Ekspor Laporan
+                    </x-ui.button>
+                    
+                    <div x-show="showExportDropdown" @click.away="showExportDropdown = false" class="absolute right-0 mt-2 w-48 rounded-xl border border-gray-100 bg-white p-2 shadow-xl dark:border-gray-800 dark:bg-gray-900 z-50" x-cloak>
+                        <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs font-bold text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/[0.03]">
+                            <svg class="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            Export to PDF
+                        </button>
+                        <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs font-bold text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/[0.03]">
+                            <svg class="h-4 w-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Export to Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+            <!-- Total Payroll -->
+            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/10">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16V15m0 1v-8"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Gaji</p>
+                        <h3 class="text-xl font-black text-gray-800 dark:text-white tabular-nums">Rp 1.240.500.000</h3>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-green-600 italic">
+                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                    +2.4% vs Bulan Lalu
+                </div>
+            </div>
+
+            <!-- Total Employees -->
+            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Karyawan Aktif</p>
+                        <h3 class="text-xl font-black text-gray-800 dark:text-white tabular-nums">248 Orang</h3>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-3">
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-2 w-2 rounded-full bg-brand-500"></span>
+                        <span class="text-[10px] font-bold text-gray-500 uppercase">156 PKWT</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                        <span class="text-[10px] font-bold text-gray-500 uppercase">92 PHL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Overtime -->
+            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-500/10">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Biaya Lembur</p>
+                        <h3 class="text-xl font-black text-gray-800 dark:text-white tabular-nums">Rp 145.200.000</h3>
+                    </div>
+                </div>
+                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-red-500 italic">
+                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                    -5.1% vs Bulan Lalu
+                </div>
+            </div>
+
+            <!-- Total Deductions -->
+            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="flex items-center gap-4">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-600 dark:bg-red-500/10">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Potongan</p>
+                        <h3 class="text-xl font-black text-gray-800 dark:text-white tabular-nums">Rp 28.450.000</h3>
+                    </div>
+                </div>
+                <p class="mt-4 text-[10px] font-bold text-gray-500 italic">Termasuk BPJS & Absensi</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <!-- Detailed Table Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                        <h3 class="text-base font-black text-gray-800 dark:text-white/90 uppercase tracking-tight italic">Rincian per Kategori</h3>
+                        <span class="text-[10px] font-black text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full uppercase italic dark:bg-brand-500/10">Data Terverifikasi</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="bg-gray-50/50 dark:bg-white/[0.01]">
+                                    <th class="px-6 py-4 text-xs font-black uppercase text-gray-500 tracking-widest">Kategori Biaya</th>
+                                    <th class="px-6 py-4 text-xs font-black uppercase text-gray-500 tracking-widest text-right">PKWT</th>
+                                    <th class="px-6 py-4 text-xs font-black uppercase text-gray-500 tracking-widest text-right">PHL</th>
+                                    <th class="px-6 py-4 text-xs font-black uppercase text-gray-500 tracking-widest text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium text-sm">
+                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                                    <td class="px-6 py-4 font-bold text-gray-800 dark:text-white/90">Gaji Pokok</td>
+                                    <td class="px-6 py-4 text-right tabular-nums">702.000.000</td>
+                                    <td class="px-6 py-4 text-right tabular-nums">230.000.000</td>
+                                    <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">932.000.000</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                                    <td class="px-6 py-4 font-bold text-gray-800 dark:text-white/90">Tunjangan Jabatan</td>
+                                    <td class="px-6 py-4 text-right tabular-nums">78.000.000</td>
+                                    <td class="px-6 py-4 text-right tabular-nums">0</td>
+                                    <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">78.000.000</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                                    <td class="px-6 py-4 font-bold text-gray-800 dark:text-white/90">Lembur</td>
+                                    <td class="px-6 py-4 text-right tabular-nums">85.500.000</td>
+                                    <td class="px-6 py-4 text-right tabular-nums">59.700.000</td>
+                                    <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">145.200.000</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                                    <td class="px-6 py-4 font-bold text-gray-800 dark:text-white/90">Makan & Transport</td>
+                                    <td class="px-6 py-4 text-right tabular-nums">102.960.000</td>
+                                    <td class="px-6 py-4 text-right tabular-nums">0</td>
+                                    <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">102.960.000</td>
+                                </tr>
+                                <tr class="bg-brand-50/30 dark:bg-brand-500/5">
+                                    <td class="px-6 py-4 font-black text-brand-600 uppercase italic">Grand Total</td>
+                                    <td class="px-6 py-4 text-right font-black text-brand-600 tabular-nums">968.460.000</td>
+                                    <td class="px-6 py-4 text-right font-black text-brand-600 tabular-nums">289.700.000</td>
+                                    <td class="px-6 py-4 text-right font-black text-brand-600 tabular-nums">1.258.160.000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization/Sidebar Section -->
+            <div class="space-y-6">
+                <!-- Summary Card -->
+                <div class="rounded-2xl border border-gray-200 bg-brand-600 p-6 shadow-xl shadow-brand-500/20 text-white">
+                    <h4 class="text-sm font-black uppercase tracking-widest italic mb-6">Payroll Health Check</h4>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-xs font-bold text-brand-100">Budget Utilization</span>
+                            <span class="text-lg font-black italic">92.4%</span>
+                        </div>
+                        <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-white rounded-full" style="width: 92.4%"></div>
+                        </div>
+                        <p class="text-[10px] text-brand-100 italic mt-2">
+                            *Pengeluaran masih dalam batas aman anggaran bulanan.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[10px] font-black text-brand-200 uppercase">Avg / Karyawan</p>
+                            <p class="text-sm font-black tabular-nums">Rp 5.073.225</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-brand-200 uppercase">Efficiency</p>
+                            <p class="text-sm font-black tabular-nums">+4.2%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Exports -->
+                <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                    <h4 class="text-xs font-black text-gray-800 dark:text-white uppercase tracking-widest mb-4 italic">Riwayat Ekspor Terakhir</h4>
+                    <div class="space-y-4">
+                        @for ($i = 1; $i <= 3; $i++)
+                        <div class="flex items-center justify-between p-3 rounded-xl border border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <div class="h-8 w-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-800 dark:text-white uppercase tracking-tight">Report_Juli_2025.pdf</p>
+                                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">14 Mei 2026 • 1.2 MB</p>
+                                </div>
+                            </div>
+                            <svg class="h-4 w-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </div>
+                        @endfor
+                    </div>
+                </div>
             </div>
         </div>
     </div>
