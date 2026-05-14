@@ -8,9 +8,13 @@
         showRiskModal: false,
         showOthersModal: false,
         showDetailModal: false,
+        showEditOvertimeModal: false,
         showSlipModal: false,
         showConfirmModal: false,
         selectedEmployee: {},
+        selectedOvertimeDate: '',
+        selectedOvertimeHours: 0,
+        selectedOvertimeNote: '',
         selectedRiskDate: '',
         selectedRiskAmount: 0,
         selectedRiskNote: '',
@@ -93,6 +97,7 @@
             <!-- Modals (Synced with PHL) -->
             <x-payroll.phl.overtime-modal />
             <x-payroll.phl.overtime-detail-modal />
+            <x-payroll.phl.overtime-edit-modal />
             <x-payroll.phl.risk-allowance-modal />
             <x-payroll.others-modal />
             <x-payroll.phl.generate-confirm-modal />
