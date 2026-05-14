@@ -73,11 +73,6 @@ class MenuHelper
                 'name' => 'Laporan PKWT & PHL',
                 'path' => '/reports/summary',
             ],
-            [
-                'icon' => 'task',
-                'name' => 'Import Laporan PDF/Excel',
-                'path' => '/reports/import',
-            ],
         ];
     }
 
