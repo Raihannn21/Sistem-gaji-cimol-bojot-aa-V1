@@ -64,10 +64,6 @@ Route::prefix('reports')->group(function () {
     Route::get('/summary', function () {
         return view('pages.reports.summary', ['title' => 'Rekap PHL & PKWT']);
     })->name('reports.summary');
-
-    Route::get('/import', function () {
-        return view('pages.reports.import', ['title' => 'Import Laporan PDF/Excel']);
-    })->name('reports.import');
 });
 
 // Pengaturan
