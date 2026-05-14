@@ -27,7 +27,7 @@
             <div id="payslip-content" class="dark:text-white/90">
                 <!-- Header Info -->
                 <div class="text-center mb-10">
-                    <h1 class="text-2xl font-black text-gray-900 dark:text-white tracking-tighter italic">SLIP GAJI PHL</h1>
+                    <h1 class="text-2xl font-black text-gray-900 dark:text-white tracking-tighter italic uppercase" x-text="'SLIP GAJI ' + (selectedSlip.type ? selectedSlip.type : 'PHL')"></h1>
                     <p class="text-sm text-gray-500 font-bold uppercase tracking-widest mt-1">Periode Juli 2025</p>
                 </div>
 
@@ -53,16 +53,29 @@
                         </div>
                         <div class="space-y-3 pl-6 border-l-2 border-brand-100 dark:border-brand-500/20">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Gaji Pokok (22 Hari)</span>
-                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums">Rp 2.500.000</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Gaji Pokok</span>
+                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums" x-text="selectedSlip.type === 'pkwt' ? 'Rp 4.500.000' : 'Rp 2.500.000'"></span>
                             </div>
+                            <!-- PKWT Only Components -->
+                            <template x-if="selectedSlip.type === 'pkwt'">
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Tj. Jabatan</span>
+                                        <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums">Rp 500.000</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Tj. Makan & Transport</span>
+                                        <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums">Rp 660.000</span>
+                                    </div>
+                                </div>
+                            </template>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Lembur (12 Jam)</span>
-                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums">Rp 450.000</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Lembur</span>
+                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums" x-text="selectedSlip.type === 'pkwt' ? 'Rp 375.000' : 'Rp 450.000'"></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Tunjangan Risiko</span>
-                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums">Rp 200.000</span>
+                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums" x-text="selectedSlip.type === 'pkwt' ? 'Rp 250.000' : 'Rp 200.000'"></span>
                             </div>
                         </div>
                     </div>
@@ -76,11 +89,11 @@
                         <div class="space-y-3 pl-6 border-l-2 border-red-100 dark:border-red-500/20">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">BPJS Kesehatan</span>
-                                <span class="text-sm font-bold text-red-500 tabular-nums">(Rp 0)</span>
+                                <span class="text-sm font-bold text-red-500 tabular-nums" x-text="selectedSlip.type === 'pkwt' ? '(Rp 90.000)' : '(Rp 0)'"></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">BPJS Ketenagakerjaan</span>
-                                <span class="text-sm font-bold text-red-500 tabular-nums">(Rp 0)</span>
+                                <span class="text-sm font-bold text-red-500 tabular-nums" x-text="selectedSlip.type === 'pkwt' ? '(Rp 135.000)' : '(Rp 0)'"></span>
                             </div>
                         </div>
                     </div>
@@ -109,6 +122,12 @@
             <!-- Modal Actions -->
             <div class="mt-10 flex justify-end gap-3 no-print border-t border-gray-100 pt-6 dark:border-gray-800">
                 <x-ui.button variant="outline" @click="showSlipModal = false">Tutup</x-ui.button>
+                <x-ui.button variant="outline" className="flex items-center gap-2 text-blue-600 border-blue-100 hover:bg-blue-50">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    Kirim Email
+                </x-ui.button>
                 <x-ui.button variant="primary" onclick="window.print()" className="flex items-center gap-2">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
