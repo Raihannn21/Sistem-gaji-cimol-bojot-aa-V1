@@ -115,7 +115,8 @@ class MenuHelper
 
     public static function isActive($path)
     {
-        return request()->is(ltrim($path, '/'));
+        $cleanPath = ltrim($path, '/');
+        return request()->is($cleanPath) || request()->is($cleanPath . '/*');
     }
 
     public static function getIconSvg($iconName)
