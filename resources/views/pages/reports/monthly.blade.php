@@ -154,107 +154,101 @@
         </div>
 
 
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <!-- Bottom Section: Detailed Table & Health Check Sidebar -->
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <!-- Detailed Table Section -->
-            <div class="lg:col-span-2 space-y-6">
+            <div>
                 <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                        <h3 class="text-base font-black text-gray-800 dark:text-white/90 uppercase tracking-tight italic">Rincian per Kategori</h3>
-                        <span class="text-[10px] font-black text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full uppercase italic dark:bg-brand-500/10">Data Terverifikasi</span>
+                        <h3 class="text-sm font-bold text-gray-800 dark:text-white uppercase tracking-wide">Rincian Per Kategori</h3>
+                        <span class="text-[10px] font-bold text-green-600 uppercase bg-green-50 px-2 py-1 rounded-lg">Data Terverifikasi</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead>
                                 <tr class="bg-gray-50/50 dark:bg-white/[0.01]">
-                                    <th class="px-6 py-4 text-xs font-black uppercase text-gray-500 tracking-widest">Kategori Biaya</th>
-                                    <th class="px-6 py-4 text-xs font-black uppercase text-gray-500 tracking-widest text-right">PKWT</th>
-                                    <th class="px-6 py-4 text-xs font-black uppercase text-gray-500 tracking-widest text-right">PHL</th>
-                                    <th class="px-6 py-4 text-xs font-black uppercase text-gray-500 tracking-widest text-right">Total</th>
+                                    <th class="px-6 py-4 text-xs font-bold uppercase text-gray-400 tracking-wide">Kategori Biaya</th>
+                                    <th class="px-6 py-4 text-xs font-bold uppercase text-gray-400 tracking-wide text-right">PKWT</th>
+                                    <th class="px-6 py-4 text-xs font-bold uppercase text-gray-400 tracking-wide text-right">PHL</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium text-sm">
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                                @foreach([
+                                    ['label' => 'Gaji Pokok', 'pkwt' => '702.000.000', 'phl' => '230.000.000'],
+                                    ['label' => 'Tunjangan Jabatan', 'pkwt' => '78.000.000', 'phl' => '0'],
+                                    ['label' => 'Lembur', 'pkwt' => '85.500.000', 'phl' => '59.700.000'],
+                                    ['label' => 'Makan & Transport', 'pkwt' => '102.960.000', 'phl' => '0']
+                                ] as $row)
                                 <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                                    <td class="px-6 py-4 font-bold text-gray-800 dark:text-white/90">Gaji Pokok</td>
-                                    <td class="px-6 py-4 text-right tabular-nums">702.000.000</td>
-                                    <td class="px-6 py-4 text-right tabular-nums">230.000.000</td>
-                                    <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">932.000.000</td>
+                                    <td class="px-6 py-4 text-sm font-bold text-gray-700 dark:text-gray-300">{{ $row['label'] }}</td>
+                                    <td class="px-6 py-4 text-right text-sm font-bold text-gray-800 dark:text-white tabular-nums">{{ $row['pkwt'] }}</td>
+                                    <td class="px-6 py-4 text-right text-sm font-bold text-gray-800 dark:text-white tabular-nums">{{ $row['phl'] }}</td>
                                 </tr>
-                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                                    <td class="px-6 py-4 font-bold text-gray-800 dark:text-white/90">Tunjangan Jabatan</td>
-                                    <td class="px-6 py-4 text-right tabular-nums">78.000.000</td>
-                                    <td class="px-6 py-4 text-right tabular-nums">0</td>
-                                    <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">78.000.000</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                                    <td class="px-6 py-4 font-bold text-gray-800 dark:text-white/90">Lembur</td>
-                                    <td class="px-6 py-4 text-right tabular-nums">85.500.000</td>
-                                    <td class="px-6 py-4 text-right tabular-nums">59.700.000</td>
-                                    <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">145.200.000</td>
-                                </tr>
-                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                                    <td class="px-6 py-4 font-bold text-gray-800 dark:text-white/90">Makan & Transport</td>
-                                    <td class="px-6 py-4 text-right tabular-nums">102.960.000</td>
-                                    <td class="px-6 py-4 text-right tabular-nums">0</td>
-                                    <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">102.960.000</td>
-                                </tr>
-                                <tr class="bg-brand-50/30 dark:bg-brand-500/5">
-                                    <td class="px-6 py-4 font-black text-brand-600 uppercase italic">Grand Total</td>
-                                    <td class="px-6 py-4 text-right font-black text-brand-600 tabular-nums">968.460.000</td>
-                                    <td class="px-6 py-4 text-right font-black text-brand-600 tabular-nums">289.700.000</td>
-                                    <td class="px-6 py-4 text-right font-black text-brand-600 tabular-nums">1.258.160.000</td>
-                                </tr>
+                                @endforeach
                             </tbody>
+                            <tfoot>
+                                <tr class="bg-gray-50/80 dark:bg-white/[0.03]">
+                                    <td class="px-6 py-4 text-sm font-bold text-gray-800 dark:text-white uppercase">Grand Total</td>
+                                    <td class="px-6 py-4 text-right text-sm font-bold text-brand-600 dark:text-brand-500 tabular-nums">968.460.000</td>
+                                    <td class="px-6 py-4 text-right text-sm font-bold text-brand-600 dark:text-brand-500 tabular-nums">289.700.000</td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Visualization/Sidebar Section -->
+            <!-- Sidebar Section (Health Check & Exports) -->
             <div class="space-y-6">
-                <!-- Summary Card -->
-                <div class="rounded-2xl border border-gray-200 bg-brand-600 p-6 shadow-xl shadow-brand-500/20 text-white">
-                    <h4 class="text-sm font-black uppercase tracking-widest italic mb-6">Payroll Health Check</h4>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-end">
-                            <span class="text-xs font-bold text-brand-100">Budget Utilization</span>
-                            <span class="text-lg font-black italic">92.4%</span>
-                        </div>
-                        <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                            <div class="h-full bg-white rounded-full" style="width: 92.4%"></div>
-                        </div>
-                        <p class="text-[10px] text-brand-100 italic mt-2">
-                            *Pengeluaran masih dalam batas aman anggaran bulanan.
-                        </p>
+                <!-- Payroll Health Check Card -->
+                <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div class="mb-6">
+                        <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Payroll Health Check</h4>
                     </div>
-                    
-                    <div class="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 gap-4">
+                    <div class="space-y-6">
                         <div>
-                            <p class="text-[10px] font-black text-brand-200 uppercase">Avg / Karyawan</p>
-                            <p class="text-sm font-black tabular-nums">Rp 5.073.225</p>
+                            <div class="mb-2 flex items-center justify-between">
+                                <span class="text-xs font-bold text-gray-600 dark:text-gray-400">Budget Utilization</span>
+                                <span class="text-xl font-bold text-brand-600 dark:text-brand-500">92.4%</span>
+                            </div>
+                            <div class="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-800">
+                                <div class="h-full rounded-full bg-brand-500 transition-all duration-1000 shadow-sm shadow-brand-500/20" style="width: 92.4%"></div>
+                            </div>
+                            <p class="mt-3 text-[10px] font-medium text-gray-500 leading-relaxed italic">
+                                * Pengeluaran masih dalam batas aman anggaran bulanan.
+                            </p>
                         </div>
-                        <div>
-                            <p class="text-[10px] font-black text-brand-200 uppercase">Efficiency</p>
-                            <p class="text-sm font-black tabular-nums">+4.2%</p>
+                        <div class="grid grid-cols-2 gap-4 border-t border-gray-50 pt-6 dark:border-gray-800">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Avg / Karyawan</p>
+                                <p class="mt-1 text-sm font-bold text-gray-800 dark:text-white">Rp 5.073.225</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Efficiency</p>
+                                <p class="mt-1 text-sm font-bold text-green-600">+4.2%</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Exports -->
+                <!-- Recent Exports Card -->
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-                    <h4 class="text-xs font-black text-gray-800 dark:text-white uppercase tracking-widest mb-4 italic">Riwayat Ekspor Terakhir</h4>
-                    <div class="space-y-4">
+                    <h4 class="mb-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Riwayat Ekspor Terakhir</h4>
+                    <div class="space-y-3">
                         @for ($i = 1; $i <= 3; $i++)
-                        <div class="flex items-center justify-between p-3 rounded-xl border border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/[0.01] transition-colors cursor-pointer">
+                        <div class="group flex items-center justify-between rounded-xl border border-gray-100 p-4 transition-all hover:border-brand-500 hover:bg-gray-50/50 dark:border-gray-800 dark:hover:bg-white/[0.02] cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div class="h-8 w-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-500 dark:bg-red-500/10">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div>
-                                    <p class="text-[10px] font-black text-gray-800 dark:text-white uppercase tracking-tight">Report_Juli_2025.pdf</p>
-                                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">14 Mei 2026 • 1.2 MB</p>
+                                    <p class="text-xs font-bold text-gray-800 dark:text-white">REPORT_JULI_2025.PDF</p>
+                                    <p class="mt-0.5 text-[10px] font-medium text-gray-500 uppercase">14 MEI 2026 • 1.2 MB</p>
                                 </div>
                             </div>
-                            <svg class="h-4 w-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <button class="text-gray-400 group-hover:text-brand-500 transition-colors">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </button>
                         </div>
                         @endfor
                     </div>
