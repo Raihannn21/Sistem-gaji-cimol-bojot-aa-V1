@@ -122,7 +122,7 @@
             <!-- Modal Actions -->
             <div class="mt-10 flex justify-end gap-3 no-print border-t border-gray-100 pt-6 dark:border-gray-800">
                 <x-ui.button variant="outline" @click="showSlipModal = false">Tutup</x-ui.button>
-                <x-ui.button variant="outline" className="flex items-center gap-2 text-blue-600 border-blue-100 hover:bg-blue-50">
+                <x-ui.button variant="outline" className="flex items-center gap-2 text-brand-600 border-brand-100 hover:bg-brand-50">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>

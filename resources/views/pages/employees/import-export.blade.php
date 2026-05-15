@@ -63,7 +63,7 @@
                 <!-- Export Section -->
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] sm:p-8">
                     <div class="flex items-center gap-3 border-b border-gray-100 pb-5 dark:border-gray-800">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
@@ -106,10 +106,10 @@
                         </div>
 
                         <!-- Master Data Card -->
-                        <div class="group relative rounded-2xl border border-gray-100 bg-white p-5 transition-all hover:border-blue-500 hover:shadow-theme-md dark:border-gray-800 dark:bg-white/[0.02]">
+                        <div class="group relative rounded-2xl border border-gray-100 bg-white p-5 transition-all hover:border-brand-500 hover:shadow-theme-md dark:border-gray-800 dark:bg-white/[0.02]">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-center gap-4">
-                                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500 text-white shadow-lg shadow-blue-500/20">
+                                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500 text-white shadow-lg shadow-brand-500/20">
                                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
@@ -119,7 +119,7 @@
                                         <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Download seluruh biodata karyawan (.xlsx)</p>
                                     </div>
                                 </div>
-                                <x-ui.button variant="outline" className="h-9 px-4 text-xs border-blue-200 text-blue-600 hover:bg-blue-50">Download</x-ui.button>
+                                <x-ui.button variant="outline" className="h-9 px-4 text-xs border-brand-200 text-brand-600 hover:bg-brand-50">Download</x-ui.button>
                             </div>
                         </div>
 
