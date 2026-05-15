@@ -18,9 +18,9 @@
         </p>
     </div>
 
-    <!-- ApexCharts Container -->
-    <div class="flex-1 mt-4">
-        <div id="recruitmentTrendChart" class="min-h-[200px]"></div>
+    <!-- ApexCharts Container with Horizontal Scroll -->
+    <div class="max-w-full overflow-x-auto custom-scrollbar">
+        <div id="recruitmentTrendChart" class="-ml-5 min-h-[250px] min-w-[700px] xl:min-w-full"></div>
     </div>
 </div>
 
@@ -83,7 +83,12 @@
             colors: ['#3c50e0', '#80caee'],
             dataLabels: { enabled: false },
             tooltip: {
-                theme: 'dark'
+                x: { show: false },
+                y: {
+                    formatter: function (val) {
+                        return val;
+                    },
+                },
             }
         };
 

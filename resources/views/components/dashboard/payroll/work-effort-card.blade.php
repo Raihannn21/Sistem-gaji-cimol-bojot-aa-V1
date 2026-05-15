@@ -1,18 +1,16 @@
-<div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 flex flex-col justify-between h-full">
+<div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] flex flex-col justify-between h-full">
     <div>
-        <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z" fill="currentColor"/>
-            </svg>
+        <div class="flex items-center justify-center w-10 h-10 bg-gray-50 rounded-xl dark:bg-gray-800">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v16a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
         </div>
 
-        <div class="flex items-end justify-between mt-5">
+        <div class="flex items-end justify-between mt-4">
             <div>
-                <span class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-widest font-bold text-[10px]">Total Work Effort</span>
-                <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90 tabular-nums tracking-tight">5.400 <span class="text-xs font-medium text-gray-400">Man Days</span></h4>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Work Effort</span>
+                <h4 class="mt-1 font-bold text-gray-800 text-lg dark:text-white/90 tabular-nums">5.400 <span class="text-xs font-medium text-gray-400">Man Days</span></h4>
             </div>
 
-            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-gray-600 dark:bg-white/10 dark:text-gray-300 uppercase tracking-widest">MTD</span>
+            <span class="rounded-full bg-gray-50 px-2 py-0.5 text-[9px] font-bold text-gray-400 dark:bg-white/5 uppercase tracking-widest">MTD</span>
         </div>
     </div>
 

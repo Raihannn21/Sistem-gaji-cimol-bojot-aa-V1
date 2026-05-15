@@ -1,18 +1,16 @@
-<div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 flex flex-col justify-between h-full">
+<div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] flex flex-col justify-between h-full">
     <div>
-        <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill="currentColor"/>
-            </svg>
+        <div class="flex items-center justify-center w-10 h-10 bg-gray-50 rounded-xl dark:bg-gray-800">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
         </div>
 
-        <div class="flex items-end justify-between mt-5">
+        <div class="flex items-end justify-between mt-4">
             <div>
-                <span class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-widest font-bold text-[10px]">Total Manpower</span>
-                <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90 tabular-nums tracking-tight">245 <span class="text-xs font-medium text-gray-400">Orang</span></h4>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Manpower</span>
+                <h4 class="mt-1 font-bold text-gray-800 text-lg dark:text-white/90 tabular-nums">245 <span class="text-xs font-medium text-gray-400">Orang</span></h4>
             </div>
 
-            <span class="rounded-full bg-success-50 px-2 py-0.5 text-[10px] font-bold text-success-600 dark:bg-success-500/15 dark:text-success-500 uppercase tracking-widest">Active</span>
+            <span class="rounded-full bg-success-50 px-2 py-0.5 text-[9px] font-bold text-success-600 dark:bg-success-500/15 dark:text-success-500 uppercase tracking-widest">Active</span>
         </div>
     </div>
 

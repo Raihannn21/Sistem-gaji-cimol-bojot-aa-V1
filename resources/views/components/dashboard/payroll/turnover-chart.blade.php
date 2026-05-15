@@ -66,10 +66,12 @@
             },
             colors: ['#ef4444'],
             tooltip: {
-                theme: 'dark',
-                fixed: { enabled: false },
                 x: { show: false },
-                y: { title: { formatter: (seriesName) => '' } },
+                y: {
+                    formatter: function (val) {
+                        return val;
+                    },
+                },
                 marker: { show: false }
             }
         };
