@@ -63,7 +63,7 @@
                                 fill="currentColor"
                             />
                         </svg>',
-                        'path' => 'profile',
+                        'path' => '/profile',
                     ],
                     [
                         'text' => 'Account settings',
@@ -75,7 +75,7 @@
                             fill="currentColor"
                         />
                         </svg>',
-                        'path' => 'chat'
+                        'path' => '/chat'
                     ],
                     [
                         'text' => 'Support',
@@ -87,7 +87,7 @@
                             fill="currentColor"
                           />
                         </svg>',
-                        'path' => 'profile'
+                        'path' => '/profile'
                     ],
                 ];
             @endphp
