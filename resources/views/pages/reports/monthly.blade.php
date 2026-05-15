@@ -4,7 +4,9 @@
     <div class="mx-auto max-w-screen-2xl" x-data="{ 
         selectedMonth: 'Juli', 
         selectedYear: '2025',
-        showExportDropdown: false 
+        showExportDropdown: false,
+        showMonthDropdown: false,
+        showYearDropdown: false
     }">
 
         <!-- Header Action Section -->
@@ -16,31 +18,54 @@
 
             <div class="flex flex-wrap items-center gap-3">
                 <!-- Month/Year Picker -->
-                <div class="flex items-center gap-2 rounded-xl border border-gray-200 bg-white p-1.5 dark:border-gray-800 dark:bg-white/[0.03]">
-                    <select x-model="selectedMonth" class="bg-transparent text-xs font-bold text-gray-700 outline-none dark:text-gray-400 cursor-pointer px-2">
-                        <option>Januari</option>
-                        <option>Februari</option>
-                        <option>Maret</option>
-                        <option>April</option>
-                        <option>Mei</option>
-                        <option>Juni</option>
-                        <option>Juli</option>
-                    </select>
+                <div class="flex items-center rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] shadow-sm h-11 overflow-visible">
+                    <div class="flex items-center px-3 border-r border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-white/[0.02] h-full">
+                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    
+                    <!-- Month Selector -->
+                    <div class="relative h-full" @click.away="showMonthDropdown = false">
+                        <button @click="showMonthDropdown = !showMonthDropdown" class="flex items-center gap-2 px-4 h-full text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-brand-600 transition-colors group">
+                            <span x-text="selectedMonth"></span>
+                            <svg class="h-3 w-3 text-gray-400 group-hover:text-brand-500 transition-colors" :class="showMonthDropdown ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        
+                        <div x-show="showMonthDropdown" x-transition x-cloak class="absolute left-0 mt-1 w-40 max-h-60 overflow-y-auto rounded-xl border border-gray-100 bg-white p-2 shadow-xl dark:border-gray-800 dark:bg-gray-900 z-[60] custom-scrollbar">
+                            @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $m)
+                                <button @click="selectedMonth = '{{ $m }}'; showMonthDropdown = false" class="flex w-full items-center px-3 py-2 text-left text-xs font-bold rounded-lg transition-colors" :class="selectedMonth === '{{ $m }}' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/[0.03]'">
+                                    {{ $m }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
                     <div class="h-4 w-px bg-gray-200 dark:bg-gray-700"></div>
-                    <select x-model="selectedYear" class="bg-transparent text-xs font-bold text-gray-700 outline-none dark:text-gray-400 cursor-pointer px-2">
-                        <option>2024</option>
-                        <option>2025</option>
-                    </select>
+
+                    <!-- Year Selector -->
+                    <div class="relative h-full" @click.away="showYearDropdown = false">
+                        <button @click="showYearDropdown = !showYearDropdown" class="flex items-center gap-2 px-4 h-full text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-brand-600 transition-colors group">
+                            <span x-text="selectedYear"></span>
+                            <svg class="h-3 w-3 text-gray-400 group-hover:text-brand-500 transition-colors" :class="showYearDropdown ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        
+                        <div x-show="showYearDropdown" x-transition x-cloak class="absolute left-0 mt-1 w-32 rounded-xl border border-gray-100 bg-white p-2 shadow-xl dark:border-gray-800 dark:bg-gray-900 z-[60]">
+                            @foreach (['2024', '2025', '2026'] as $y)
+                                <button @click="selectedYear = '{{ $y }}'; showYearDropdown = false" class="flex w-full items-center px-3 py-2 text-left text-xs font-bold rounded-lg transition-colors" :class="selectedYear === '{{ $y }}' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/[0.03]'">
+                                    {{ $y }}
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Export Button -->
-                <div class="relative">
+                <div class="relative" @click.away="showExportDropdown = false">
                     <x-ui.button variant="primary" @click="showExportDropdown = !showExportDropdown" className="flex items-center gap-2 shadow-lg shadow-brand-500/20">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                         Ekspor Laporan
                     </x-ui.button>
                     
-                    <div x-show="showExportDropdown" @click.away="showExportDropdown = false" class="absolute right-0 mt-2 w-48 rounded-xl border border-gray-100 bg-white p-2 shadow-xl dark:border-gray-800 dark:bg-gray-900 z-50" x-cloak>
+                    <div x-show="showExportDropdown" x-transition x-cloak class="absolute right-0 mt-2 w-48 rounded-xl border border-gray-100 bg-white p-2 shadow-xl dark:border-gray-800 dark:bg-gray-900 z-50">
                         <button class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-xs font-bold text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/[0.03]">
                             <svg class="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                             Export to PDF
