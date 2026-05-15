@@ -30,6 +30,11 @@
                 </div>
             </div>
 
+            <!-- New Row: Payroll Analytics -->
+            <div class="col-span-12">
+                <x-dashboard.payroll.analytics-chart />
+            </div>
+
             <!-- Row 2: Trends & Charts -->
             <div class="col-span-12 xl:col-span-7">
                 <x-dashboard.payroll.recruitment-chart />
