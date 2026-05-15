@@ -63,14 +63,15 @@
         :class="(!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen) ?
         'xl:justify-center' :
         'justify-start'">
-        <a href="/">
+        <a href="/" class="flex items-center gap-3">
             <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" width="150" height="40" />
-            <img x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
-                class="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" width="150"
-                height="40" />
+                src="/images/logo/logo-cimol-bojot-aa.png" alt="Logo" class="w-10 h-10 rounded-full" />
+            <span x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen"
+                class="font-bold text-lg tracking-tight text-gray-900 dark:text-white whitespace-nowrap">
+                CIMOL BOJOT AA
+            </span>
             <img x-show="!$store.sidebar.isExpanded && !$store.sidebar.isHovered && !$store.sidebar.isMobileOpen"
-                src="/images/logo/logo-icon.svg" alt="Logo" width="32" height="32" />
+                src="/images/logo/logo-cimol-bojot-aa.png" alt="Logo" class="w-8 h-8 rounded-full" />
 
         </a>
     </div>

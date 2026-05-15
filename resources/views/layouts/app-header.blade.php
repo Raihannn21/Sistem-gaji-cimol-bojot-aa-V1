@@ -48,10 +48,9 @@
                 </svg>
             </button>
 
-            <!-- Logo (mobile only) -->
-            <a href="/" class="xl:hidden">
-                <img class="dark:hidden" src="/images/logo/logo.svg" alt="Logo" />
-                <img class="hidden dark:block" src="/images/logo/logo-dark.svg" alt="Logo" />
+            <a href="/" class="xl:hidden flex items-center gap-2">
+                <img src="/images/logo/logo-cimol-bojot-aa.png" alt="Logo" class="w-8 h-8 rounded-full" />
+                <span class="font-bold text-gray-900 dark:text-white tracking-tight">CIMOL BOJOT AA</span>
             </a>
 
             <!-- Application Menu Toggle (mobile only) -->
