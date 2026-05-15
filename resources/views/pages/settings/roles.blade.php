@@ -91,10 +91,10 @@
                         <thead>
                             <tr class="border-b border-gray-100 dark:border-gray-800">
                                 <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">User</th>
-                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Role</th>
-                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Status</th>
-                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">Login Terakhir</th>
-                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-right">Aksi</th>
+                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Role</th>
+                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Status</th>
+                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Login Terakhir</th>
+                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -106,21 +106,21 @@
                                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user['email'] }}</p>
                                     </div>
                                 </td>
-                                <td class="px-5 py-4">
+                                <td class="px-5 py-4 text-center">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="getRoleClass('{{ $user['role'] }}')">
                                         {{ $user['role'] }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4">
+                                <td class="px-5 py-4 text-center">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="getStatusClass('{{ $user['status'] }}')">
                                         {{ $user['status'] }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                <td class="px-5 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                     {{ $user['last_login'] }}
                                 </td>
-                                <td class="px-5 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
+                                <td class="px-5 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-2">
                                         <button class="p-1.5 text-gray-500 hover:text-brand-500 transition-colors" title="Edit" @click="editUser({{ json_encode($user) }})">
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                         </button>
