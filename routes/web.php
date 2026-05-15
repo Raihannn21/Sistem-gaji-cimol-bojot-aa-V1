@@ -5,12 +5,8 @@ use App\Http\Controllers\DashboardController;
 
 // Dashboard
 Route::get('/', function () {
-    return view('pages.dashboard.ecommerce', ['title' => 'E-commerce Dashboard']);
-})->name('dashboard');
-
-Route::get('/dashboard/payroll', function () {
     return view('pages.dashboard.payroll', ['title' => 'Payroll Analytics']);
-})->name('dashboard.payroll');
+})->name('dashboard');
 
 // Manajemen Karyawan
 Route::prefix('employees')->group(function () {
