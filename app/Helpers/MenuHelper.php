@@ -34,21 +34,8 @@ class MenuHelper
     public static function getEmployeeManagementItems()
     {
         return [
-            [
-                'icon' => 'user-profile',
-                'name' => 'Data Karyawan',
-                'path' => '/employees',
-            ],
-            [
-                'icon' => 'user-off',
-                'name' => 'Resign & SPHK',
-                'path' => '/employees/status',
-            ],
-            [
-                'icon' => 'pages',
-                'name' => 'Import & Export',
-                'path' => '/employees/import-export',
-            ],
+            ['name' => 'Data Karyawan', 'path' => '/employees', 'icon' => 'user-profile'],
+            ['name' => 'Resign & SPHK', 'path' => '/employees/status', 'icon' => 'user-minus'],
         ];
     }
 

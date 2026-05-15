@@ -18,9 +18,6 @@ Route::prefix('employees')->group(function () {
         return view('pages.employees.status', ['title' => 'Resign & SPHK']);
     })->name('employees.status');
     
-    Route::get('/import-export', function () {
-        return view('pages.employees.import-export', ['title' => 'Import & Export']);
-    })->name('employees.import-export');
 });
 
 // Payroll PHL

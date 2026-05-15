@@ -49,7 +49,22 @@
         isActive(path) {
             const cleanPath = path.replace(/^\//, '');
             const current = '{{ $currentPath }}';
-            return window.location.pathname === path || current === cleanPath || current.startsWith(cleanPath + '/');
+            
+            if (current === cleanPath || window.location.pathname === path) {
+                return true;
+            }
+            
+            if (current.startsWith(cleanPath + '/')) {
+                if (cleanPath === 'employees') {
+                    const segments = current.split('/');
+                    if (segments[1] === 'status') {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
+            return false;
         }
     }"
     :class="{
