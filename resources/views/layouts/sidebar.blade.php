@@ -47,7 +47,9 @@
             return this.openSubmenus[key] || false;
         },
         isActive(path) {
-            return window.location.pathname === path || '{{ $currentPath }}' === path.replace(/^\//, '');
+            const cleanPath = path.replace(/^\//, '');
+            const current = '{{ $currentPath }}';
+            return window.location.pathname === path || current === cleanPath || current.startsWith(cleanPath + '/');
         }
     }"
     :class="{
