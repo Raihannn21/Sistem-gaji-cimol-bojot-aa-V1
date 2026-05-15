@@ -1,9 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto max-w-screen-2xl" x-data="{ 
+        <div class="mx-auto max-w-screen-2xl" x-data="{ 
             searchQuery: '',
             selectedEmployee: null,
+            showSlipModal: false,
+            selectedSlip: {},
             employees: [
                 { id: 1, name: 'Ahmad Fauzi', nrp: '1001', dept: 'Security', status: 'PHL', email: 'fauzi@example.com' },
                 { id: 2, name: 'Budi Santoso', nrp: '2001', dept: 'Production', status: 'PKWT', email: 'budi@example.com' },
@@ -161,8 +163,9 @@
                                                     class="px-6 py-4 text-right text-sm font-bold text-brand-600 tabular-nums">
                                                     Rp 5.200.000</td>
                                                 <td class="px-6 py-4 text-center">
-                                                    <button class="text-gray-400 hover:text-brand-500 transition-colors">
-                                                        <svg class="h-5 w-5" fill="none" stroke="currentColor"
+                                                    <button @click="selectedSlip = { name: selectedEmployee.name, nrp: selectedEmployee.nrp, total: '5.030.000', type: selectedEmployee.status.toLowerCase(), period: m + ' 2025' }; showSlipModal = true" 
+                                                        class="text-gray-400 hover:text-brand-500 transition-colors p-2 hover:bg-brand-50 rounded-lg dark:hover:bg-brand-500/10 group">
+                                                        <svg class="h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -196,9 +199,9 @@
                             laporan detail.</p>
                     </div>
                 </template>
-            </div>
         </div>
 
+        <x-report.employee-slip-modal />
     </div>
 
     <style>
