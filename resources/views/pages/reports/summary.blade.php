@@ -38,7 +38,7 @@
                                 <td class="px-6 py-4 text-center tabular-nums">156</td>
                                 <td class="px-6 py-4 text-center tabular-nums">92</td>
                                 <td class="px-6 py-4 text-right tabular-nums text-brand-600 font-bold">968.460.000</td>
-                                <td class="px-6 py-4 text-right tabular-nums text-blue-600 font-bold">289.700.000</td>
+                                <td class="px-6 py-4 text-right tabular-nums text-brand-600 font-bold">289.700.000</td>
                                 <td class="px-6 py-4 text-right font-black text-gray-900 dark:text-white tabular-nums">1.258.160.000</td>
                             </tr>
                             @endforeach
@@ -81,7 +81,7 @@
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                     <div class="mb-6 flex items-center justify-between">
                         <h4 class="text-xs font-bold text-gray-800 dark:text-white uppercase tracking-wide">Komposisi Biaya PHL</h4>
-                        <span class="text-[10px] font-bold text-blue-600 italic">18.5% dari Total Payroll</span>
+                        <span class="text-[10px] font-bold text-brand-600 italic">18.5% dari Total Payroll</span>
                     </div>
                     <div class="space-y-4">
                         <div class="space-y-2">
@@ -90,7 +90,7 @@
                                 <span class="text-gray-800 dark:text-white">79.4%</span>
                             </div>
                             <div class="h-1.5 w-full bg-gray-100 rounded-full dark:bg-white/5 overflow-hidden">
-                                <div class="h-full bg-blue-500 rounded-full" style="width: 79.4%"></div>
+                                <div class="h-full bg-brand-500 rounded-full" style="width: 79.4%"></div>
                             </div>
                         </div>
                         <div class="space-y-2">
@@ -108,3 +108,4 @@
         </div>
     </div>
 @endsection
+
