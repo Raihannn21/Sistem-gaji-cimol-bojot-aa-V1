@@ -1,22 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto max-w-screen-2xl p-4 md:p-6" x-data="{ 
+    <div class="mx-auto max-w-screen-2xl" x-data="{ 
         selectedMonth: 'Juli', 
         selectedYear: '2025',
         showExportDropdown: false 
     }">
-        <x-common.page-breadcrumb :pageName="$title" />
 
         <!-- Header Action Section -->
-        <div class="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div class="mb-6 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight italic uppercase">
-                    Rekapitulasi Gaji Bulanan
-                </h2>
-                <p class="text-sm text-gray-500 font-medium mt-1">
-                    Visualisasi dan rincian pengeluaran payroll untuk periode <span class="text-brand-600 font-bold" x-text="selectedMonth + ' ' + selectedYear"></span>
-                </p>
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Rekapitulasi Gaji Bulanan</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Visualisasi rincian pengeluaran payroll periode <span class="text-brand-600 font-semibold" x-text="selectedMonth + ' ' + selectedYear"></span></p>
             </div>
 
             <div class="flex flex-wrap items-center gap-3">

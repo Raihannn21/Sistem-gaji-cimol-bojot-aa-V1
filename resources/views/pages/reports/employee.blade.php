@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto max-w-screen-2xl p-4 md:p-6" x-data="{ 
+    <div class="mx-auto max-w-screen-2xl" x-data="{ 
         searchQuery: '',
         selectedEmployee: null,
         employees: [
@@ -10,13 +10,20 @@
             { id: 3, name: 'Siti Aminah', nrp: '2002', dept: 'Production', status: 'PKWT', email: 'siti@example.com' }
         ]
     }">
-        <x-common.page-breadcrumb :pageName="$title" />
+
+        <!-- Header Section -->
+        <div class="mb-6 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Laporan Per Karyawan</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Rincian riwayat penggajian dan administrasi individu karyawan.</p>
+            </div>
+        </div>
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <!-- Sidebar: Search & List -->
             <div class="lg:col-span-1 space-y-6">
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-                    <h3 class="text-base font-black text-gray-800 dark:text-white uppercase tracking-tight italic mb-6">Cari Karyawan</h3>
+                    <h3 class="text-sm font-bold text-gray-800 dark:text-white uppercase tracking-wide mb-6">Cari Karyawan</h3>
                     
                     <!-- Search Input -->
                     <div class="relative mb-6">
@@ -73,7 +80,7 @@
                         <!-- Payroll History -->
                         <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                             <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800">
-                                <h3 class="text-base font-black text-gray-800 dark:text-white uppercase tracking-tight italic">Riwayat Penggajian (6 Bulan Terakhir)</h3>
+                                <h3 class="text-sm font-bold text-gray-800 dark:text-white uppercase tracking-wide">Riwayat Penggajian (6 Bulan Terakhir)</h3>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
@@ -110,7 +117,7 @@
                         <div class="h-24 w-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 dark:bg-white/5">
                             <svg class="h-12 w-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </div>
-                        <h3 class="text-lg font-black text-gray-800 dark:text-white uppercase tracking-tight italic">Pilih Karyawan</h3>
+                        <h3 class="text-base font-bold text-gray-800 dark:text-white uppercase tracking-wide">Pilih Karyawan</h3>
                         <p class="text-sm text-gray-400 font-medium mt-2">Silahkan pilih karyawan di sisi kiri untuk melihat laporan detail.</p>
                     </div>
                 </template>
