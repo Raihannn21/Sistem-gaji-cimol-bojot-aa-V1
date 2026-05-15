@@ -84,13 +84,6 @@ class MenuHelper
                     ['name' => 'Konfigurasi SMTP', 'path' => '/settings/smtp'],
                 ],
             ],
-            [
-                'icon' => 'authentication',
-                'name' => 'Authentication',
-                'subItems' => [
-                    ['name' => 'Sign In', 'path' => '/signin', 'pro' => false],
-                ],
-            ],
         ];
     }
 
