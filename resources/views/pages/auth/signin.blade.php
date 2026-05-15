@@ -5,7 +5,9 @@
         <div class="relative flex h-screen w-full flex-col justify-center sm:p-0 lg:flex-row dark:bg-gray-900">
             <!-- Form -->
             <div class="flex w-full flex-1 flex-col lg:w-1/2">
-                <div class="mx-auto w-full max-w-md pt-10">
+                <div class="mx-auto w-full max-w-md pt-10 flex items-center justify-center lg:justify-start gap-3">
+                    <img src="/images/logo/logo-cimol-bojot-aa.png" alt="Logo" class="w-10 h-10 rounded-full" />
+                    <span class="font-bold text-xl tracking-tight text-gray-900 dark:text-white">CIMOL BOJOT AA</span>
                 </div>
                 <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
                     <div>
@@ -100,7 +102,7 @@
                     <x-common.common-grid-shape />
                     <div class="flex max-w-xs flex-col items-center">
                         <a href="/" class="mb-4 block">
-                            <img src="/images/logo/logo-cimol-bojot-aa.png" alt="Logo" class="max-w-[200px]" />
+                            <img src="/images/logo/logo-cimol-bojot-aa.png" alt="Logo" class="max-w-[120px] rounded-full border-4 border-white/10 shadow-xl" />
                         </a>
                         <p class="text-center text-gray-400 dark:text-white/60">
                             Sistem Manajemen Payroll & Karyawan Cimol Bojot AA
