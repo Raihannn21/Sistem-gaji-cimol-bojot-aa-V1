@@ -79,34 +79,34 @@
             </div>
         </div>
 
-        <!-- Stats Overview -->
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <!-- Stats Overview: Horizontal Scrollable Row -->
+        <div class="flex flex-row flex-nowrap gap-4 w-full overflow-x-auto pb-4 custom-scrollbar mb-8">
             <!-- Total Payroll -->
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="flex-1 min-w-[280px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/10">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/10">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16V15m0 1v-8"/></svg>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Gaji</p>
-                        <h3 class="text-xl font-black text-gray-800 dark:text-white tabular-nums">Rp 1.240.500.000</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Total Gaji</p>
+                        <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90 tabular-nums">Rp 1.240.500.000</h4>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-green-600 italic">
+                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-green-600">
                     <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
                     +2.4% vs Bulan Lalu
                 </div>
             </div>
 
-            <!-- Total Employees -->
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+            <!-- Active Employees -->
+            <div class="flex-1 min-w-[280px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Karyawan Aktif</p>
-                        <h3 class="text-xl font-black text-gray-800 dark:text-white tabular-nums">248 Orang</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Karyawan Aktif</p>
+                        <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90 tabular-nums">248 Orang</h4>
                     </div>
                 </div>
                 <div class="mt-4 flex items-center gap-3">
@@ -122,36 +122,37 @@
             </div>
 
             <!-- Total Overtime -->
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="flex-1 min-w-[280px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-500/10">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-600 dark:bg-orange-500/10">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Biaya Lembur</p>
-                        <h3 class="text-xl font-black text-gray-800 dark:text-white tabular-nums">Rp 145.200.000</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Biaya Lembur</p>
+                        <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90 tabular-nums">Rp 145.200.000</h4>
                     </div>
                 </div>
-                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-red-500 italic">
+                <div class="mt-4 flex items-center gap-2 text-xs font-bold text-red-500">
                     <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                     -5.1% vs Bulan Lalu
                 </div>
             </div>
 
             <!-- Total Deductions -->
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+            <div class="flex-1 min-w-[280px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-red-600 dark:bg-red-500/10">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600 dark:bg-red-500/10">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
-                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Potongan</p>
-                        <h3 class="text-xl font-black text-gray-800 dark:text-white tabular-nums">Rp 28.450.000</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Total Potongan</p>
+                        <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90 tabular-nums">Rp 28.450.000</h4>
                     </div>
                 </div>
-                <p class="mt-4 text-[10px] font-bold text-gray-500 italic">Termasuk BPJS & Absensi</p>
+                <p class="mt-4 text-[10px] font-bold text-gray-400 italic">Termasuk BPJS & Absensi</p>
             </div>
         </div>
+
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <!-- Detailed Table Section -->
