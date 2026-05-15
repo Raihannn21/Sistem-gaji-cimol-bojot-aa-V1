@@ -1,18 +1,16 @@
-<div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 flex flex-col justify-between h-full">
+<div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] flex flex-col justify-between h-full">
     <div>
-        <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <svg class="fill-gray-800 dark:fill-white/90" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.39 2.1-1.39 1.47 0 2.01.59 2.1 1.58h1.6c-.11-1.73-1.09-2.74-2.59-3.08V5h-2.1v1.57c-1.39.28-2.58 1.16-2.58 2.65 0 2.3 1.91 2.87 4.7 3.58 1.93.49 2.34 1.28 2.34 2 0 1.18-1 1.7-2.55 1.7-1.74 0-2.47-.79-2.56-1.87h-1.6c.13 1.89 1.3 2.76 2.71 3.12V19h2.1v-1.58c1.39-.3 2.72-1.09 2.72-2.82 0-2.35-1.9-3.02-4.69-3.74z" fill="currentColor"/>
-            </svg>
+        <div class="flex items-center justify-center w-10 h-10 bg-gray-50 rounded-xl dark:bg-gray-800">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
 
-        <div class="flex items-end justify-between mt-5">
+        <div class="flex items-end justify-between mt-4">
             <div>
-                <span class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-widest font-bold text-[10px]">Total Salary Cost</span>
-                <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90 tabular-nums tracking-tight">Rp 485.500.000</h4>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Salary Cost</span>
+                <h4 class="mt-1 font-bold text-gray-800 text-lg dark:text-white/90 tabular-nums">Rp 485.500.000</h4>
             </div>
 
-            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-gray-600 dark:bg-white/10 dark:text-gray-300 uppercase tracking-widest">MTD</span>
+            <span class="rounded-full bg-gray-50 px-2 py-0.5 text-[9px] font-bold text-gray-400 dark:bg-white/5 uppercase tracking-widest">MTD</span>
         </div>
     </div>
 
