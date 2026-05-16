@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmployeeController;
 
 // Dashboard
 Route::get('/', function () {
@@ -10,9 +11,11 @@ Route::get('/', function () {
 
 // Manajemen Karyawan
 Route::prefix('employees')->group(function () {
-    Route::get('/', function () {
-        return view('pages.employees.index', ['title' => 'Data Karyawan']);
-    })->name('employees.index');
+    Route::get('/', [EmployeeController::class, 'index'])->name('employees.index');
+
+    Route::post('/', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::put('/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+    Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
     
     Route::get('/status', function () {
         return view('pages.employees.status', ['title' => 'Resign & SPHK']);

@@ -1,0 +1,141 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\Employee\StoreEmployeeRequest;
+use App\Http\Requests\Employee\UpdateEmployeeRequest;
+use App\Models\Employee;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+
+class EmployeeController extends Controller
+{
+    public function index(): View
+    {
+        $employees = Employee::query()
+            ->orderBy('name')
+            ->get()
+            ->map(function (Employee $employee) {
+                $salary = $employee->employment_type === 'PHL'
+                    ? $employee->salary_daily
+                    : $employee->salary_monthly;
+
+                return [
+                    'id' => $employee->id,
+                    'name' => $employee->name,
+                    'emp_no' => $employee->emp_no,
+                    'id_no' => $employee->no_id,
+                    'nik' => $employee->nik,
+                    'role' => $employee->employment_type,
+                    'status' => $employee->status,
+                    'team' => $employee->team,
+                    'location' => $employee->location,
+                    'salary' => $this->formatAmount($salary),
+                    'risk_allowance' => $this->formatAmount($employee->risk_daily_amount),
+                    'bpjs_health' => $this->formatAmount($employee->bpjs_health),
+                    'bpjs_tk' => $this->formatAmount($employee->bpjs_tk),
+                    'pph21' => $this->formatAmount($employee->pph21),
+                    'bank_name' => $employee->bank_name,
+                    'bank_account' => $employee->bank_account,
+                    'email' => $employee->email,
+                    'phone' => $employee->phone,
+                ];
+            })
+            ->values();
+
+        $stats = [
+            'total' => $employees->count(),
+            'aktif' => $employees->where('status', 'Aktif')->count(),
+            'resign' => $employees->where('status', 'Resign')->count(),
+            'sphk' => $employees->where('status', 'SPHK')->count(),
+        ];
+
+        return view('pages.employees.index', [
+            'title' => 'Data Karyawan',
+            'employees' => $employees,
+            'stats' => $stats,
+        ]);
+    }
+    public function store(StoreEmployeeRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        $employmentType = $data['employment_type'] ?? $data['jabatan'] ?? null;
+
+        Employee::create($this->mapEmployeeData($data, $employmentType));
+
+        return back();
+    }
+
+    public function update(UpdateEmployeeRequest $request, Employee $employee): RedirectResponse
+    {
+        $data = $request->validated();
+        $employmentType = $data['employment_type'] ?? $data['jabatan'] ?? $employee->employment_type;
+
+        $employee->update($this->mapEmployeeData($data, $employmentType));
+
+        return back();
+    }
+
+    public function destroy(Employee $employee): RedirectResponse
+    {
+        $employee->delete();
+
+        return back();
+    }
+
+    private function mapEmployeeData(array $data, ?string $employmentType): array
+    {
+        $salary = $this->normalizeCurrency($data['salary'] ?? null);
+        $riskAllowance = $this->normalizeCurrency($data['risk_allowance'] ?? null);
+
+        return [
+            'emp_no' => $data['emp_no'] ?? null,
+            'no_id' => $data['no_id'] ?? null,
+            'nik' => $data['nik'] ?? null,
+            'name' => $data['name'] ?? null,
+            'email' => $data['email'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'team' => $data['team'] ?? null,
+            'location' => $data['location'] ?? null,
+            'employment_type' => $employmentType,
+            'status' => $data['status'] ?? 'Aktif',
+            'salary_daily' => $employmentType === 'PHL' ? $salary : $this->normalizeDecimal($data['salary_daily'] ?? null),
+            'salary_monthly' => $employmentType === 'PKWT' ? $salary : $this->normalizeDecimal($data['salary_monthly'] ?? null),
+            'risk_daily_amount' => $riskAllowance,
+            'bpjs_health' => $this->normalizeCurrency($data['bpjs_health'] ?? null),
+            'bpjs_tk' => $this->normalizeCurrency($data['bpjs_tk'] ?? null),
+            'pph21' => $this->normalizeCurrency($data['pph21'] ?? null),
+            'bank_name' => $data['bank_name'] ?? null,
+            'bank_account' => $data['bank_account'] ?? null,
+        ];
+    }
+
+    private function normalizeCurrency(?string $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $normalized = preg_replace('/\D/', '', $value);
+
+        return $normalized !== '' ? $normalized : null;
+    }
+
+    private function normalizeDecimal($value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return is_string($value) ? $value : (string) $value;
+    }
+
+    private function formatAmount($value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return is_numeric($value) ? (string) ((int) round((float) $value)) : null;
+    }
+}

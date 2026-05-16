@@ -79,7 +79,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Total Karyawan</p>
-                            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90">1.250</h4>
+                            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90">{{ $stats['total'] }}</h4>
                         </div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Aktif</p>
-                            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90">1.180</h4>
+                            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90">{{ $stats['aktif'] }}</h4>
                         </div>
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Resign</p>
-                            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90">45</h4>
+                            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90">{{ $stats['resign'] }}</h4>
                         </div>
                     </div>
                 </div>
@@ -118,14 +118,14 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">SPHK</p>
-                            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90">25</h4>
+                            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90">{{ $stats['sphk'] }}</h4>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Table Section -->
-            <x-employee.employee-table />
+            <x-employee.employee-table :employees="$employees" />
         </div>
 
         <!-- Employee Modal Components -->

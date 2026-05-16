@@ -1,5 +1,4 @@
-<template x-teleport="body">
-    <div x-show="showDetailModal" 
+<div x-show="showDetailModal" 
          x-data="{
             formatPrice(val) {
                 if (!val) return '0';
@@ -71,12 +70,12 @@
 
                     <!-- Conditional: PKWT Details -->
                     <div x-show="selectedEmployee.role === 'PKWT'" class="mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-gray-800 space-y-2">
-                        <p class="text-[10px] font-bold text-brand-500 uppercase italic">Potongan & BPJS PKWT:</p>
+                        <p class="text-[10px] font-bold text-brand-500 uppercase italic">Potongan PKWT:</p>
                         <template x-for="field in [
-                            { label: 'Potongan', value: formatPrice(selectedEmployee.deduction) },
                             { label: 'BPJS Kesehatan', value: formatPrice(selectedEmployee.bpjs_health) },
                             { label: 'BPJS TK', value: formatPrice(selectedEmployee.bpjs_tk) },
-                            { label: 'PPH 21', value: formatPrice(selectedEmployee.pph21) }
+                            { label: 'PPH 21', value: formatPrice(selectedEmployee.pph21) },
+                            { label: 'Tunjangan Risiko', value: formatPrice(selectedEmployee.risk_allowance) }
                         ]">
                             <div class="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800 last:border-0">
                                 <span class="text-[11px] text-gray-500 dark:text-gray-400" x-text="field.label"></span>
@@ -93,4 +92,3 @@
             </div>
         </div>
     </div>
-</template>
