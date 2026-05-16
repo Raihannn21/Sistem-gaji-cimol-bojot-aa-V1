@@ -38,4 +38,16 @@ class UpdateEmployeeRequest extends FormRequest
             'bank_account' => ['nullable', 'string', 'max:100'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'emp_no.required' => 'Emp No wajib diisi.',
+            'emp_no.unique' => 'Emp No sudah terdaftar.',
+            'no_id.required' => 'No. ID wajib diisi.',
+            'no_id.unique' => 'No. ID sudah terdaftar.',
+            'email.email' => 'Format email tidak valid.',
+        ];
+    }
 }
