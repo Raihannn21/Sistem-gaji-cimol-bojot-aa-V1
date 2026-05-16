@@ -1,6 +1,6 @@
 @php
     $toastArr = session('toast');
-    $message = session('success') ?? session('status') ?? session('toast_message') ?? (is_array($toastArr) ? ($toastArr['message'] ?? null) : null);
+    $message = session('success') ?? session('error') ?? session('status') ?? session('toast_message') ?? (is_array($toastArr) ? ($toastArr['message'] ?? null) : null);
     $type = session('error') ? 'error' : (session('toast_type') ?? ($toastArr['type'] ?? 'success'));
 
     $bg = $type === 'success' ? '#059669' : '#dc2626';
