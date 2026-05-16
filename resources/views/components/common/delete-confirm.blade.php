@@ -37,7 +37,7 @@
                  style="position: fixed; inset: 0; background: rgba(156, 163, 175, 0.5); backdrop-filter: blur(4px);"
                  @click="open = false"></div>
 
-            <!-- Modal Content (Pakai Inline Style untuk Border Radius agar TIDAK RUNCING) -->
+            <!-- Modal Content -->
             <div x-show="open"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0 scale-95 translate-y-4"
