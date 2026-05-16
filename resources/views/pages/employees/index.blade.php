@@ -29,6 +29,7 @@
             showModal: @js($errors->any()), 
             showEditModal: false, 
             showDetailModal: false,
+            showImportModal: false,
             selectedEmployee: {},
             getStatusClass(status) {
                 const classes = {
@@ -63,6 +64,9 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
+                    <x-ui.button variant="outline" :startIcon="$importIcon" @click="showImportModal = true">
+                        Import Excel
+                    </x-ui.button>
                     <x-ui.button variant="primary" :startIcon="$plusIcon" @click="showModal = true">
                         Tambah Karyawan
                     </x-ui.button>
@@ -132,5 +136,6 @@
         <x-employee.create-modal />
         <x-employee.edit-modal />
         <x-employee.detail-modal />
+        <x-employee.import-modal />
     </div>
 @endsection
