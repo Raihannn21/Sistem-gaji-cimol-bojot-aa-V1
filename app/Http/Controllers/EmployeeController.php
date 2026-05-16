@@ -7,13 +7,22 @@ use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Models\Employee;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Request;
+use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $search = trim($request->query('search'));
+
         $employees = Employee::query()
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('emp_no', 'like', "%{$search}%")
+                      ->orWhere('no_id', 'like', "%{$search}%");
+                });
+            })
             ->orderBy('name')
             ->get()
             ->map(fn(Employee $employee) => [
