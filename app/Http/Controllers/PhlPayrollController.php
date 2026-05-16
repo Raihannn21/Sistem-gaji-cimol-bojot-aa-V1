@@ -5,15 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\PhlPayrollPeriod;
+use App\Models\Employee;
 
 class PhlPayrollController extends Controller
 {
     public function index()
     {
         $periods = PhlPayrollPeriod::orderBy('start_date', 'desc')->get();
+        $phlEmployeeCount = Employee::where('employment_type', 'PHL')
+                                               ->where('status', 'Aktif')
+                                               ->count();
+                                               
         return view('pages.payroll.phl.periods', [
             'title' => 'Periode Gaji PHL',
-            'periods' => $periods
+            'periods' => $periods,
+            'phlEmployeeCount' => $phlEmployeeCount
         ]);
     }
 
@@ -25,7 +31,7 @@ class PhlPayrollController extends Controller
         ]);
 
         $dates = explode(' to ', $request->date_range);
-        
+
         $startDate = trim($dates[0]);
         $endDate = isset($dates[1]) ? trim($dates[1]) : $startDate;
 
@@ -38,16 +44,20 @@ class PhlPayrollController extends Controller
         ]);
 
         return redirect()->route('payroll.phl.periods.show', $period->id)
-                         ->with('success', 'Periode gaji baru berhasil dibuka.');
+            ->with('success', 'Periode gaji baru berhasil dibuka.');
     }
 
     public function show($id)
     {
         $period = PhlPayrollPeriod::findOrFail($id);
-        
+        $employees = Employee::where('employment_type', 'PHL')
+            ->where('status', 'Aktif')
+            ->get();
+
         return view('pages.payroll.phl.period-detail', [
             'title' => 'Detail Periode Gaji PHL',
-            'period' => $period
+            'period' => $period,
+            'employees' => $employees
         ]);
     }
 
