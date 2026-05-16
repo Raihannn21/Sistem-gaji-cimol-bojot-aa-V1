@@ -49,7 +49,7 @@
                         </div>
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Rata-rata Karyawan/Bulan</p>
-                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">0 Karyawan</h4>
+                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">{{ $phlEmployeeCount }} Karyawan</h4>
                         </div>
                     </div>
                 </div>
@@ -88,7 +88,11 @@
                                         </span>
                                     </td>
                                     <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-400">
-                                        {{ $period->attendances()->distinct('employee_id')->count() }} Karyawan
+                                        @php
+                                            $attendanceCount = $period->attendances()->distinct('employee_id')->count();
+                                            $displayCount = ($attendanceCount === 0 && $period->status === 'Open') ? $phlEmployeeCount : $attendanceCount;
+                                        @endphp
+                                        {{ $displayCount }} Karyawan
                                     </td>
                                     <td class="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-white">
                                         Rp 0 <!-- TODO: Calculate actual amount -->

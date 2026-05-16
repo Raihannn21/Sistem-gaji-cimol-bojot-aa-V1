@@ -40,8 +40,10 @@
                     </a>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Juli 2025</h2>
-                            <span class="rounded-full bg-green-50 px-2.5 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/15 dark:text-green-500 uppercase tracking-wider">Aktif</span>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">{{ $period->title }}</h2>
+                            <span class="rounded-full {{ $period->status === 'Open' ? 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500' : 'bg-gray-100 text-gray-700 dark:bg-white/5 dark:text-gray-400' }} px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                                {{ $period->status === 'Open' ? 'Aktif' : $period->status }}
+                            </span>
                         </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Pusat kendali penggajian PHL (Security, Driver, & Helper).</p>
                     </div>
