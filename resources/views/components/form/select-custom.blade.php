@@ -40,7 +40,7 @@ class="relative w-full"
 
     
     <div class="relative">
-        <input type="hidden" name="{{ $name }}" x-model="selected">
+        <input type="hidden" name="{{ $name }}" x-model="selected" {{ $attributes->has('required') ? 'required' : '' }}>
         
         <button 
             type="button"
@@ -87,9 +87,14 @@ class="relative w-full"
             </div>
         </div>
     </div>
-    @if($hasError)
-        <p class="mt-1.5 text-xs font-semibold text-red-500 italic">
-            {{ $errors->first($name) }}
-        </p>
+    
+    @if($name)
+        <!-- Error Client-side -->
+        <p x-show="errors && errors.{{ $name }}" x-text="errors.{{ $name }}" class="mt-1.5 text-xs text-red-500 font-medium"></p>
+        
+        <!-- Error Server-side -->
+        @error($name)
+            <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p>
+        @enderror
     @endif
 </div>

@@ -2,6 +2,7 @@
 
 <div x-show="showEditModal" 
          x-data="{ 
+            errors: {},
             formatCurrency(el) {
                 if (!el) return;
                 let val = el.value.toString().replace(/\D/g, '');
@@ -16,6 +17,24 @@
                     const inputs = this.$el.querySelectorAll('[data-currency]');
                     inputs.forEach(input => this.formatCurrency(input));
                 });
+            },
+            validateForm(e) {
+                this.errors = {};
+                let hasError = false;
+                
+                const name = this.$el.querySelector('[name=name]').value;
+                const emp_no = this.$el.querySelector('[name=emp_no]').value;
+                const no_id = this.$el.querySelector('[name=no_id]').value;
+
+                if (!name) { this.errors.name = 'Nama lengkap wajib diisi.'; hasError = true; }
+                if (!emp_no) { this.errors.emp_no = 'Emp No wajib diisi.'; hasError = true; }
+                if (!no_id) { this.errors.no_id = 'No. ID wajib diisi.'; hasError = true; }
+
+                if (hasError) {
+                    e.preventDefault();
+                    return false;
+                }
+                return true;
             }
          }"
          x-init="$watch('showEditModal', value => value && formatAllCurrency())"
@@ -53,13 +72,18 @@
 
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar bg-white dark:bg-gray-900">
-                <form id="editEmployeeForm" class="space-y-6" method="POST" x-bind:action="selectedEmployee.id ? `/employees/${selectedEmployee.id}` : '#'">
+                <form id="editEmployeeForm" 
+                      class="space-y-6" 
+                      method="POST" 
+                      x-bind:action="selectedEmployee.id ? `/employees/${selectedEmployee.id}` : '#'"
+                      @submit="validateForm($event)"
+                      novalidate>
                     @csrf
                     @method('PUT')
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                        <x-form.input name="name" label="Nama Lengkap" x-model="selectedEmployee.name" />
-                        <x-form.input name="emp_no" label="Emp No" x-model="selectedEmployee.emp_no" />
-                        <x-form.input name="no_id" label="No. ID" x-model="selectedEmployee.id_no" />
+                        <x-form.input name="name" label="Nama Lengkap" x-model="selectedEmployee.name" @input="delete errors.name" />
+                        <x-form.input name="emp_no" label="Emp No" x-model="selectedEmployee.emp_no" @input="delete errors.emp_no" />
+                        <x-form.input name="no_id" label="No. ID" x-model="selectedEmployee.id_no" @input="delete errors.no_id" />
                         <x-form.input name="nik" label="NIK" x-model="selectedEmployee.nik" />
 
                         <div>

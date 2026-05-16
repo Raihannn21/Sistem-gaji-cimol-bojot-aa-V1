@@ -25,15 +25,27 @@ class StoreEmployeeRequest extends FormRequest
             'employment_type' => ['nullable', 'in:PHL,PKWT'],
             'jabatan' => ['nullable', 'in:PHL,PKWT'],
             'status' => ['nullable', 'in:Aktif,Resign,SPHK'],
-            'salary' => ['nullable', 'string'],
+            'salary' => ['nullable'],
             'salary_daily' => ['nullable', 'numeric'],
             'salary_monthly' => ['nullable', 'numeric'],
-            'risk_allowance' => ['nullable', 'string'],
-            'bpjs_health' => ['nullable', 'string'],
-            'bpjs_tk' => ['nullable', 'string'],
-            'pph21' => ['nullable', 'string'],
+            'risk_allowance' => ['nullable'],
+            'bpjs_health' => ['nullable'],
+            'bpjs_tk' => ['nullable'],
+            'pph21' => ['nullable'],
             'bank_name' => ['nullable', 'string', 'max:100'],
-            'bank_account' => ['nullable', 'string', 'max:100'],
+            'bank_account' => ['nullable', 'string', 'max:50'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'emp_no.required' => 'Emp No wajib diisi.',
+            'emp_no.unique' => 'Emp No sudah terdaftar.',
+            'no_id.required' => 'No. ID wajib diisi.',
+            'no_id.unique' => 'No. ID sudah terdaftar.',
+            'email.email' => 'Format email tidak valid.',
         ];
     }
 }
