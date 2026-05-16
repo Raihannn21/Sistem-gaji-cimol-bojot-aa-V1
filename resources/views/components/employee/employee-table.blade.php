@@ -49,7 +49,12 @@
                                 ? number_format((float) $salaryValue, 0, ',', '.')
                                 : '0';
                         @endphp
-                        <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.01]">
+                        <tr x-show="(!search || 
+                                     '{{ strtolower($employee['name']) }}'.includes(search.toLowerCase()) || 
+                                     '{{ strtolower($employee['emp_no']) }}'.includes(search.toLowerCase()) || 
+                                     '{{ strtolower($employee['id_no']) }}'.includes(search.toLowerCase())) &&
+                                     (!onlyIncomplete || {{ $employee['completeness_percentage'] ?? 0 }} < 100)"
+                            class="hover:bg-gray-50 dark:hover:bg-white/[0.01]">
                             <td class="px-5 py-4">
                                 <div class="flex items-center gap-3">
                                     <div>

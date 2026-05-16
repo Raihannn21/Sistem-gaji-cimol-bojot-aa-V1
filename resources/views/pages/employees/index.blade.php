@@ -30,6 +30,8 @@
             showEditModal: false, 
             showDetailModal: false,
             showImportModal: false,
+            search: '',
+            onlyIncomplete: false,
             selectedEmployee: {},
             getStatusClass(status) {
                 const classes = {
@@ -41,33 +43,38 @@
             }
         }">
         <div class="space-y-6">
-            <!-- Header Actions (Standardized with Title & Description) -->
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Manajemen Karyawan</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Kelola data induk, status, dan informasi detail
-                        karyawan.</p>
-                </div>
+            <!-- Judul Halaman -->
+            <div class="mb-2">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Manajemen Karyawan</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Kelola data induk, status, dan informasi detail karyawan.</p>
+            </div>
 
-                <div class="flex flex-wrap items-center gap-3">
+            <!-- Baris Aksi: Satu Baris Penuh -->
+            <div class="flex flex-row items-center justify-between gap-4">
+                <!-- Kiri: Pencarian -->
+                <div class="w-1/3">
                     <div class="relative group">
-                        <span
-                            class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-colors group-focus-within:text-brand-500">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </span>
-                        <input type="text" placeholder="Cari karyawan..."
-                            class="h-11 w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-12 pr-14 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-white/90 dark:focus:border-brand-500 sm:w-80 shadow-theme-xs">
+                        <input type="text" x-model="search" placeholder="Cari karyawan..."
+                            class="h-11 w-full rounded-xl border border-gray-200 bg-white pl-12 pr-4 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] shadow-sm transition-all">
                     </div>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-3">
-                    <x-ui.button variant="outline" :startIcon="$importIcon" @click="showImportModal = true">
+                <!-- Kanan: Checkbox & Buttons -->
+                <div class="flex items-center gap-4 flex-nowrap">
+                    <label class="flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <input type="checkbox" x-model="onlyIncomplete" 
+                               class="h-5 w-5 rounded border-gray-300 text-brand-500 focus:ring-brand-500 transition-colors">
+                        <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Hanya Data Belum Lengkap</span>
+                    </label>
+
+                    <x-ui.button variant="outline" :startIcon="$importIcon" @click="showImportModal = true" className="h-11 px-4 whitespace-nowrap">
                         Import Excel
                     </x-ui.button>
-                    <x-ui.button variant="primary" :startIcon="$plusIcon" @click="showModal = true">
+                    
+                    <x-ui.button variant="primary" :startIcon="$plusIcon" @click="showModal = true" className="h-11 px-6 whitespace-nowrap">
                         Tambah Karyawan
                     </x-ui.button>
                 </div>
