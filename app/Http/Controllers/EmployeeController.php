@@ -7,6 +7,7 @@ use App\Http\Requests\Employee\UpdateEmployeeRequest;
 use App\Models\Employee;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Request;
 
 class EmployeeController extends Controller
 {
@@ -148,5 +149,23 @@ class EmployeeController extends Controller
         }
 
         return is_numeric($value) ? (string) ((int) round((float) $value)) : null;
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ], [
+            'file.required' => 'Silakan pilih file Excel terlebih dahulu.',
+            'file.mimes' => 'Format file harus .xlsx atau .xls.',
+        ]);
+
+        try {
+            $defaultJabatan = $request->input('jabatan');
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\EmployeesImport($defaultJabatan), $request->file('file'));
+            
+            return redirect()->route('employees.index')->with('success', 'Data karyawan berhasil diimport.');
+        } catch (\Exception $e) {
+            return redirect()->route('employees.index')->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+        }
     }
 }
