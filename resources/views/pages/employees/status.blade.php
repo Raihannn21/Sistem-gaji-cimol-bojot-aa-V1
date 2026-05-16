@@ -13,11 +13,16 @@
 @endphp
 
 @section('content')
+    <script>
+        window.initialStatusChanges = @json($statuses);
+    </script>
     <div class="mx-auto max-w-screen-2xl" x-data="{ 
         showModal: false,
         showDetailModal: false,
         selectedItem: {},
         search: '',
+        errors: {},
+        statusChanges: window.initialStatusChanges,
         getStatusClass(type) {
             return type === 'Resign' 
                 ? 'bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500' 
@@ -92,7 +97,7 @@
             </div>
 
             <!-- Table Section -->
-            <x-employee.status-table :statuses="$statuses" />
+            <x-employee.status-table />
         </div>
 
         <!-- Modal Components -->
@@ -100,4 +105,3 @@
         <x-employee.status-detail-modal />
     </div>
 @endsection
-
