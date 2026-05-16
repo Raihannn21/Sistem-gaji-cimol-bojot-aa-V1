@@ -45,7 +45,7 @@
 
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar bg-white dark:bg-gray-900">
-                <form id="editEmployeeForm" class="space-y-6" method="POST" :action="`/employees/${selectedEmployee.id}`">
+                <form id="editEmployeeForm" class="space-y-6" method="POST" x-bind:action="selectedEmployee.id ? `/employees/${selectedEmployee.id}` : '#'">
                     @csrf
                     @method('PUT')
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">

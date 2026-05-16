@@ -136,8 +136,7 @@
 
     </div>
 
-    <x-common.toast />
-
+    @include('components.common.toast')
 </body>
 
 @stack('scripts')
