@@ -8,6 +8,8 @@ use App\Models\Employee;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\EmployeesImport;
 
 class EmployeeController extends Controller
 {
@@ -171,7 +173,7 @@ class EmployeeController extends Controller
 
         try {
             $defaultJabatan = $request->input('jabatan');
-            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\EmployeesImport($defaultJabatan), $request->file('file'));
+            Excel::import(new EmployeesImport($defaultJabatan), $request->file('file'));
             
             return redirect()->route('employees.index')->with('success', 'Data karyawan berhasil diimport.');
         } catch (\Exception $e) {

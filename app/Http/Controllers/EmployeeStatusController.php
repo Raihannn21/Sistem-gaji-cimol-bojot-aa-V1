@@ -7,6 +7,9 @@ use App\Models\Employee;
 use App\Http\Requests\EmployeeStatus\StoreEmployeeStatusRequest;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class EmployeeStatusController extends Controller
 {
@@ -33,7 +36,7 @@ class EmployeeStatusController extends Controller
                 'nik' => $status->employee->nik ?? '-',
                 'role' => $status->employee->employment_type ?? '-',
                 'type' => $status->type,
-                'date' => \Carbon\Carbon::parse($status->effective_date)->format('d-m-Y'),
+                'date' => Carbon::parse($status->effective_date)->format('d-m-Y'),
                 'reason' => $status->reason,
                 'team' => $status->employee->team ?? '-',
                 'location' => $status->employee->location ?? '-',
@@ -58,11 +61,11 @@ class EmployeeStatusController extends Controller
         ]);
     }
 
-    public function store(StoreEmployeeStatusRequest $request): \Illuminate\Http\RedirectResponse
+    public function store(StoreEmployeeStatusRequest $request): RedirectResponse
     {
         $validated = $request->validated();
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated) {
             EmployeeStatus::create($validated);
 
             Employee::where('id', $validated['employee_id'])->update([
@@ -73,11 +76,11 @@ class EmployeeStatusController extends Controller
         return redirect()->back()->with('success', 'Status pemberhentian karyawan berhasil disimpan.');
     }
 
-    public function destroy($id): \Illuminate\Http\RedirectResponse
+    public function destroy($id): RedirectResponse
     {
         $statusRecord = EmployeeStatus::findOrFail($id);
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($statusRecord) {
+        DB::transaction(function () use ($statusRecord) {
             $statusRecord->employee->update(['status' => 'Aktif']);
             $statusRecord->delete();
         });
