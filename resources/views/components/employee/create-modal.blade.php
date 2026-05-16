@@ -1,7 +1,6 @@
 @props(['show' => false])
 
-<template x-teleport="body">
-    <div x-show="showModal" 
+<div x-show="showModal" 
          x-data="{ 
             selectedRole: '',
             formatCurrency(el) {
@@ -46,37 +45,39 @@
 
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar bg-white dark:bg-gray-900">
-                <form id="createEmployeeForm" class="space-y-6">
+                <form id="createEmployeeForm" class="space-y-6" method="POST" action="{{ route('employees.store') }}">
+                    @csrf
                     <input type="hidden" name="status" value="Aktif">
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                        <x-form.input label="Nama Lengkap" placeholder="Nama" />
-                        <x-form.input label="Emp No" placeholder="EMP001" />
-                        <x-form.input label="No. ID" placeholder="ID1001" />
-                        <x-form.input label="NIK" placeholder="16 digit NIK" />
+                        <x-form.input name="name" label="Nama Lengkap" placeholder="Nama" />
+                        <x-form.input name="emp_no" label="Emp No" placeholder="EMP001" />
+                        <x-form.input name="no_id" label="No. ID" placeholder="ID1001" />
+                        <x-form.input name="nik" label="NIK" placeholder="16 digit NIK" />
 
                         <x-form.select-custom label="Jabatan" placeholder="Pilih Jabatan" name="jabatan">
                             <x-form.select-item value="PHL">PHL</x-form.select-item>
                             <x-form.select-item value="PKWT">PKWT</x-form.select-item>
                         </x-form.select-custom>
                         
-                        <x-form.input label="Email" type="email" placeholder="mail@example.com" />
-                        <x-form.input label="No. Telepon" placeholder="0812xxx" />
-                        <x-form.input label="Nomor Tim" placeholder="T0x" />
-                        <x-form.input label="Lokasi" placeholder="HO / Site" />
+                        <x-form.input name="email" label="Email" type="email" placeholder="mail@example.com" />
+                        <x-form.input name="phone" label="No. Telepon" placeholder="0812xxx" />
+                        <x-form.input name="team" label="Nomor Tim" placeholder="T0x" />
+                        <x-form.input name="location" label="Lokasi" placeholder="HO / Site" />
                         
                         <!-- Gaji Pokok with Rp and Format -->
-                        <x-form.input label="Gaji Pokok" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                        <x-form.input name="salary" label="Gaji Pokok" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                         
-                        <x-form.input label="Nama Bank" placeholder="Contoh: BCA" />
-                        <x-form.input label="Nomor Rekening" placeholder="12345678" />
+                        <x-form.input name="bank_name" label="Nama Bank" placeholder="Contoh: BCA" />
+                        <x-form.input name="bank_account" label="Nomor Rekening" placeholder="12345678" />
                     </div>
 
                     <!-- Input Khusus PHL -->
                     <div x-show="selectedRole === 'PHL'" x-transition class="pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
-                        <h4 class="text-sm font-bold text-brand-500 mb-4 italic">Data Khusus PHL:</h4>
+                        <h4 class="text-sm font-bold text-brand-500 mb-1 italic">Data Khusus PHL:</h4>
+                        <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">Gaji pokok PHL diinput per hari.</p>
                         <div class="grid grid-cols-1 gap-4">
-                            <x-form.input label="Tunjangan Risiko" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            <x-form.input name="risk_allowance" label="Tunjangan Risiko" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                         </div>
                     </div>
 
@@ -84,10 +85,10 @@
                     <div x-show="selectedRole === 'PKWT'" x-transition class="pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
                         <h4 class="text-sm font-bold text-brand-500 mb-4 italic">Data Khusus PKWT:</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                            <x-form.input label="Potongan" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
-                            <x-form.input label="Bpjs Kesehatan" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
-                            <x-form.input label="Bpjs TK" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
-                            <x-form.input label="PPH 21" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            <x-form.input name="bpjs_health" label="Bpjs Kesehatan" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            <x-form.input name="bpjs_tk" label="Bpjs TK" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            <x-form.input name="pph21" label="PPH 21" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            <x-form.input name="risk_allowance" label="Tunjangan Risiko" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                         </div>
                     </div>
                 </form>
@@ -100,4 +101,3 @@
             </div>
         </div>
     </div>
-</template>

@@ -1,7 +1,6 @@
 @props(['employee' => null])
 
-<template x-teleport="body">
-    <div x-show="showEditModal" 
+<div x-show="showEditModal" 
          x-data="{ 
             formatCurrency(el) {
                 if (!el) return;
@@ -46,34 +45,52 @@
 
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar bg-white dark:bg-gray-900">
-                <form id="editEmployeeForm" class="space-y-6">
+                <form id="editEmployeeForm" class="space-y-6" method="POST" :action="`/employees/${selectedEmployee.id}`">
+                    @csrf
+                    @method('PUT')
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                        <x-form.input label="Nama Lengkap" x-model="selectedEmployee.name" />
-                        <x-form.input label="Emp No" x-model="selectedEmployee.emp_no" />
-                        <x-form.input label="No. ID" x-model="selectedEmployee.id_no" />
-                        <x-form.input label="NIK" x-model="selectedEmployee.nik" />
+                        <x-form.input name="name" label="Nama Lengkap" x-model="selectedEmployee.name" />
+                        <x-form.input name="emp_no" label="Emp No" x-model="selectedEmployee.emp_no" />
+                        <x-form.input name="no_id" label="No. ID" x-model="selectedEmployee.id_no" />
+                        <x-form.input name="nik" label="NIK" x-model="selectedEmployee.nik" />
 
-                        <x-form.select-custom label="Jabatan" name="jabatan">
-                            <x-form.select-item value="PHL">PHL</x-form.select-item>
-                            <x-form.select-item value="PKWT">PKWT</x-form.select-item>
-                        </x-form.select-custom>
+                        <div>
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Jabatan
+                            </label>
+                            <div class="relative z-20 bg-transparent">
+                                <select
+                                    name="jabatan"
+                                    x-model="selectedEmployee.role"
+                                    class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                    <option value="PHL">PHL</option>
+                                    <option value="PKWT">PKWT</option>
+                                </select>
+                                <span class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                                    <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
                         
-                        <x-form.input label="Email" type="email" x-model="selectedEmployee.email" />
-                        <x-form.input label="No. Telepon" x-model="selectedEmployee.phone" />
-                        <x-form.input label="Nomor Tim" x-model="selectedEmployee.team" />
-                        <x-form.input label="Lokasi" x-model="selectedEmployee.location" />
+                        <x-form.input name="email" label="Email" type="email" x-model="selectedEmployee.email" />
+                        <x-form.input name="phone" label="No. Telepon" x-model="selectedEmployee.phone" />
+                        <x-form.input name="team" label="Nomor Tim" x-model="selectedEmployee.team" />
+                        <x-form.input name="location" label="Lokasi" x-model="selectedEmployee.location" />
                         
-                        <x-form.input label="Gaji Pokok" prefix="Rp" data-currency x-model="selectedEmployee.salary" @input="formatCurrency($event.target)" />
+                        <x-form.input name="salary" label="Gaji Pokok" prefix="Rp" data-currency x-model="selectedEmployee.salary" @input="formatCurrency($event.target)" />
                         
-                        <x-form.input label="Nama Bank" x-model="selectedEmployee.bank_name" />
-                        <x-form.input label="Nomor Rekening" x-model="selectedEmployee.bank_account" />
+                        <x-form.input name="bank_name" label="Nama Bank" x-model="selectedEmployee.bank_name" />
+                        <x-form.input name="bank_account" label="Nomor Rekening" x-model="selectedEmployee.bank_account" />
                     </div>
 
                     <!-- Input Khusus PHL -->
                     <div x-show="selectedEmployee.role === 'PHL'" x-transition class="pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
-                        <h4 class="text-sm font-bold text-brand-500 mb-4 italic">Data Khusus PHL:</h4>
+                        <h4 class="text-sm font-bold text-brand-500 mb-1 italic">Data Khusus PHL:</h4>
+                        <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">Gaji pokok PHL diinput per hari.</p>
                         <div class="grid grid-cols-1 gap-4">
-                            <x-form.input label="Tunjangan Risiko" prefix="Rp" data-currency x-model="selectedEmployee.risk_allowance" @input="formatCurrency($event.target)" />
+                            <x-form.input name="risk_allowance" label="Tunjangan Risiko" prefix="Rp" data-currency x-model="selectedEmployee.risk_allowance" @input="formatCurrency($event.target)" />
                         </div>
                     </div>
 
@@ -81,10 +98,10 @@
                     <div x-show="selectedEmployee.role === 'PKWT'" x-transition class="pt-4 border-t border-dashed border-gray-200 dark:border-gray-800">
                         <h4 class="text-sm font-bold text-brand-500 mb-4 italic">Data Khusus PKWT:</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                            <x-form.input label="Potongan" prefix="Rp" data-currency x-model="selectedEmployee.deduction" @input="formatCurrency($event.target)" />
-                            <x-form.input label="Bpjs Kesehatan" prefix="Rp" data-currency x-model="selectedEmployee.bpjs_health" @input="formatCurrency($event.target)" />
-                            <x-form.input label="Bpjs TK" prefix="Rp" data-currency x-model="selectedEmployee.bpjs_tk" @input="formatCurrency($event.target)" />
-                            <x-form.input label="PPH 21" prefix="Rp" data-currency x-model="selectedEmployee.pph21" @input="formatCurrency($event.target)" />
+                            <x-form.input name="bpjs_health" label="Bpjs Kesehatan" prefix="Rp" data-currency x-model="selectedEmployee.bpjs_health" @input="formatCurrency($event.target)" />
+                            <x-form.input name="bpjs_tk" label="Bpjs TK" prefix="Rp" data-currency x-model="selectedEmployee.bpjs_tk" @input="formatCurrency($event.target)" />
+                            <x-form.input name="pph21" label="PPH 21" prefix="Rp" data-currency x-model="selectedEmployee.pph21" @input="formatCurrency($event.target)" />
+                            <x-form.input name="risk_allowance" label="Tunjangan Risiko" prefix="Rp" data-currency x-model="selectedEmployee.risk_allowance" @input="formatCurrency($event.target)" />
                         </div>
                     </div>
                 </form>
@@ -97,4 +114,3 @@
             </div>
         </div>
     </div>
-</template>
