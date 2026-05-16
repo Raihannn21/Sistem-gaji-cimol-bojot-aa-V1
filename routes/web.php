@@ -26,15 +26,10 @@ Route::prefix('employees')->group(function () {
 
 // Payroll PHL
 Route::prefix('payroll/phl')->group(function () {
-    Route::get('/periods', function () {
-        return view('pages.payroll.phl.periods', ['title' => 'Periode Gaji PHL']);
-    })->name('payroll.phl.periods');
-
-    Route::get('/periods/{id}', function ($id) {
-        return view('pages.payroll.phl.period-detail', ['title' => 'Detail Periode Gaji PHL', 'id' => $id]);
-    })->name('payroll.phl.periods.show');
-    
-    // Consolidated into Period Detail
+    Route::get('/periods', [App\Http\Controllers\PhlPayrollController::class, 'index'])->name('payroll.phl.periods');
+    Route::post('/periods', [App\Http\Controllers\PhlPayrollController::class, 'store'])->name('payroll.phl.periods.store');
+    Route::get('/periods/{id}', [App\Http\Controllers\PhlPayrollController::class, 'show'])->name('payroll.phl.periods.show');
+    Route::delete('/periods/{id}', [App\Http\Controllers\PhlPayrollController::class, 'destroy'])->name('payroll.phl.periods.destroy');
 });
 
 // Payroll PKWT
