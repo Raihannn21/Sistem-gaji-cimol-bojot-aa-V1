@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Employee extends Model
 {
@@ -35,4 +36,16 @@ class Employee extends Model
         'bpjs_tk' => 'decimal:2',
         'pph21' => 'decimal:2',
     ];
+
+    /**
+     * Get the effective salary based on employment type.
+     */
+    protected function salary(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->employment_type === 'PHL' 
+                ? $this->salary_daily 
+                : $this->salary_monthly,
+        );
+    }
 }

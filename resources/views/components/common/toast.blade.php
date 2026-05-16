@@ -3,11 +3,6 @@
     $message = session('success') ?? session('status') ?? session('toast_message') ?? (is_array($toastArr) ? ($toastArr['message'] ?? null) : null);
     $type = session('error') ? 'error' : (session('toast_type') ?? ($toastArr['type'] ?? 'success'));
 
-    if (!$message && $errors->any()) {
-        $message = "Ada kesalahan input. Silakan cek kembali.";
-        $type = 'error';
-    }
-
     $bg = $type === 'success' ? '#059669' : '#dc2626';
     $shadow = $type === 'success' ? 'rgba(5, 150, 105, 0.4)' : 'rgba(220, 38, 38, 0.4)';
 @endphp

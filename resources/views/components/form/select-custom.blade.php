@@ -5,25 +5,39 @@
     'name' => null,
 ])
 
+@php
+    $hasError = $name && $errors->has($name);
+    $oldValue = $name ? old($name) : null;
+@endphp
+
 <div x-data="{ 
     open: false, 
-    selected: '', 
+    selected: '{{ $oldValue }}', 
     label: '{{ $placeholder }}',
     select(value, text) {
         this.selected = value;
         this.label = text;
         this.open = false;
-        // Kirim event agar modal bisa mendeteksi perubahan
         this.$dispatch('change-' + '{{ $name }}', value);
+    },
+    init() {
+        // Try to find the label for the old value if it exists
+        if(this.selected) {
+            this.$nextTick(() => {
+                const activeItem = this.$el.querySelector(`[data-value='${this.selected}']`);
+                if(activeItem) this.label = activeItem.innerText.trim();
+            });
+        }
     }
 }" 
 class="relative w-full"
 :class="open ? 'z-9999' : 'z-20'">
     @if($label)
-        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+        <label class="mb-1.5 block text-sm font-medium {{ $hasError ? 'text-red-500' : 'text-gray-700 dark:text-gray-400' }}">
             {{ $label }}
         </label>
     @endif
+
     
     <div class="relative">
         <input type="hidden" name="{{ $name }}" x-model="selected">
@@ -31,7 +45,7 @@ class="relative w-full"
         <button 
             type="button"
             @click="open = !open"
-            class="relative flex h-11 w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800"
+            class="relative flex h-11 w-full items-center justify-between rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800 {{ $hasError ? 'border-red-500 ring-4 ring-red-500/10' : 'border-gray-300 dark:border-gray-700' }}"
             :class="selected ? 'text-gray-800 dark:text-white' : 'text-gray-400 dark:text-white/30'"
         >
             <span x-text="label"></span>
@@ -73,4 +87,9 @@ class="relative w-full"
             </div>
         </div>
     </div>
+    @if($hasError)
+        <p class="mt-1.5 text-xs font-semibold text-red-500 italic">
+            {{ $errors->first($name) }}
+        </p>
+    @endif
 </div>

@@ -27,10 +27,18 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" 
+         style="display: none;"
          x-cloak>
         
         <!-- Modal Box -->
         <div @click.away="showEditModal = false" 
+             x-show="showEditModal"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
              class="relative flex flex-col w-full max-w-2xl h-[480px] rounded-3xl bg-white shadow-xl dark:bg-gray-900 overflow-hidden border border-gray-100 dark:border-gray-800">
             
             <!-- Close Button -->
@@ -39,7 +47,7 @@
             </button>
 
             <!-- Header -->
-            <div class="p-6 sm:p-8 pb-0 flex-shrink-0 bg-white dark:bg-gray-900">
+            <div class="px-6 py-5 sm:px-8 border-b border-gray-100 dark:border-gray-800 flex-shrink-0 bg-white dark:bg-gray-900">
                 <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Edit Data Karyawan</h3>
             </div>
 
@@ -108,9 +116,9 @@
             </div>
 
             <!-- Footer -->
-            <div class="p-6 sm:p-8 pt-6 border-t border-gray-100 dark:border-gray-800 flex-shrink-0 flex items-center justify-end gap-3 bg-white dark:bg-gray-900">
+            <div class="px-6 py-5 sm:px-8 border-t border-gray-100 dark:border-gray-800 flex-shrink-0 flex items-center justify-end gap-3 bg-white dark:bg-gray-900">
                 <button @click="showEditModal = false" class="text-sm font-medium text-gray-500 hover:text-gray-700">Batal</button>
                 <x-ui.button variant="primary" form="editEmployeeForm" type="submit" className="px-6">Update Data</x-ui.button>
             </div>
         </div>
-    </div>
+</div>

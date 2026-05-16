@@ -13,10 +13,18 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" 
+         style="display: none;"
          x-cloak>
         
         <!-- Modal Box -->
         <div @click.away="showDetailModal = false" 
+             x-show="showDetailModal"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
              class="relative flex flex-col w-full max-w-md h-[480px] rounded-3xl bg-white shadow-xl dark:bg-gray-900 overflow-hidden border border-gray-100 dark:border-gray-800">
             
             <!-- Close Button -->
@@ -25,7 +33,7 @@
             </button>
 
             <!-- Header -->
-            <div class="p-6 sm:p-8 pb-0 flex-shrink-0 bg-white dark:bg-gray-900 text-center">
+            <div class="px-6 py-5 sm:px-8 border-b border-gray-100 dark:border-gray-800 flex-shrink-0 bg-white dark:bg-gray-900 text-center">
                 <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Profil Karyawan</h3>
             </div>
 
@@ -87,8 +95,8 @@
             </div>
 
             <!-- Footer -->
-            <div class="p-6 sm:p-8 pt-6 border-t border-gray-100 dark:border-gray-800 flex-shrink-0 bg-white dark:bg-gray-900">
+            <div class="px-6 py-5 sm:px-8 border-t border-gray-100 dark:border-gray-800 flex-shrink-0 bg-white dark:bg-gray-900">
                 <x-ui.button variant="outline" className="w-full text-xs" @click="showDetailModal = false">Tutup</x-ui.button>
             </div>
         </div>
-    </div>
+</div>
