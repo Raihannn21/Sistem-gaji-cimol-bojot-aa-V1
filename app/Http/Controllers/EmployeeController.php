@@ -63,7 +63,7 @@ class EmployeeController extends Controller
 
         Employee::create($this->mapEmployeeData($data, $employmentType));
 
-        return back()
+        return redirect()->route('employees.index')
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Karyawan berhasil ditambahkan.',
@@ -79,7 +79,7 @@ class EmployeeController extends Controller
 
         $employee->update($this->mapEmployeeData($data, $employmentType));
 
-        return back()
+        return redirect()->route('employees.index')
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Data karyawan berhasil diperbarui.',
@@ -92,7 +92,7 @@ class EmployeeController extends Controller
     {
         $employee->delete();
 
-        return back()
+        return redirect()->route('employees.index')
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Karyawan berhasil dihapus.',
