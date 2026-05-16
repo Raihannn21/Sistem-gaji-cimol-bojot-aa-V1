@@ -63,7 +63,13 @@ class EmployeeController extends Controller
 
         Employee::create($this->mapEmployeeData($data, $employmentType));
 
-        return back();
+        return back()
+            ->with('toast', [
+                'type' => 'success',
+                'message' => 'Karyawan berhasil ditambahkan.',
+            ])
+            ->with('toast_type', 'success')
+            ->with('toast_message', 'Karyawan berhasil ditambahkan.');
     }
 
     public function update(UpdateEmployeeRequest $request, Employee $employee): RedirectResponse
@@ -73,14 +79,26 @@ class EmployeeController extends Controller
 
         $employee->update($this->mapEmployeeData($data, $employmentType));
 
-        return back();
+        return back()
+            ->with('toast', [
+                'type' => 'success',
+                'message' => 'Data karyawan berhasil diperbarui.',
+            ])
+            ->with('toast_type', 'success')
+            ->with('toast_message', 'Data karyawan berhasil diperbarui.');
     }
 
     public function destroy(Employee $employee): RedirectResponse
     {
         $employee->delete();
 
-        return back();
+        return back()
+            ->with('toast', [
+                'type' => 'success',
+                'message' => 'Karyawan berhasil dihapus.',
+            ])
+            ->with('toast_type', 'success')
+            ->with('toast_message', 'Karyawan berhasil dihapus.');
     }
 
     private function mapEmployeeData(array $data, ?string $employmentType): array
