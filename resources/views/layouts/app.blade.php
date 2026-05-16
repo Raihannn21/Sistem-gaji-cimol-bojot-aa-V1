@@ -136,6 +136,8 @@
 
     </div>
 
+    <x-common.toast />
+
 </body>
 
 @stack('scripts')
