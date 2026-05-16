@@ -18,9 +18,9 @@ Route::prefix('employees')->group(function () {
     Route::put('/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
     Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
     
-    Route::get('/status', function () {
-        return view('pages.employees.status', ['title' => 'Resign & SPHK']);
-    })->name('employees.status');
+    Route::get('/status', [App\Http\Controllers\EmployeeStatusController::class, 'index'])->name('employees.status');
+    Route::post('/status', [App\Http\Controllers\EmployeeStatusController::class, 'store'])->name('employees.status.store');
+    Route::delete('/status/{id}', [App\Http\Controllers\EmployeeStatusController::class, 'destroy'])->name('employees.status.destroy');
     
 });
 
