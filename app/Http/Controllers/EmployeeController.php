@@ -35,6 +35,8 @@ class EmployeeController extends Controller
                 'bank_account' => $employee->bank_account,
                 'email' => $employee->email,
                 'phone' => $employee->phone,
+                'completeness_percentage' => $employee->completeness_percentage,
+                'completeness_color' => $employee->completeness_color,
             ]);
 
         $stats = [

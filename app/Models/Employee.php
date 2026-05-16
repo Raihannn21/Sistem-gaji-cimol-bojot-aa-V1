@@ -48,4 +48,42 @@ class Employee extends Model
                 : $this->salary_monthly,
         );
     }
+
+    public function getCompletenessPercentageAttribute(): int
+    {
+        $fields = [
+            'nik', 'email', 'phone', 'team', 'location', 
+            'bank_name', 'bank_account'
+        ];
+        
+        if ($this->employment_type === 'PHL') {
+            $fields[] = 'salary_daily';
+            $fields[] = 'risk_daily_amount';
+        } else {
+            $fields[] = 'salary_monthly';
+            $fields[] = 'bpjs_health';
+            $fields[] = 'bpjs_tk';
+            $fields[] = 'pph21';
+        }
+
+        $totalFields = count($fields);
+        $filledFields = 0;
+
+        foreach ($fields as $field) {
+            if (!empty($this->$field)) {
+                $filledFields++;
+            }
+        }
+
+        return ($totalFields > 0) ? (int) (($filledFields / $totalFields) * 100) : 100;
+    }
+
+    public function getCompletenessColorAttribute(): string
+    {
+        $percentage = $this->getCompletenessPercentageAttribute();
+        if ($percentage === 100) return 'green';
+        if ($percentage >= 70) return 'blue';
+        if ($percentage >= 40) return 'yellow';
+        return 'red';
+    }
 }

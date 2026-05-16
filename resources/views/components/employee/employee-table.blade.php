@@ -25,6 +25,9 @@
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Rekening</p>
                         </th>
                         <th class="px-5 py-3 text-center">
+                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Kelengkapan</p>
+                        </th>
+                        <th class="px-5 py-3 text-center">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Aksi</p>
                         </th>
                     </tr>
@@ -73,6 +76,22 @@
                             <td class="px-5 py-4">
                                 <p class="text-gray-800 text-theme-sm dark:text-white/90 font-medium">{{ $employee['bank_name'] ?? '-' }}</p>
                                 <p class="text-gray-500 text-theme-xs dark:text-gray-400">{{ $employee['bank_account'] ?? '-' }}</p>
+                            </td>
+                            <td class="px-5 py-4 text-center">
+                                @php
+                                    $cColor = $employee['completeness_color'] ?? 'red';
+                                    $cClasses = [
+                                        'green' => 'bg-green-50 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20',
+                                        'blue' => 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
+                                        'yellow' => 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-500/10 dark:text-yellow-400 dark:border-yellow-500/20',
+                                        'red' => 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20',
+                                    ];
+                                    $cClass = $cClasses[$cColor] ?? $cClasses['red'];
+                                @endphp
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border {{ $cClass }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ 'bg-'.$cColor.'-500' }}"></span>
+                                    <span class="text-[11px] font-bold">{{ $employee['completeness_percentage'] ?? 0 }}%</span>
+                                </div>
                             </td>
                             <td class="px-5 py-4">
                                 <div class="flex items-center justify-center gap-2">
