@@ -12,6 +12,7 @@
         showEditRiskModal: false,
         showSlipModal: false,
         showConfirmModal: false,
+        showAttendanceImportModal: false,
         selectedEmployee: {},
         selectedOvertimeDate: '',
         selectedOvertimeHours: 0,
@@ -21,7 +22,14 @@
         selectedRiskNote: '',
         selectedSlip: {},
         processing: false,
-        
+        errors: {{ $errors->any() ? 'true' : '{}' }},
+        @if($errors->any())
+            init() {
+                // If there are validation errors, we might want to open the specific modal
+                // For now just initialize the object
+            }
+        @endif
+
         generate() {
             this.processing = true;
             setTimeout(() => {
@@ -108,5 +116,7 @@
             <x-payroll.others-modal />
             <x-payroll.phl.payslip-modal />
         </div>
+        <!-- Modal: Import Absensi -->
+        <x-payroll.phl.attendance-import-modal :period="$period" />
     </div>
 @endsection

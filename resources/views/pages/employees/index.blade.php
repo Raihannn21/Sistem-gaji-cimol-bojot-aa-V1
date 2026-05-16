@@ -33,6 +33,7 @@
             search: '',
             onlyIncomplete: false,
             selectedEmployee: {},
+            errors: @js($errors->any() ? $errors->getMessages() : (object)[]),
             getStatusClass(status) {
                 const classes = {
                     'Aktif': 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500',

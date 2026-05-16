@@ -10,7 +10,7 @@
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Kelola data kehadiran harian karyawan PHL.
                 </p>
             </div>
-            <x-ui.button variant="outline" className="flex items-center gap-2 text-xs py-2">
+            <x-ui.button variant="outline" @click="showAttendanceImportModal = true" className="flex items-center gap-2 text-xs py-2">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -32,14 +32,13 @@
                             Pulang</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">
                             Durasi</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider">Keterangan</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Aksi
                         </th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     <tr>
-                        <td colspan="7" class="px-6 py-32 text-center">
+                        <td colspan="6" class="px-6 py-32 text-center">
                             <div class="flex flex-col items-center justify-center">
                                 <div
                                     class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 text-gray-300 dark:bg-white/5">

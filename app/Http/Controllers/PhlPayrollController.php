@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\PhlPayrollPeriod;
 use App\Models\Employee;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\PhlAttendanceImport;
 
 class PhlPayrollController extends Controller
 {
@@ -59,6 +61,24 @@ class PhlPayrollController extends Controller
             'period' => $period,
             'employees' => $employees
         ]);
+    }
+
+    public function importAttendance(Request $request, $id)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ], [
+            'file.required' => 'Silakan pilih file Excel terlebih dahulu.',
+            'file.mimes' => 'Format file harus .xlsx atau .xls.',
+        ]);
+
+        try {
+            Excel::import(new PhlAttendanceImport($id), $request->file('file'));
+            
+            return redirect()->back()->with('success', 'Data absensi berhasil diimport.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+        }
     }
 
     public function destroy($id)
