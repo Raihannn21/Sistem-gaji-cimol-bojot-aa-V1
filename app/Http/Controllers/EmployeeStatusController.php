@@ -33,7 +33,7 @@ class EmployeeStatusController extends Controller
                 'nik' => $status->employee->nik ?? '-',
                 'role' => $status->employee->employment_type ?? '-',
                 'type' => $status->type,
-                'date' => \Carbon\Carbon::parse($status->effective_date)->format('Y-m-d'),
+                'date' => \Carbon\Carbon::parse($status->effective_date)->format('d-m-Y'),
                 'reason' => $status->reason,
                 'team' => $status->employee->team ?? '-',
                 'location' => $status->employee->location ?? '-',
