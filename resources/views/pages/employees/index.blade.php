@@ -26,7 +26,7 @@
 
 @section('content')
     <div class="mx-auto max-w-screen-2xl" x-data="{ 
-            showModal: false, 
+            showModal: @js($errors->any()), 
             showEditModal: false, 
             showDetailModal: false,
             selectedEmployee: {},

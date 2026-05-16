@@ -15,33 +15,26 @@ class EmployeeController extends Controller
         $employees = Employee::query()
             ->orderBy('name')
             ->get()
-            ->map(function (Employee $employee) {
-                $salary = $employee->employment_type === 'PHL'
-                    ? $employee->salary_daily
-                    : $employee->salary_monthly;
-
-                return [
-                    'id' => $employee->id,
-                    'name' => $employee->name,
-                    'emp_no' => $employee->emp_no,
-                    'id_no' => $employee->no_id,
-                    'nik' => $employee->nik,
-                    'role' => $employee->employment_type,
-                    'status' => $employee->status,
-                    'team' => $employee->team,
-                    'location' => $employee->location,
-                    'salary' => $this->formatAmount($salary),
-                    'risk_allowance' => $this->formatAmount($employee->risk_daily_amount),
-                    'bpjs_health' => $this->formatAmount($employee->bpjs_health),
-                    'bpjs_tk' => $this->formatAmount($employee->bpjs_tk),
-                    'pph21' => $this->formatAmount($employee->pph21),
-                    'bank_name' => $employee->bank_name,
-                    'bank_account' => $employee->bank_account,
-                    'email' => $employee->email,
-                    'phone' => $employee->phone,
-                ];
-            })
-            ->values();
+            ->map(fn(Employee $employee) => [
+                'id' => $employee->id,
+                'name' => $employee->name,
+                'emp_no' => $employee->emp_no,
+                'id_no' => $employee->no_id,
+                'nik' => $employee->nik,
+                'role' => $employee->employment_type,
+                'status' => $employee->status,
+                'team' => $employee->team,
+                'location' => $employee->location,
+                'salary' => $this->formatAmount($employee->salary),
+                'risk_allowance' => $this->formatAmount($employee->risk_daily_amount),
+                'bpjs_health' => $this->formatAmount($employee->bpjs_health),
+                'bpjs_tk' => $this->formatAmount($employee->bpjs_tk),
+                'pph21' => $this->formatAmount($employee->pph21),
+                'bank_name' => $employee->bank_name,
+                'bank_account' => $employee->bank_account,
+                'email' => $employee->email,
+                'phone' => $employee->phone,
+            ]);
 
         $stats = [
             'total' => $employees->count(),
