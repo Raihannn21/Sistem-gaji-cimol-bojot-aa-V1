@@ -24,7 +24,8 @@
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Tentukan rentang tanggal untuk mengaktifkan periode
                 penggajian Pekerja Harian Lepas (PHL).</p>
 
-            <form class="mt-8 space-y-5 pb-40">
+            <form action="{{ route('payroll.phl.periods.store') }}" method="POST" class="mt-8 space-y-5 pb-40">
+                @csrf
                 <!-- Judul Periode -->
                 <x-form.input label="Judul Periode" name="title" placeholder="Contoh: Gaji PHL Juli 2025" required />
 
