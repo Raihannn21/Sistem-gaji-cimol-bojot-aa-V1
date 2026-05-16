@@ -51,7 +51,7 @@ class PhlPayrollController extends Controller
 
     public function show($id)
     {
-        $period = PhlPayrollPeriod::findOrFail($id);
+        $period = PhlPayrollPeriod::with(['attendances.employee'])->findOrFail($id);
         $employees = Employee::where('employment_type', 'PHL')
             ->where('status', 'Aktif')
             ->get();
@@ -73,6 +73,11 @@ class PhlPayrollController extends Controller
         ]);
 
         try {
+            $array = Excel::toArray(new PhlAttendanceImport($id), $request->file('file'));
+            if (empty($array) || empty($array[0])) {
+                return redirect()->back()->with('error', 'File Excel terbaca kosong. Jika ini file dari mesin absen (berformat .xls), silakan buka file tersebut di aplikasi Excel lalu pilih "Save As" ke format .xlsx (Excel Workbook) dan coba import kembali file yang baru.');
+            }
+            
             Excel::import(new PhlAttendanceImport($id), $request->file('file'));
             
             return redirect()->back()->with('success', 'Data absensi berhasil diimport.');

@@ -27,7 +27,7 @@
             init() {
                 // If there are validation errors, we might want to open the specific modal
                 // For now just initialize the object
-            }
+            },
         @endif
 
         generate() {
