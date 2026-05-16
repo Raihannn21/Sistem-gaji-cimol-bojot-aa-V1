@@ -27,7 +27,7 @@
             <div class="mt-8 grid grid-cols-1 gap-y-4">
                 <div class="rounded-2xl bg-gray-50 p-4 dark:bg-white/[0.03]">
                     <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Karyawan</p>
-                    <p class="mt-1 text-sm font-semibold text-gray-800 dark:text-white" x-text="selectedItem.name + ' (' + selectedItem.nrp + ')'"></p>
+                    <p class="mt-1 text-sm font-semibold text-gray-800 dark:text-white" x-text="selectedItem.name + ' (' + selectedItem.emp_no + ')'"></p>
                     <p class="text-xs text-gray-500 dark:text-gray-400" x-text="selectedItem.role"></p>
                 </div>
 

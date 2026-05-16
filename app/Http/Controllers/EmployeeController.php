@@ -121,7 +121,6 @@ class EmployeeController extends Controller
             'team' => $data['team'] ?? null,
             'location' => $data['location'] ?? null,
             'employment_type' => $employmentType,
-            'status' => $data['status'] ?? 'Aktif',
             'salary_daily' => $employmentType === 'PHL' ? $salary : $this->normalizeDecimal($data['salary_daily'] ?? null),
             'salary_monthly' => $employmentType === 'PKWT' ? $salary : $this->normalizeDecimal($data['salary_monthly'] ?? null),
             'risk_daily_amount' => $riskAllowance,

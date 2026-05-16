@@ -1,4 +1,4 @@
-@props(['show' => false])
+@props(['show' => false, 'activeEmployees' => []])
 
 <template x-teleport="body">
     <div x-show="showModal" 
@@ -21,14 +21,15 @@
             <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Input Status Resign / PHK</h3>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Pilih karyawan dan tentukan status pemberhentiannya.</p>
 
-            <form class="mt-8 space-y-5">
+            <form action="{{ route('employees.status.store') }}" method="POST" class="mt-8 space-y-5">
+                @csrf
                 <div class="space-y-5">
-                    <!-- Searchable Employee Select (Mockup) -->
+                    <!-- Searchable Employee Select -->
                     <div class="relative z-50">
                         <x-form.select-custom label="Pilih Karyawan" placeholder="Cari nama atau NRP..." name="employee_id">
-                            <x-form.select-item value="1">Ahmad Fauzi (123456)</x-form.select-item>
-                            <x-form.select-item value="2">Siti Aminah (123457)</x-form.select-item>
-                            <x-form.select-item value="4">Rudi Hermawan (123459)</x-form.select-item>
+                            @foreach($activeEmployees as $emp)
+                                <x-form.select-item value="{{ $emp->id }}">{{ $emp->name }} ({{ $emp->emp_no }})</x-form.select-item>
+                            @endforeach
                         </x-form.select-custom>
                     </div>
 
@@ -43,7 +44,7 @@
 
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Alasan Pemberhentian</label>
-                        <textarea placeholder="Masukkan alasan secara detail..." rows="3" class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white"></textarea>
+                        <textarea name="reason" placeholder="Masukkan alasan secara detail..." rows="3" class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white"></textarea>
                     </div>
                 </div>
 

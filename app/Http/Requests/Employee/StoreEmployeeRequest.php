@@ -24,7 +24,6 @@ class StoreEmployeeRequest extends FormRequest
             'location' => ['nullable', 'string', 'max:100'],
             'employment_type' => ['nullable', 'in:PHL,PKWT'],
             'jabatan' => ['nullable', 'in:PHL,PKWT'],
-            'status' => ['nullable', 'in:Aktif,Resign,SPHK'],
             'salary' => ['nullable'],
             'salary_daily' => ['nullable', 'numeric'],
             'salary_monthly' => ['nullable', 'numeric'],

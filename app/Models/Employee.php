@@ -86,4 +86,9 @@ class Employee extends Model
         if ($percentage >= 40) return 'yellow';
         return 'red';
     }
+
+    public function statuses()
+    {
+        return $this->hasMany(EmployeeStatus::class);
+    }
 }
