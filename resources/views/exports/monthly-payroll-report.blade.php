@@ -370,17 +370,17 @@
         <tr>
             <td>
                 <div class="signature-title">Dibuat Oleh,</div>
-                <div class="signature-name">Bella Lestari</div>
+                <div class="signature-name">Nama Staf</div>
                 <div class="signature-role">Staff Finance & Payroll</div>
             </td>
             <td>
                 <div class="signature-title">Diperiksa Oleh,</div>
-                <div class="signature-name">Raihan Syahbana</div>
+                <div class="signature-name">Nama Staf</div>
                 <div class="signature-role">HR Manager</div>
             </td>
             <td>
                 <div class="signature-title">Disetujui Oleh,</div>
-                <div class="signature-name">Ahmad Anwar</div>
+                <div class="signature-name">Nama Staf</div>
                 <div class="signature-role">Direktur Utama</div>
             </td>
         </tr>
