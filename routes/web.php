@@ -34,6 +34,7 @@ Route::prefix('payroll/phl')->group(function () {
     
     // Lembur (Overtime) PHL
     Route::post('/periods/{id}/overtime', [App\Http\Controllers\PhlPayrollController::class, 'storeOvertime'])->name('payroll.phl.periods.store-overtime');
+    Route::put('/periods/{id}/overtime/{overtimeId}', [App\Http\Controllers\PhlPayrollController::class, 'updateOvertime'])->name('payroll.phl.periods.update-overtime');
     Route::delete('/periods/{id}/overtime/{overtimeId}', [App\Http\Controllers\PhlPayrollController::class, 'destroyOvertime'])->name('payroll.phl.periods.destroy-overtime');
 });
 

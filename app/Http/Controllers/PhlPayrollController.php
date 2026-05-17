@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\PhlOvertime;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PhlAttendanceImport;
+use App\Http\Requests\PhlPayroll\StorePhlOvertimeRequest;
 
 class PhlPayrollController extends Controller
 {
@@ -87,17 +88,9 @@ class PhlPayrollController extends Controller
         }
     }
 
-    public function storeOvertime(Request $request, $id)
+    public function storeOvertime(StorePhlOvertimeRequest $request, $id)
     {
         $period = PhlPayrollPeriod::findOrFail($id);
-
-        $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'overtime_date' => 'required|date',
-            'hours' => 'required|integer|min:1',
-            'amount' => 'required|numeric|min:0',
-            'note' => 'nullable|string|max:255',
-        ]);
 
         try {
             $existing = PhlOvertime::where('phl_payroll_period_id', $period->id)
@@ -121,6 +114,34 @@ class PhlPayrollController extends Controller
             return redirect()->back()->with('success', 'Data lembur berhasil ditambahkan.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function updateOvertime(StorePhlOvertimeRequest $request, $id, $overtimeId)
+    {
+        try {
+            $overtime = PhlOvertime::where('phl_payroll_period_id', $id)->findOrFail($overtimeId);
+            $existing = PhlOvertime::where('phl_payroll_period_id', $id)
+                ->where('employee_id', $request->employee_id)
+                ->where('date', $request->overtime_date)
+                ->where('id', '!=', $overtimeId)
+                ->first();
+
+            if ($existing) {
+                return redirect()->back()->with('error', 'Karyawan tersebut sudah memiliki data lembur terdaftar pada tanggal tersebut.');
+            }
+
+            $overtime->update([
+                'employee_id' => $request->employee_id,
+                'date' => $request->overtime_date,
+                'hours' => $request->hours,
+                'amount' => $request->amount,
+                'note' => $request->note,
+            ]);
+
+            return redirect()->back()->with('success', 'Data lembur berhasil diubah.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengubah data lembur: ' . $e->getMessage());
         }
     }
 
