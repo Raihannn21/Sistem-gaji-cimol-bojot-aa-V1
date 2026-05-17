@@ -17,15 +17,37 @@ class PhlPayrollController extends Controller
 {
     public function index()
     {
-        $periods = PhlPayrollPeriod::orderBy('start_date', 'desc')->get();
+        $periods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
+            ->orderBy('start_date', 'desc')
+            ->get();
+            
         $phlEmployeeCount = Employee::where('employment_type', 'PHL')
             ->where('status', 'Aktif')
             ->count();
 
+        $currentYear = date('Y');
+        $ytdPaid = 0;
+        
+        foreach ($periods as $period) {
+            $totalPokok = $period->attendances->sum(function ($attendance) {
+                return $attendance->duration > 0 ? ($attendance->employee->salary_daily ?? 0) : 0;
+            });
+            $totalOvertime = $period->overtimes->sum('amount');
+            $totalRisk = $period->riskAllowances->sum('amount');
+            $periodTotal = $totalPokok + $totalOvertime + $totalRisk;
+            
+            $period->total_expenditure = $periodTotal;
+            
+            if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
+                $ytdPaid += $periodTotal;
+            }
+        }
+
         return view('pages.payroll.phl.periods', [
             'title' => 'Periode Gaji PHL',
             'periods' => $periods,
-            'phlEmployeeCount' => $phlEmployeeCount
+            'phlEmployeeCount' => $phlEmployeeCount,
+            'ytdPaid' => $ytdPaid
         ]);
     }
 
