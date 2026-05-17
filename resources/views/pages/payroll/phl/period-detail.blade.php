@@ -121,7 +121,7 @@
             <x-payroll.phl.risk-allowance-modal :period="$period" :employees="$employees" />
             <x-payroll.phl.risk-allowance-detail-modal :period="$period" />
             <x-payroll.phl.risk-allowance-edit-modal :period="$period" />
-            <x-payroll.phl.generate-confirm-modal />
+            <x-payroll.phl.generate-confirm-modal :period="$period" :employees="$employees" />
             <x-payroll.phl.payslip-modal />
         </div>
         <!-- Modal: Import Absensi -->

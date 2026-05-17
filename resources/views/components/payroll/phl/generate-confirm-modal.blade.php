@@ -1,3 +1,13 @@
+@props(['period', 'employees'])
+@php
+    $totalOvertimeAmount = $period->overtimes->sum('amount');
+    $totalRiskAmount = $period->riskAllowances->sum('amount');
+    $totalEstimation = $employees->sum(function ($employee) use ($period) {
+        $employeeAttendances = $period->attendances->where('employee_id', $employee->id);
+        $daysWorked = $employeeAttendances->where('duration', '>', 0)->count();
+        return $daysWorked * $employee->salary_daily;
+    }) + $totalOvertimeAmount + $totalRiskAmount;
+@endphp
 <template x-teleport="body">
     <div x-show="showConfirmModal" 
          x-transition:enter="transition ease-out duration-300"
@@ -28,13 +38,13 @@
 
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-white/90">Konfirmasi Generate</h3>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Anda akan memproses gaji untuk <span class="font-bold text-gray-700 dark:text-gray-200">153 Karyawan</span> periode <span class="font-bold text-gray-700 dark:text-gray-200">Juli 2025</span>.
+                    Anda akan memproses gaji untuk <span class="font-bold text-gray-700 dark:text-gray-200">{{ $employees->count() }} Karyawan</span> periode <span class="font-bold text-gray-700 dark:text-gray-200">{{ $period->title }}</span>.
                 </p>
 
                 <div class="mt-6 rounded-2xl bg-gray-50 p-4 text-left dark:bg-white/[0.03]">
                     <div class="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
                         <span class="text-xs text-gray-500">Estimasi Total Pengeluaran:</span>
-                        <span class="text-xs font-bold text-gray-800 dark:text-white">Rp 482.500.000</span>
+                        <span class="text-xs font-bold text-gray-800 dark:text-white">Rp {{ number_format($totalEstimation, 0, ',', '.') }}</span>
                     </div>
                     <div class="mt-2 flex items-start gap-2">
                         <svg class="mt-0.5 h-4 w-4 text-yellow-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -43,7 +53,7 @@
                 </div>
 
                 <div class="mt-8 flex flex-col gap-3">
-                    <button @click="generate()" 
+                    <button @click="processing = true; document.getElementById('generate-payroll-form').submit();" 
                             :disabled="processing"
                             class="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3.5 text-sm font-bold text-white transition-all hover:bg-brand-700 disabled:opacity-50">
                         <template x-if="processing">
@@ -64,4 +74,8 @@
             </div>
         </div>
     </div>
+    
+    <form id="generate-payroll-form" action="{{ route('payroll.phl.periods.generate', $period->id) }}" method="POST" class="hidden">
+        @csrf
+    </form>
 </template>
