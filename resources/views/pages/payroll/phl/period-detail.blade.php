@@ -75,9 +75,11 @@
                     <x-ui.button variant="outline">
                         Export Report
                     </x-ui.button>
+                    @if($period->status !== 'Locked')
                     <x-ui.button variant="primary" @click="showConfirmModal = true" x-show="activeTab === 'overview'">
                         Generate Payroll
                     </x-ui.button>
+                    @endif
                 </div>
             </div>
 

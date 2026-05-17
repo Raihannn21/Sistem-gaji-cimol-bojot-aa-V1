@@ -5,7 +5,9 @@
             <h3 class="text-base font-bold text-gray-800 dark:text-white/90">Rekapitulasi Lembur</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Daftar lembur yang telah diinput untuk periode ini.</p>
         </div>
+        @if($period->status !== 'Locked')
         <x-ui.button variant="primary" @click="showOvertimeModal = true">Input Lembur Baru</x-ui.button>
+        @endif
     </div>
     <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="overflow-x-auto">
