@@ -16,10 +16,24 @@
         <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h3 class="text-base font-bold text-gray-800 dark:text-white/90">Daftar Slip Gaji Terbit</h3>
-                <x-ui.button variant="outline" @click="alert('Seluruh email slip gaji karyawan periode {{ $period->title }} berhasil dijadwalkan untuk dikirim!')" className="flex items-center gap-2 text-xs py-2 px-4 text-brand-600 border-brand-100 hover:bg-brand-50">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    Kirim Semua Email
-                </x-ui.button>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+                    <div class="relative w-full sm:w-64 max-w-xs group">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center justify-center pointer-events-none" style="left: 14px;">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </span>
+                        <input type="text" 
+                               x-model="searchQuery" 
+                               placeholder="Cari nama atau NRP..." 
+                               class="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pr-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-transparent dark:text-white dark:focus:border-brand-500 transition-colors"
+                               style="padding-left: 2.75rem;">
+                    </div>
+                    <x-ui.button variant="outline" @click="alert('Seluruh email slip gaji karyawan periode {{ $period->title }} berhasil dijadwalkan untuk dikirim!')" className="flex items-center gap-2 text-xs py-2 px-4 text-brand-600 border-brand-100 hover:bg-brand-50 shrink-0">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Kirim Semua Email
+                    </x-ui.button>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
@@ -52,7 +66,8 @@
                                 $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
                                 $total = max(0, $pokok + $lembur + $risiko + $lain_lain - $potongan);
                             @endphp
-                            <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01]">
+                            <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] slip-row"
+                                x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->emp_no)) }}'.includes(searchQuery.toLowerCase())">
                                 <td class="px-6 py-4">
                                     <p class="font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
                                     <p class="text-xs text-gray-400">NRP. {{ $employee->emp_no }}</p>
@@ -89,7 +104,7 @@
                                                 title="Lihat Slip Gaji">
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                         </button>
-                                        <button @click="alert('Slip gaji karyawan {{ $employee->name }} berhasil dikirim ke email {{ $employee->email ?? 'karyawan@bojot.com' }}!')" 
+                                        <button @click="alert('Slip gaji karyawan {{ addslashes($employee->name) }} berhasil dikirim ke email {{ $employee->email ?? 'karyawan@bojot.com' }}!')" 
                                                 class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-brand-500 transition-colors" 
                                                 title="Kirim ke Email">
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -104,6 +119,11 @@
                                 </td>
                             </tr>
                         @endforelse
+                        <tr x-show="searchQuery && Array.from(document.querySelectorAll('.slip-row')).every(el => el.style.display === 'none')" x-cloak>
+                            <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400 italic">
+                                Tidak ada karyawan yang cocok dengan pencarian "<span x-text="searchQuery" class="font-bold"></span>".
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
