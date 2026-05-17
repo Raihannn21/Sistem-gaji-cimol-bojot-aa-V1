@@ -1,3 +1,4 @@
+@props(['period'])
 <template x-teleport="body">
     <div x-show="showRiskDetailModal" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -42,9 +43,11 @@
                                 <th
                                     class="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-500 text-right">
                                     Nominal</th>
+                                @if($period->status !== 'Locked')
                                 <th
                                     class="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-500 text-center">
                                     Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
@@ -52,6 +55,7 @@
                                 <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01]">
                                     <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-400" x-text="item.date"></td>
                                     <td class="px-4 py-3 text-sm text-right font-bold text-brand-600 dark:text-brand-500" x-text="'Rp ' + Number(item.amount).toLocaleString('id-ID')"></td>
+                                    @if($period->status !== 'Locked')
                                     <td class="px-4 py-3">
                                         <div class="flex items-center justify-center gap-1">
                                             <button
@@ -79,10 +83,11 @@
                                             </button>
                                         </div>
                                     </td>
+                                    @endif
                                 </tr>
                             </template>
                             <tr x-show="selectedEmployeeRisks.length === 0">
-                                <td colspan="4" class="px-4 py-8 text-center text-sm text-gray-400 italic">
+                                <td colspan="{{ $period->status !== 'Locked' ? 3 : 2 }}" class="px-4 py-8 text-center text-sm text-gray-400 italic">
                                     Tidak ada data tunjangan risiko untuk karyawan ini.
                                 </td>
                             </tr>

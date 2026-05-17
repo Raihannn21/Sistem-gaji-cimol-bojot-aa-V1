@@ -69,6 +69,11 @@ class PhlPayrollController extends Controller
 
     public function importAttendance(Request $request, $id)
     {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv|max:2048',
         ], [
@@ -93,6 +98,9 @@ class PhlPayrollController extends Controller
     public function storeOvertime(StorePhlOvertimeRequest $request, $id)
     {
         $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
 
         try {
             $existing = PhlOvertime::where('phl_payroll_period_id', $period->id)
@@ -121,6 +129,11 @@ class PhlPayrollController extends Controller
 
     public function updateOvertime(StorePhlOvertimeRequest $request, $id, $overtimeId)
     {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
         try {
             $overtime = PhlOvertime::where('phl_payroll_period_id', $id)->findOrFail($overtimeId);
             $existing = PhlOvertime::where('phl_payroll_period_id', $id)
@@ -149,6 +162,11 @@ class PhlPayrollController extends Controller
 
     public function destroyOvertime($id, $overtimeId)
     {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
         try {
             $overtime = PhlOvertime::where('phl_payroll_period_id', $id)->findOrFail($overtimeId);
             $overtime->delete();
@@ -162,6 +180,9 @@ class PhlPayrollController extends Controller
     public function storeRisk(StorePhlRiskRequest $request, $id)
     {
         $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
 
         try {
             $existing = PhlRiskAllowance::where('phl_payroll_period_id', $period->id)
@@ -189,6 +210,11 @@ class PhlPayrollController extends Controller
 
     public function updateRisk(StorePhlRiskRequest $request, $id, $riskId)
     {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
         try {
             $risk = PhlRiskAllowance::where('phl_payroll_period_id', $id)->findOrFail($riskId);
             $existing = PhlRiskAllowance::where('phl_payroll_period_id', $id)
@@ -216,6 +242,11 @@ class PhlPayrollController extends Controller
 
     public function destroyRisk($id, $riskId)
     {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
         try {
             $risk = PhlRiskAllowance::where('phl_payroll_period_id', $id)->findOrFail($riskId);
             $risk->delete();
@@ -238,6 +269,9 @@ class PhlPayrollController extends Controller
     {
         try {
             $period = PhlPayrollPeriod::findOrFail($id);
+            if ($period->status === 'Locked') {
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'slips'])->with('error', 'Periode payroll ini sudah dikunci.');
+            }
             $period->update([
                 'status' => 'Locked'
             ]);

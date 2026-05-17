@@ -10,6 +10,7 @@
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Kelola data kehadiran harian karyawan PHL.
                 </p>
             </div>
+            @if($period->status !== 'Locked')
             <x-ui.button variant="outline" @click="showAttendanceImportModal = true" className="flex items-center gap-2 text-xs py-2">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -17,6 +18,7 @@
                 </svg>
                 Import Excel
             </x-ui.button>
+            @endif
         </div>
 
         <div class="overflow-x-auto no-scrollbar">
@@ -32,8 +34,10 @@
                             Pulang</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">
                             Durasi</th>
+                        @if($period->status !== 'Locked')
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Aksi
                         </th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -68,6 +72,7 @@
                                     {{ $attendance->duration }} Jam
                                 </span>
                             </td>
+                            @if($period->status !== 'Locked')
                             <td class="px-6 py-4 text-right">
                                 <button type="button" class="text-gray-400 hover:text-red-500 transition-colors">
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,10 +80,11 @@
                                     </svg>
                                 </button>
                             </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-32 text-center">
+                            <td colspan="{{ $period->status !== 'Locked' ? 6 : 5 }}" class="px-6 py-32 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 text-gray-300 dark:bg-white/5">
                                         <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
