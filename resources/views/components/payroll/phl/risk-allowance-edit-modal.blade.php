@@ -1,11 +1,14 @@
+@props(['period'])
 <template x-teleport="body">
-    <div x-show="showEditRiskModal" x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" x-cloak>
+    <div x-show="showEditRiskModal" 
+         x-init="$watch('showEditRiskModal', value => value && $nextTick(() => { const input = $el.querySelector('[data-currency]'); if (input) formatCurrency(input); }))"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" x-cloak>
 
-        <div @click.away="showEditRiskModal = false" x-show="showEditRiskModal"
+         <div @click.away="showEditRiskModal = false" x-show="showEditRiskModal"
             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
@@ -21,29 +24,31 @@
             </button>
 
             <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Edit Tunjangan Risiko</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" x-text="'Tanggal: ' + selectedRiskDate"></p>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <span class="font-semibold text-brand-600" x-text="selectedEmployee.name"></span> | Tanggal: <span x-text="selectedRiskDate"></span>
+            </p>
 
-            <form class="mt-8 space-y-5">
-                <div>
-                    <label class="mb-2.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Nominal Tunjangan (Rp)
-                    </label>
-                    <input type="number" x-model="selectedRiskAmount"
-                        class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white dark:focus:border-brand-500"
-                        placeholder="Contoh: 50000">
-                </div>
+            <form :action="`/payroll/phl/periods/{{ $period->id }}/risk/${selectedRiskId}`" method="POST" class="mt-8 space-y-5">
+                @csrf
+                @method('PUT')
+
+                <!-- Input Tersembunyi untuk Memenuhi Validasi FormRequest -->
+                <input type="hidden" name="employee_id" :value="selectedEmployee.id">
+                <input type="hidden" name="risk_date" :value="selectedRiskDate">
+
+                <x-form.input name="amount" label="Nominal Tunjangan" prefix="Rp" data-currency placeholder="0" required x-model="selectedRiskAmount" @input="formatCurrency($event.target)" />
 
                 <div>
                     <label class="mb-2.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Keterangan / Alasan
                     </label>
-                    <textarea x-model="selectedRiskNote" rows="3"
+                    <textarea name="note" x-model="selectedRiskNote" rows="3"
                         class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white dark:focus:border-brand-500"
                         placeholder="Jelaskan alasan pemberian tunjangan..."></textarea>
                 </div>
 
                 <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
-                    <x-ui.button variant="outline" @click="showEditRiskModal = false">Batal</x-ui.button>
+                    <x-ui.button variant="outline" type="button" @click="showEditRiskModal = false">Batal</x-ui.button>
                     <x-ui.button variant="primary" type="submit">Simpan Perubahan</x-ui.button>
                 </div>
             </form>
