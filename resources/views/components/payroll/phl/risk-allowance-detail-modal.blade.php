@@ -1,17 +1,17 @@
 <template x-teleport="body">
-    <div x-show="showDetailModal" x-transition:enter="transition ease-out duration-300"
+    <div x-show="showRiskDetailModal" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" x-cloak>
 
-        <div @click.away="showDetailModal = false" x-show="showDetailModal"
+        <div @click.away="showRiskDetailModal = false" x-show="showRiskDetailModal"
             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
             class="relative w-[500px] max-w-full rounded-3xl bg-white p-6 shadow-xl dark:bg-gray-900 sm:p-8">
 
-            <button @click="showDetailModal = false"
+            <button @click="showRiskDetailModal = false"
                 class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 sm:right-6 sm:top-6">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -84,7 +84,7 @@
             </div>
 
             <div class="mt-8 flex justify-end pt-6 border-t border-gray-100 dark:border-gray-800">
-                <x-ui.button variant="outline" @click="showDetailModal = false">Tutup</x-ui.button>
+                <x-ui.button variant="outline" @click="showRiskDetailModal = false">Tutup</x-ui.button>
             </div>
         </div>
     </div>
