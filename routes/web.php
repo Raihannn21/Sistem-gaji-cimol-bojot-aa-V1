@@ -85,6 +85,8 @@ Route::prefix('payroll/pkwt')->group(function () {
 // Laporan
 Route::prefix('reports')->group(function () {
     Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
+    Route::get('/monthly/export-pdf', [ReportController::class, 'exportMonthlyPdf'])->name('reports.monthly.export-pdf');
+    Route::get('/monthly/export-excel', [ReportController::class, 'exportMonthlyExcel'])->name('reports.monthly.export-excel');
     
     Route::get('/employee', function () {
         return view('pages.reports.employee', ['title' => 'Laporan Individu']);
