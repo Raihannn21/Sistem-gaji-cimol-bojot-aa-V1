@@ -35,8 +35,7 @@
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">
                             Durasi</th>
                         @if($period->status !== 'Locked')
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Aksi
-                        </th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Aksi</th>
                         @endif
                     </tr>
                 </thead>
@@ -74,7 +73,7 @@
                             </td>
                             @if($period->status !== 'Locked')
                             <td class="px-6 py-4">
-                                <div class="flex items-center justify-end gap-2">
+                                <div class="flex items-center justify-center gap-2">
                                     <!-- Edit Button -->
                                     <button type="button" 
                                             @click="selectedAttendance = {
