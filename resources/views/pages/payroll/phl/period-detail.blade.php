@@ -6,7 +6,6 @@
         // Global Modal States
         showOvertimeModal: false,
         showRiskModal: false,
-        showOthersModal: false,
         showOvertimeDetailModal: false,
         showRiskDetailModal: false,
         showEditOvertimeModal: false,
@@ -98,10 +97,6 @@
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                     Risiko
                 </button>
-                <button @click="activeTab = 'others'" :class="activeTab === 'others' ? 'bg-gray-100 text-brand-600 dark:bg-white/10 dark:text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'" class="flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all whitespace-nowrap px-4">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                    Tunjangan Lain
-                </button>
                 <button @click="activeTab = 'slips'" :class="activeTab === 'slips' ? 'bg-gray-100 text-brand-600 dark:bg-white/10 dark:text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'" class="flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all whitespace-nowrap px-4">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Slip Gaji
@@ -114,7 +109,6 @@
                 @include('pages.payroll.phl.tabs._attendance')
                 @include('pages.payroll.phl.tabs._overtime')
                 @include('pages.payroll.phl.tabs._risk')
-                @include('pages.payroll.phl.tabs._others')
                 @include('pages.payroll.phl.tabs._slips')
             </div>
 
@@ -126,7 +120,6 @@
             <x-payroll.phl.risk-allowance-detail-modal :period="$period" />
             <x-payroll.phl.risk-allowance-edit-modal :period="$period" />
             <x-payroll.phl.generate-confirm-modal />
-            <x-payroll.others-modal />
             <x-payroll.phl.payslip-modal />
         </div>
         <!-- Modal: Import Absensi -->
