@@ -114,7 +114,7 @@
         </div>
 
         <!-- Modal Component -->
-        <x-payroll.phl.period-modal />
+        <x-payroll.pkwt.period-modal />
     </div>
 @endsection
 
