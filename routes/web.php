@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ReportController;
 
 // Dashboard
 Route::get('/', function () {
@@ -83,9 +84,7 @@ Route::prefix('payroll/pkwt')->group(function () {
 
 // Laporan
 Route::prefix('reports')->group(function () {
-    Route::get('/monthly', function () {
-        return view('pages.reports.monthly', ['title' => 'Rekap Bulanan']);
-    })->name('reports.monthly');
+    Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
     
     Route::get('/employee', function () {
         return view('pages.reports.employee', ['title' => 'Laporan Individu']);
