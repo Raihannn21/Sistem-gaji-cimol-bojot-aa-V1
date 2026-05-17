@@ -43,8 +43,15 @@
                     </a>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Juli 2025</h2>
-                            <span class="rounded-full bg-green-50 px-2.5 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/15 dark:text-green-500 uppercase tracking-wider">Aktif</span>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">
+                                {{ $period->title }}
+                                <span class="text-xs font-normal text-gray-400 dark:text-gray-500 ml-1.5">({{ $period->start_date->format('d-m-Y') }} - {{ $period->end_date->format('d-m-Y') }})</span>
+                            </h2>
+                            @if($period->status === 'Open')
+                                <span class="rounded-full bg-green-50 px-2.5 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/15 dark:text-green-500 uppercase tracking-wider">Aktif</span>
+                            @else
+                                <span class="rounded-full bg-gray-100 px-2.5 py-0.5 text-[10px] font-bold text-gray-700 dark:bg-white/10 dark:text-gray-400 uppercase tracking-wider">Terkunci</span>
+                            @endif
                         </div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Pusat kendali penggajian PKWT (Karyawan Kontrak).</p>
                     </div>
