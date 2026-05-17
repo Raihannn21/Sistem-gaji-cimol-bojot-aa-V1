@@ -26,8 +26,10 @@
             <div class="flex-1 overflow-y-auto pr-1.5 custom-scrollbar my-2" id="payslip-content">
                 <!-- Header Info (Corporate Logo/Name and Title) -->
                 <div class="text-center mb-4 mt-2">
-                    <h2 class="text-base font-extrabold tracking-wider text-gray-900 dark:text-white">CIMOL BOJOT AA
-                    </h2>
+                    <img src="{{ asset('images/logo/logo-cimol-bojot-aa.png') }}"
+                        class="h-12 mx-auto mb-2 dark:brightness-110" alt="Logo Cimol Bojot AA">
+                    <h2 class="text-xs font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase">CIMOL BOJOT
+                        AA</h2>
                     <div class="border-b border-gray-300 dark:border-gray-700 my-2"></div>
                     <h1 class="text-sm font-extrabold text-gray-800 dark:text-white uppercase tracking-widest">SLIP GAJI
                         KARYAWAN (PHL)</h1>
@@ -141,9 +143,10 @@
                     className="w-full sm:w-auto text-[11px] py-1.5 px-3 flex items-center justify-center gap-1 bg-brand-500 text-white hover:bg-brand-600">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 9h1.5m-1.5 3h4m-4 3h4" />
                     </svg>
-                    Cetak Slip
+                    Lihat PDF
                 </x-ui.button>
             </div>
         </div>
