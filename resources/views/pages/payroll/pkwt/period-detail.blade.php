@@ -13,6 +13,8 @@
         showEditRiskModal: false,
         showSlipModal: false,
         showConfirmModal: false,
+        showAttendanceImportModal: false,
+        showImportModal: false,
         selectedEmployee: {},
         selectedOvertimeDate: '',
         selectedOvertimeHours: 0,
@@ -104,8 +106,10 @@
             <x-payroll.pkwt.risk-allowance-detail-modal />
             <x-payroll.pkwt.risk-allowance-edit-modal />
             <x-payroll.pkwt.others-modal />
-            <x-payroll.phl.generate-confirm-modal />
-            <x-payroll.phl.payslip-modal />
+            <x-payroll.pkwt.generate-confirm-modal />
+            <x-payroll.pkwt.payslip-modal />
+            <x-payroll.pkwt.attendance-import-modal />
+            <x-payroll.pkwt.import-modal />
         </div>
     </div>
 @endsection
