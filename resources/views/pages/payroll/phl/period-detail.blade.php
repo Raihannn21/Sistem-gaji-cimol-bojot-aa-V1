@@ -13,6 +13,8 @@
         showSlipModal: false,
         showConfirmModal: false,
         showAttendanceImportModal: false,
+        showEditAttendanceModal: false,
+        selectedAttendance: { id: null, employee_name: '', date: '', scan_in: '', scan_out: '' },
         selectedEmployee: {},
         selectedEmployeeOvertimes: [],
         selectedEmployeeRisks: [],
@@ -165,6 +167,9 @@
         </div>
         <!-- Modal: Import Absensi -->
         <x-payroll.phl.attendance-import-modal :period="$period" />
+        
+        <!-- Modal: Edit Absensi -->
+        <x-payroll.phl.attendance-edit-modal :period="$period" />
         
         <!-- Modal Konfirmasi Hapus Umum -->
         <x-common.delete-confirm />

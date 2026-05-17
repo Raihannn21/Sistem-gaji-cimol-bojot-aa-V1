@@ -87,6 +87,12 @@ class PkwtPayrollController extends Controller
             'otherAllowances.employee'
         ])->findOrFail($id);
         
+        // Sort attendances so they don't jump around when updated
+        $period->setRelation('attendances', $period->attendances->sortBy([
+            ['employee.name', 'asc'],
+            ['date', 'asc']
+        ]));
+        
         $employees = Employee::where('employment_type', 'PKWT')
             ->where('status', 'Aktif')
             ->get();
