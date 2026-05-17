@@ -1,0 +1,114 @@
+<?php
+
+namespace App\Exports;
+
+use App\Models\PkwtPayrollPeriod;
+use App\Models\Employee;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
+use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
+
+class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithTitle, WithColumnWidths, WithCustomValueBinder
+{
+    protected $period;
+
+    public function __construct(PkwtPayrollPeriod $period)
+    {
+        $this->period = $period;
+    }
+
+    public function bindValue(Cell $cell, $value)
+    {
+        // Force Credited Account column (E) to be a string to avoid scientific notation
+        if ($cell->getColumn() === 'E' && is_numeric($value)) {
+            $cell->setValueExplicit($value, DataType::TYPE_STRING);
+            return true;
+        }
+
+        return parent::bindValue($cell, $value);
+    }
+
+    public function view(): View
+    {
+        $period = PkwtPayrollPeriod::with([
+            'attendances.employee', 
+            'overtimes.employee', 
+            'riskAllowances.employee',
+            'otherAllowances.employee'
+        ])->findOrFail($this->period->id);
+
+        $employees = Employee::where('employment_type', 'PKWT')
+            ->where(function($q) use ($period) {
+                $q->where('status', 'Aktif')
+                  ->orWhereHas('pkwtAttendances', function($sub) use ($period) {
+                      $sub->where('pkwt_payroll_period_id', $period->id);
+                  });
+            })
+            ->distinct()
+            ->get();
+
+        $startDate = \Carbon\Carbon::parse($period->start_date);
+        $endDate = \Carbon\Carbon::parse($period->end_date);
+        $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
+
+        $rows = [];
+        foreach ($employees as $employee) {
+            $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
+            
+            // Rumus Prorata:
+            $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+            $pokok = $daysWorked * $harian;
+
+            $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+            $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+            $tunjanganLain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
+
+            $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
+            $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
+
+            if ($daysWorked > 0 || $lembur > 0 || $risiko > 0 || $tunjanganLain > 0) {
+                $rows[] = [
+                    'transfer_type' => $employee->bank_name ?: 'BCA',
+                    'credited_account' => $employee->bank_account ?: '',
+                    'receiver_name' => $employee->name,
+                    'amount' => $total,
+                    'remark' => $period->title,
+                ];
+            }
+        }
+
+        return view('exports.pkwt-bca-excel', [
+            'period' => $period,
+            'rows' => $rows
+        ]);
+    }
+
+    public function title(): string
+    {
+        return 'BCA_TRANSFER_LIST';
+    }
+
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 6,   // No
+            'B' => 15,  // Transaction ID
+            'C' => 15,  // Transfer Type
+            'D' => 15,  // Beneficiary ID
+            'E' => 25,  // Credited Account
+            'F' => 30,  // Receiver Name
+            'G' => 20,  // Amount
+            'H' => 12,  // NIP
+            'I' => 35,  // Remark
+            'J' => 25,  // Beneficiary email address
+            'K' => 20,  // Receiver Swift Code
+            'L' => 20,  // Receiver Cust Type
+            'M' => 20,  // Receiver Cust Residence
+        ];
+    }
+}
