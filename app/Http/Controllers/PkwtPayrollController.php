@@ -411,4 +411,103 @@ class PkwtPayrollController extends Controller
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'others'])->with('error', 'Gagal menghapus tunjangan: ' . $e->getMessage());
         }
     }
+
+
+    public function generate($id)
+    {
+        try {
+            $period = PkwtPayrollPeriod::findOrFail($id);
+            if ($period->status === 'Locked') {
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'slips'])->with('error', 'Periode payroll ini sudah dikunci.');
+            }
+            $period->update([
+                'status' => 'Locked'
+            ]);
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'slips'])
+                ->with('success', 'Payroll PKWT berhasil digenerate dan slip gaji telah diterbitkan!');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overview'])
+                ->with('error', 'Terjadi kesalahan saat memproses payroll PKWT: ' . $e->getMessage());
+        }
+    }
+
+    public function exportExcel($id)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        $fileName = 'REKAP_PAYROLL_PKWT_' . str_replace(' ', '_', strtoupper($period->title)) . '.xlsx';
+
+        return Excel::download(new \App\Exports\PkwtPayrollExport($period), $fileName);
+    }
+
+    public function exportBca($id)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        $fileName = 'BCA_TRANSFER_LIST_PKWT_' . str_replace(' ', '_', strtoupper($period->title)) . '.xlsx';
+
+        return Excel::download(new \App\Exports\PkwtBcaPayrollExport($period), $fileName);
+    }
+
+    public function exportPdf($id)
+    {
+        $period = PkwtPayrollPeriod::with([
+            'attendances.employee',
+            'overtimes.employee',
+            'riskAllowances.employee',
+            'otherAllowances.employee'
+        ])->findOrFail($id);
+
+        $employees = Employee::where('employment_type', 'PKWT')
+            ->where(function ($q) use ($period) {
+                $q->where('status', 'Aktif')
+                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    });
+            })
+            ->distinct()
+            ->get();
+
+        $startDate = \Carbon\Carbon::parse($period->start_date);
+        $endDate = \Carbon\Carbon::parse($period->end_date);
+        $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
+
+        $rows = [];
+        foreach ($employees as $employee) {
+            $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
+            $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
+
+            $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+            $pokok = $daysWorked * $harian;
+
+            $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+            $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+            $tunjanganLain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
+
+            $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
+            $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
+
+            if ($daysWorked > 0 || $lembur > 0 || $risiko > 0 || $tunjanganLain > 0) {
+                $rows[] = [
+                    'employee' => $employee,
+                    'days_worked' => $daysWorked,
+                    'days_absent' => $daysAbsent,
+                    'tarif_harian' => $harian,
+                    'gaji_pokok_didapat' => $pokok,
+                    'lembur' => $lembur,
+                    'risiko' => $risiko,
+                    'lain_lain' => $tunjanganLain,
+                    'potongan' => $potongan,
+                    'total_bersih' => $total,
+                ];
+            }
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.pkwt-payroll', [
+            'period' => $period,
+            'rows' => $rows
+        ])->setPaper('a4', 'landscape');
+
+        $fileName = 'REKAP_PAYROLL_PKWT_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
+        return $pdf->download($fileName);
+    }
 }

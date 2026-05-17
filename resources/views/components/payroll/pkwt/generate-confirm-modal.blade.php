@@ -1,3 +1,24 @@
+@props(['period', 'employees'])
+@php
+    $totalOvertimeAmount = $period->overtimes->sum('amount');
+    $totalRiskAmount = $period->riskAllowances->sum('amount');
+    $totalOthersAmount = $period->otherAllowances->sum('amount');
+    $startDate = \Carbon\Carbon::parse($period->start_date);
+    $endDate = \Carbon\Carbon::parse($period->end_date);
+    $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
+
+    $totalBasicAmount = $employees->sum(function ($employee) use ($period, $totalPeriodDays) {
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
+        $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+        return $daysWorked * $harian;
+    });
+
+    $totalDeductions = $employees->sum(function ($emp) {
+        return ($emp->bpjs_health ?? 0) + ($emp->bpjs_tk ?? 0) + ($emp->pph21 ?? 0);
+    });
+
+    $totalEstimation = max(0, $totalBasicAmount + $totalOvertimeAmount + $totalRiskAmount + $totalOthersAmount - $totalDeductions);
+@endphp
 <template x-teleport="body">
     <div x-show="showConfirmModal" 
          x-transition:enter="transition ease-out duration-300"
@@ -28,13 +49,13 @@
 
                 <h3 class="text-2xl font-bold text-gray-800 dark:text-white/90">Konfirmasi Generate (PKWT)</h3>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Anda akan memproses gaji untuk <span class="font-bold text-gray-700 dark:text-gray-200">45 Karyawan</span> periode <span class="font-bold text-gray-700 dark:text-gray-200">Juli 2025</span>.
+                    Anda akan memproses gaji untuk <span class="font-bold text-gray-700 dark:text-gray-200">{{ $employees->count() }} Karyawan</span> periode <span class="font-bold text-gray-700 dark:text-gray-200">{{ $period->title }}</span>.
                 </p>
 
                 <div class="mt-6 rounded-2xl bg-gray-50 p-4 text-left dark:bg-white/[0.03]">
                     <div class="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
                         <span class="text-xs text-gray-500">Estimasi Total Pengeluaran PKWT:</span>
-                        <span class="text-xs font-bold text-gray-800 dark:text-white">Rp 210.500.000</span>
+                        <span class="text-xs font-bold text-gray-800 dark:text-white">Rp {{ number_format($totalEstimation, 0, ',', '.') }}</span>
                     </div>
                     <div class="mt-2 flex items-start gap-2">
                         <svg class="mt-0.5 h-4 w-4 text-yellow-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -43,17 +64,15 @@
                 </div>
 
                 <div class="mt-8 flex flex-col gap-3">
-                    <button @click="generate()" 
-                            :disabled="processing"
-                            class="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-3.5 text-sm font-bold text-white transition-all hover:bg-brand-700 disabled:opacity-50">
+                    <x-ui.button variant="primary" className="w-full py-3.5 flex items-center justify-center gap-2" @click="processing = true; document.getElementById('generate-pkwt-form').submit();" x-bind:disabled="processing">
                         <template x-if="processing">
-                            <svg class="h-5 w-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                            <svg class="h-5 w-5 animate-spin text-white mr-2" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                         </template>
                         <span x-text="processing ? 'Sedang Memproses...' : 'Ya, Generate Gaji PKWT'"></span>
-                    </button>
+                    </x-ui.button>
                     
                     <button @click="showConfirmModal = false" 
                             :disabled="processing"
@@ -65,3 +84,7 @@
         </div>
     </div>
 </template>
+
+<form id="generate-pkwt-form" action="{{ route('payroll.pkwt.periods.generate', $period->id) }}" method="POST" class="hidden">
+    @csrf
+</form>
