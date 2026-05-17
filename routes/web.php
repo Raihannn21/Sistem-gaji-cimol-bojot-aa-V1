@@ -34,6 +34,8 @@ Route::prefix('payroll/phl')->group(function () {
     Route::get('/periods/{id}/export/excel', [App\Http\Controllers\PhlPayrollController::class, 'exportExcel'])->name('payroll.phl.periods.export.excel');
     Route::get('/periods/{id}/export/bca', [App\Http\Controllers\PhlPayrollController::class, 'exportBca'])->name('payroll.phl.periods.export.bca');
     Route::post('/periods/{id}/import-attendance', [App\Http\Controllers\PhlPayrollController::class, 'importAttendance'])->name('payroll.phl.periods.import-attendance');
+    Route::put('/periods/{id}/attendance/{attendanceId}', [App\Http\Controllers\PhlPayrollController::class, 'updateAttendance'])->name('payroll.phl.periods.update-attendance');
+    Route::delete('/periods/{id}/attendance/{attendanceId}', [App\Http\Controllers\PhlPayrollController::class, 'destroyAttendance'])->name('payroll.phl.periods.destroy-attendance');
     Route::post('/periods/{id}/generate', [App\Http\Controllers\PhlPayrollController::class, 'generate'])->name('payroll.phl.periods.generate');
     Route::delete('/periods/{id}', [App\Http\Controllers\PhlPayrollController::class, 'destroy'])->name('payroll.phl.periods.destroy');
     

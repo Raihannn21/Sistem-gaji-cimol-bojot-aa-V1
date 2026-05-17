@@ -8,6 +8,7 @@ use App\Models\PhlPayrollPeriod;
 use App\Models\Employee;
 use App\Models\PhlOvertime;
 use App\Models\PhlRiskAllowance;
+use App\Models\PhlAttendance;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PhlAttendanceImport;
 use App\Http\Requests\PhlPayroll\StorePhlOvertimeRequest;
@@ -23,14 +24,14 @@ class PhlPayrollController extends Controller
         $periods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
             ->orderBy('start_date', 'desc')
             ->get();
-            
+
         $phlEmployeeCount = Employee::where('employment_type', 'PHL')
             ->where('status', 'Aktif')
             ->count();
 
         $currentYear = date('Y');
         $ytdPaid = 0;
-        
+
         foreach ($periods as $period) {
             $totalPokok = $period->attendances->sum(function ($attendance) {
                 return $attendance->duration > 0 ? ($attendance->employee->salary_daily ?? 0) : 0;
@@ -38,9 +39,9 @@ class PhlPayrollController extends Controller
             $totalOvertime = $period->overtimes->sum('amount');
             $totalRisk = $period->riskAllowances->sum('amount');
             $periodTotal = $totalPokok + $totalOvertime + $totalRisk;
-            
+
             $period->total_expenditure = $periodTotal;
-            
+
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
                 $ytdPaid += $periodTotal;
             }
@@ -64,8 +65,8 @@ class PhlPayrollController extends Controller
         $dates = explode(' to ', $request->date_range);
 
         $startDate = \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[0]))->format('Y-m-d');
-        $endDate = isset($dates[1]) 
-            ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d') 
+        $endDate = isset($dates[1])
+            ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d')
             : $startDate;
 
         $period = PhlPayrollPeriod::create([
@@ -83,6 +84,12 @@ class PhlPayrollController extends Controller
     public function show($id)
     {
         $period = PhlPayrollPeriod::with(['attendances.employee', 'overtimes.employee', 'riskAllowances.employee'])->findOrFail($id);
+
+        $period->setRelation('attendances', $period->attendances->sortBy([
+            ['employee.name', 'asc'],
+            ['date', 'asc']
+        ]));
+
         $employees = Employee::where('employment_type', 'PHL')
             ->where('status', 'Aktif')
             ->get();
@@ -315,24 +322,24 @@ class PhlPayrollController extends Controller
     {
         $period = PhlPayrollPeriod::findOrFail($id);
         $fileName = 'REKAP_PAYROLL_PHL_' . str_replace(' ', '_', strtoupper($period->title)) . '.xlsx';
-        
+
         return Excel::download(new PhlPayrollExport($period), $fileName);
     }
 
     public function exportPdf($id)
     {
         $period = PhlPayrollPeriod::with([
-            'attendances.employee', 
-            'overtimes.employee', 
+            'attendances.employee',
+            'overtimes.employee',
             'riskAllowances.employee'
         ])->findOrFail($id);
 
         $employees = Employee::where('employment_type', 'PHL')
-            ->where(function($q) use ($period) {
+            ->where(function ($q) use ($period) {
                 $q->where('status', 'Aktif')
-                  ->orWhereHas('phlAttendances', function($sub) use ($period) {
-                      $sub->where('phl_payroll_period_id', $period->id);
-                  });
+                    ->orWhereHas('phlAttendances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    });
             })
             ->distinct()
             ->get();
@@ -379,7 +386,7 @@ class PhlPayrollController extends Controller
     {
         $period = PhlPayrollPeriod::findOrFail($id);
         $fileName = 'BCA_TRANSFER_LIST_PHL_' . str_replace(' ', '_', strtoupper($period->title)) . '.xlsx';
-        
+
         return Excel::download(new BcaPayrollExport($period), $fileName);
     }
 
@@ -415,5 +422,66 @@ class PhlPayrollController extends Controller
 
         $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
         return $pdf->stream($fileName);
+    }
+
+    public function updateAttendance(Request $request, $id, $attendanceId)
+    {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        $request->validate([
+            'scan_in' => 'nullable|string',
+            'scan_out' => 'nullable|string',
+        ]);
+
+        try {
+            $attendance = PhlAttendance::where('phl_payroll_period_id', $id)->findOrFail($attendanceId);
+
+            $scanIn = $request->scan_in ? \Carbon\Carbon::parse($request->scan_in)->format('H:i:s') : null;
+            $scanOut = $request->scan_out ? \Carbon\Carbon::parse($request->scan_out)->format('H:i:s') : null;
+
+            $duration = 0;
+            if ($scanIn && $scanOut) {
+                $start = \Carbon\Carbon::parse($scanIn);
+                $end = \Carbon\Carbon::parse($scanOut);
+
+                if ($end->gt($start)) {
+                    $diffInMinutes = abs($end->diffInMinutes($start));
+                    $hours = round($diffInMinutes / 60, 2);
+                    $duration = (int) round(min($hours, 8));
+                }
+            } elseif ($scanIn || $scanOut) {
+                $duration = 8;
+            }
+
+            $attendance->update([
+                'scan_in' => $scanIn,
+                'scan_out' => $scanOut,
+                'duration' => $duration,
+            ]);
+
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi berhasil diubah.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Terjadi kesalahan saat mengubah data absensi: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyAttendance($id, $attendanceId)
+    {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $attendance = PhlAttendance::where('phl_payroll_period_id', $id)->findOrFail($attendanceId);
+            $attendance->delete();
+
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Gagal menghapus data absensi: ' . $e->getMessage());
+        }
     }
 }
