@@ -84,17 +84,27 @@
     </div>
 
     <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-        <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <h3 class="text-base font-bold text-gray-800 dark:text-white/90">Rangkuman Penggajian PKWT (Pro-rata
-                Kehadiran)</h3>
-            @if($period->status === 'Locked')
-                <span
-                    class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/10 dark:text-green-500 uppercase tracking-wider">Locked</span>
-            @else
-                <span
-                    class="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2 py-0.5 text-[10px] font-bold text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-500 uppercase tracking-wider">Draft
-                    Mode</span>
-            @endif
+        <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center gap-3">
+                <h3 class="text-base font-bold text-gray-800 dark:text-white/90">Rangkuman Penggajian PKWT (Pro-rata Kehadiran)</h3>
+                @if($period->status === 'Locked')
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/10 dark:text-green-500 uppercase tracking-wider">Locked</span>
+                @else
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2 py-0.5 text-[10px] font-bold text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-500 uppercase tracking-wider">Draft Mode</span>
+                @endif
+            </div>
+            <div class="relative w-full sm:w-64 max-w-xs group">
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 flex items-center justify-center pointer-events-none" style="left: 14px;">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
+                <input type="text" 
+                       x-model="searchQuery" 
+                       placeholder="Cari nama atau NRP..." 
+                       class="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pr-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-transparent dark:text-white dark:focus:border-brand-500 transition-colors"
+                       style="padding-left: 2.75rem;">
+            </div>
         </div>
         <div class="overflow-x-auto no-scrollbar">
             <table class="w-full text-left">
@@ -141,7 +151,8 @@
                             $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
                             $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
                         @endphp
-                        <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                        <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors overview-row"
+                            x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->emp_no)) }}'.includes(searchQuery.toLowerCase())">
                             <td class="px-6 py-4">
                                 <p class="text-sm font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
                                 <p class="text-xs text-gray-400">ID. {{ $employee->emp_no }}</p>
@@ -184,6 +195,13 @@
                             </td>
                         </tr>
                     @endforelse
+                    
+                    <!-- Empty State for Search Results -->
+                    <tr x-show="searchQuery && document.querySelectorAll('.overview-row[style*=\'display: none\']').length === document.querySelectorAll('.overview-row').length">
+                        <td colspan="10" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400 italic">
+                            Karyawan dengan nama atau NRP tersebut tidak ditemukan.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
