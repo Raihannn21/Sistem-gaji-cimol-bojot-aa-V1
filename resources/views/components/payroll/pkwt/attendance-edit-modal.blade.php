@@ -1,0 +1,63 @@
+@props(['period'])
+<template x-teleport="body">
+    <div x-show="showEditAttendanceModal" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-999999 flex items-center justify-center bg-gray-400/50 backdrop-blur-sm p-4" 
+         x-cloak>
+        
+        <div @click.away="showEditAttendanceModal = false" 
+             x-show="showEditAttendanceModal"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="relative w-[450px] max-w-full rounded-3xl bg-white p-6 shadow-xl dark:bg-gray-900 sm:p-8">
+            
+            <button @click="showEditAttendanceModal = false" class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 sm:right-6 sm:top-6">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.04289 16.5413C5.65237 16.9318 5.65237 17.565 6.04289 17.9555C6.43342 18.346 7.06658 18.346 7.45711 17.9555L11.9987 13.4139L16.5408 17.956C16.9313 18.3466 17.5645 18.3466 17.955 17.956C18.3455 17.5655 18.3455 16.9323 17.955 16.5418L13.4129 11.9997L17.955 7.4576C18.3455 7.06707 18.3455 6.43391 17.955 6.04338C17.5645 5.65286 16.9313 5.65286 16.5408 6.04338L11.9987 10.5855L7.45711 6.0439C7.06658 5.65338 6.43342 5.65338 6.04289 6.0439C5.65237 6.43442 5.65237 7.06759 6.04289 7.45811L10.5845 11.9997L6.04289 16.5413Z" fill="currentColor"/></svg>
+            </button>
+
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Edit Log Absensi PKWT</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <span class="font-semibold text-brand-600" x-text="selectedAttendance.employee_name"></span> | <span x-text="selectedAttendance.date"></span>
+            </p>
+
+            <form :action="`/payroll/pkwt/periods/{{ $period->id }}/attendance/${selectedAttendance.id}`" method="POST" class="mt-8 space-y-5">
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label class="mb-2.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Scan Masuk (Jam Masuk)
+                    </label>
+                    <input type="time" name="scan_in" x-model="selectedAttendance.scan_in" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white dark:focus:border-brand-500">
+                </div>
+
+                <div>
+                    <label class="mb-2.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Scan Pulang (Jam Keluar)
+                    </label>
+                    <input type="time" name="scan_out" x-model="selectedAttendance.scan_out" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white dark:focus:border-brand-500">
+                </div>
+
+                <div class="rounded-xl bg-brand-50 p-4 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
+                    <p class="text-xs text-brand-700 dark:text-brand-400 leading-relaxed">
+                        <strong>Catatan:</strong> Durasi kehadiran akan dihitung ulang secara otomatis berdasarkan selisih jam masuk dan jam pulang (maksimal 8 jam). Jika hanya salah satu diisi, maka durasi akan otomatis dihitung 8 jam.
+                    </p>
+                </div>
+
+                <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
+                    <x-ui.button variant="outline" type="button" @click="showEditAttendanceModal = false">Batal</x-ui.button>
+                    <x-ui.button variant="primary" type="submit">Simpan Perubahan</x-ui.button>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>

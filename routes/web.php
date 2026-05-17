@@ -55,6 +55,9 @@ Route::prefix('payroll/pkwt')->group(function () {
     Route::get('/periods', [App\Http\Controllers\PkwtPayrollController::class, 'index'])->name('payroll.pkwt.periods');
     Route::post('/periods', [App\Http\Controllers\PkwtPayrollController::class, 'store'])->name('payroll.pkwt.periods.store');
     Route::get('/periods/{id}', [App\Http\Controllers\PkwtPayrollController::class, 'show'])->name('payroll.pkwt.periods.show');
+    Route::post('/periods/{id}/import-attendance', [App\Http\Controllers\PkwtPayrollController::class, 'importAttendance'])->name('payroll.pkwt.periods.import-attendance');
+    Route::put('/periods/{id}/attendance/{attendanceId}', [App\Http\Controllers\PkwtPayrollController::class, 'updateAttendance'])->name('payroll.pkwt.periods.update-attendance');
+    Route::delete('/periods/{id}/attendance/{attendanceId}', [App\Http\Controllers\PkwtPayrollController::class, 'destroyAttendance'])->name('payroll.pkwt.periods.destroy-attendance');
     Route::delete('/periods/{id}', [App\Http\Controllers\PkwtPayrollController::class, 'destroy'])->name('payroll.pkwt.periods.destroy');
 });
 
