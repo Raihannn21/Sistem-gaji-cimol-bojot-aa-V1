@@ -1,3 +1,4 @@
+@props(['period'])
 <template x-teleport="body">
     <div x-show="showOvertimeDetailModal" 
          x-transition:enter="transition ease-out duration-300"
@@ -46,24 +47,40 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
-                            @for ($i = 1; $i <= 3; $i++)
-                            <tr>
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-400">{{ now()->subDays($i)->format('d M Y') }}</td>
-                                <td class="px-4 py-3 text-sm text-center font-bold text-gray-800 dark:text-white">4 Jam</td>
-                                <td class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 italic">Lembur Shift Malam - Produksi...</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center justify-center gap-1">
-                                        <button @click="showEditOvertimeModal = true; selectedOvertimeDate = '{{ now()->subDays($i)->format('d M Y') }}'; selectedOvertimeHours = 4; selectedOvertimeNote = 'Lembur Shift Malam - Produksi'"
-                                                class="p-1.5 text-gray-400 hover:text-brand-500 transition-colors">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                        </button>
-                                        <button class="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        </button>
-                                    </div>
+                            <template x-for="item in selectedEmployeeOvertimes" :key="item.id">
+                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01]">
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-400" x-text="item.date"></td>
+                                    <td class="px-4 py-3 text-sm text-center font-bold text-gray-800 dark:text-white" x-text="item.hours + ' Jam'"></td>
+                                    <td class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 italic" x-text="item.note"></td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <button @click="showEditOvertimeModal = true; 
+                                                            selectedOvertimeId = item.id;
+                                                            selectedOvertimeDate = item.raw_date;
+                                                            selectedOvertimeDateFormatted = item.date;
+                                                            selectedOvertimeHours = item.hours;
+                                                            selectedOvertimeAmount = item.amount;
+                                                            selectedOvertimeNote = item.note;"
+                                                    class="p-1.5 text-gray-400 hover:text-brand-500 transition-colors">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            </button>
+                                            <button @click="$dispatch('open-delete-modal', { 
+                                                            url: `/payroll/phl/periods/{{ $period->id }}/overtime/${item.id}`,
+                                                            message: `Apakah Anda yakin ingin menghapus data lembur karyawan ${selectedEmployee.name} pada tanggal ${item.date}?`
+                                                    })"
+                                                    class="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                                                    title="Hapus Lembur">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                            <tr x-show="selectedEmployeeOvertimes.length === 0">
+                                <td colspan="4" class="px-4 py-8 text-center text-sm text-gray-400 italic">
+                                    Tidak ada data lembur untuk karyawan ini.
                                 </td>
                             </tr>
-                            @endfor
                         </tbody>
                     </table>
                 </div>

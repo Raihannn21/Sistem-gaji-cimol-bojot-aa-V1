@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="mx-auto max-w-screen-2xl" x-data="{ 
-        activeTab: 'overview',
+        activeTab: '{{ request()->query('tab', 'overview') }}',
         // Global Modal States
         showOvertimeModal: false,
         showRiskModal: false,
@@ -15,12 +15,24 @@
         showConfirmModal: false,
         showAttendanceImportModal: false,
         selectedEmployee: {},
+        selectedEmployeeOvertimes: [],
+        selectedOvertimeId: null,
         selectedOvertimeDate: '',
+        selectedOvertimeDateFormatted: '',
         selectedOvertimeHours: 0,
+        selectedOvertimeAmount: 0,
         selectedOvertimeNote: '',
         selectedRiskDate: '',
         selectedRiskAmount: 0,
         selectedRiskNote: '',
+        formatCurrency(el) {
+            let val = el.value.replace(/\D/g, '');
+            if (val === '') {
+                el.value = '';
+                return;
+            }
+            el.value = new Intl.NumberFormat('id-ID').format(val);
+        },
         selectedSlip: {},
         processing: false,
         errors: {{ $errors->any() ? 'true' : '{}' }},
@@ -107,17 +119,20 @@
             </div>
 
             <!-- Modal Components (Consolidated) -->
-            <x-payroll.phl.overtime-modal />
-            <x-payroll.phl.overtime-detail-modal />
-            <x-payroll.phl.overtime-edit-modal />
-            <x-payroll.phl.risk-allowance-modal />
-            <x-payroll.phl.risk-allowance-detail-modal />
-            <x-payroll.phl.risk-allowance-edit-modal />
+            <x-payroll.phl.overtime-modal :period="$period" :employees="$employees" />
+            <x-payroll.phl.overtime-detail-modal :period="$period" />
+            <x-payroll.phl.overtime-edit-modal :period="$period" />
+            <x-payroll.phl.risk-allowance-modal :period="$period" :employees="$employees" />
+            <x-payroll.phl.risk-allowance-detail-modal :period="$period" />
+            <x-payroll.phl.risk-allowance-edit-modal :period="$period" />
             <x-payroll.phl.generate-confirm-modal />
             <x-payroll.others-modal />
             <x-payroll.phl.payslip-modal />
         </div>
         <!-- Modal: Import Absensi -->
         <x-payroll.phl.attendance-import-modal :period="$period" />
+        
+        <!-- Modal Konfirmasi Hapus Umum -->
+        <x-common.delete-confirm />
     </div>
 @endsection
