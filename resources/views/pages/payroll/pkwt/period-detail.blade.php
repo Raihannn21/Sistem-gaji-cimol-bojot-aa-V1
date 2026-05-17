@@ -8,7 +8,9 @@
         showRiskModal: false,
         showOthersModal: false,
         showDetailModal: false,
+        showRiskDetailModal: false,
         showEditOvertimeModal: false,
+        showEditRiskModal: false,
         showSlipModal: false,
         showConfirmModal: false,
         selectedEmployee: {},
@@ -94,12 +96,14 @@
                 @include('pages.payroll.pkwt.tabs._slips')
             </div>
 
-            <!-- Modals (Synced with PHL) -->
-            <x-payroll.phl.overtime-modal />
-            <x-payroll.phl.overtime-detail-modal />
-            <x-payroll.phl.overtime-edit-modal />
-            <x-payroll.phl.risk-allowance-modal />
-            <x-payroll.others-modal />
+            <!-- Modals (PKWT Isolated Components) -->
+            <x-payroll.pkwt.overtime-modal />
+            <x-payroll.pkwt.overtime-detail-modal />
+            <x-payroll.pkwt.overtime-edit-modal />
+            <x-payroll.pkwt.risk-allowance-modal />
+            <x-payroll.pkwt.risk-allowance-detail-modal />
+            <x-payroll.pkwt.risk-allowance-edit-modal />
+            <x-payroll.pkwt.others-modal />
             <x-payroll.phl.generate-confirm-modal />
             <x-payroll.phl.payslip-modal />
         </div>

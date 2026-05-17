@@ -20,8 +20,8 @@
                 </svg>
             </button>
 
-            <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Input Tunjangan Lain</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Tambahkan tunjangan manual seperti THR, Bonus, atau insentif.</p>
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Input Tunjangan Lain (PKWT)</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Tambahkan tunjangan manual seperti THR, Bonus, atau insentif untuk karyawan kontrak.</p>
 
             <form class="mt-8 space-y-5 pb-40">
                 <div class="space-y-5">
