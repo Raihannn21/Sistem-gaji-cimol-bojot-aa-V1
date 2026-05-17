@@ -30,7 +30,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Kesiapan Data</p>
-                    <h4 class="mt-1 text-xl font-bold text-gray-800 dark:text-white/90">{{ $readiness }}% <span class="text-xs font-medium {{ $readiness === 100 ? 'text-green-500' : 'text-yellow-500' }}">{{ $readiness === 100 ? 'Ready' : 'Pending' }}</span></h4>
+                    <h4 class="mt-1 text-xl font-bold text-gray-800 dark:text-white/90">{{ $readiness }}% <span class="text-xs font-medium {{ $readiness == 100 ? 'text-green-500' : 'text-yellow-500' }}">{{ $readiness == 100 ? 'Ready' : 'Pending' }}</span></h4>
                 </div>
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-500">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -60,6 +60,7 @@
                 <thead>
                     <tr class="bg-gray-50/50 dark:bg-white/[0.01]">
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider">Karyawan</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Total Masuk</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Pokok</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Lembur</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Risiko</th>
@@ -82,6 +83,7 @@
                             <p class="text-sm font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
                             <p class="text-xs text-gray-400">ID. {{ $employee->emp_no }}</p>
                         </td>
+                        <td class="px-6 py-4 text-sm text-center font-bold text-gray-700 dark:text-gray-300">{{ $daysWorked }} Hari</td>
                         <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp {{ number_format($pokok, 0, ',', '.') }}</td>
                         <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp {{ number_format($lembur, 0, ',', '.') }}</td>
                         <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp {{ number_format($risiko, 0, ',', '.') }}</td>
@@ -89,7 +91,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                             Tidak ada karyawan PHL yang ditemukan.
                         </td>
                     </tr>
