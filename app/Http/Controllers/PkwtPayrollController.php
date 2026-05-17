@@ -509,4 +509,60 @@ class PkwtPayrollController extends Controller
         $fileName = 'REKAP_PAYROLL_PKWT_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
         return $pdf->download($fileName);
     }
+
+    public function exportIndividualPdf($id, $employeeId)
+    {
+        $period = PkwtPayrollPeriod::with([
+            'attendances',
+            'overtimes',
+            'riskAllowances',
+            'otherAllowances'
+        ])->findOrFail($id);
+
+        $employee = Employee::where('employment_type', 'PKWT')->findOrFail($employeeId);
+
+        $startDate = \Carbon\Carbon::parse($period->start_date);
+        $endDate = \Carbon\Carbon::parse($period->end_date);
+        $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
+
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
+        $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
+
+        $tarif_harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+        $pokok = $daysWorked * $tarif_harian;
+
+        $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+        $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+        $lain_lain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
+
+        $bpjs_health = (int) ($employee->bpjs_health ?? 0);
+        $bpjs_tk = (int) ($employee->bpjs_tk ?? 0);
+        $pph21 = (int) ($employee->pph21 ?? 0);
+        $potongan = $bpjs_health + $bpjs_tk + $pph21;
+
+        $total = max(0, $pokok + $lembur + $risiko + $lain_lain - $potongan);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.pkwt-individual-slip', [
+            'period' => $period,
+            'employee' => $employee,
+            'days_worked' => $daysWorked,
+            'days_absent' => $daysAbsent,
+            'total_days' => $totalPeriodDays,
+            'salary_monthly' => $employee->salary_monthly,
+            'tarif_harian' => $tarif_harian,
+            'pokok' => $pokok,
+            'lembur' => $lembur,
+            'risiko' => $risiko,
+            'lain_lain' => $lain_lain,
+            'bpjs_health' => $bpjs_health,
+            'bpjs_tk' => $bpjs_tk,
+            'pph21' => $pph21,
+            'potongan' => $potongan,
+            'total' => $total,
+        ])->setPaper('a5', 'portrait');
+
+        $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
+        return $pdf->stream($fileName);
+    }
 }
+

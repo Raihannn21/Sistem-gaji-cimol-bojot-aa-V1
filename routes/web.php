@@ -56,6 +56,7 @@ Route::prefix('payroll/pkwt')->group(function () {
     Route::post('/periods', [App\Http\Controllers\PkwtPayrollController::class, 'store'])->name('payroll.pkwt.periods.store');
     Route::get('/periods/{id}', [App\Http\Controllers\PkwtPayrollController::class, 'show'])->name('payroll.pkwt.periods.show');
     Route::get('/periods/{id}/export/pdf', [App\Http\Controllers\PkwtPayrollController::class, 'exportPdf'])->name('payroll.pkwt.periods.export.pdf');
+    Route::get('/periods/{id}/slips/{employeeId}/pdf', [App\Http\Controllers\PkwtPayrollController::class, 'exportIndividualPdf'])->name('payroll.pkwt.periods.slip.pdf');
     Route::get('/periods/{id}/export/excel', [App\Http\Controllers\PkwtPayrollController::class, 'exportExcel'])->name('payroll.pkwt.periods.export.excel');
     Route::get('/periods/{id}/export/bca', [App\Http\Controllers\PkwtPayrollController::class, 'exportBca'])->name('payroll.pkwt.periods.export.bca');
     Route::post('/periods/{id}/generate', [App\Http\Controllers\PkwtPayrollController::class, 'generate'])->name('payroll.pkwt.periods.generate');

@@ -144,7 +144,7 @@
             </td>
             <td class="meta-label" style="text-align: right; width: 150px;">Tanggal Cetak</td>
             <td style="width: 10px; text-align: center;">:</td>
-            <td class="meta-value" style="text-align: right; width: 120px;">{{ date('d-m-Y H:i') }}</td>
+            <td class="meta-value" style="text-align: right; width: 120px;">{{ \Carbon\Carbon::now('Asia/Jakarta')->format('d-m-Y H:i') }}</td>
         </tr>
         <tr>
             <td class="meta-label">Total Karyawan</td>
@@ -223,7 +223,7 @@
         <table class="signature-table">
             <tr>
                 <td>
-                    <div>Bandung, {{ date('d M Y') }}</div>
+                    <div>Bandung, {{ \Carbon\Carbon::now('Asia/Jakarta')->format('d M Y') }}</div>
                     <div style="margin-top: 5px;">Dibuat Oleh,</div>
                     <div style="margin-top: 60px;" class="signature-name">{{ auth()->user()->name ?? 'Administrator' }}</div>
                     <div class="signature-title">HRD / Payroll Officer</div>
