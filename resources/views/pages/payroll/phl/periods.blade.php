@@ -38,7 +38,7 @@
                         </div>
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Terbayar (YTD)</p>
-                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">Rp 0</h4>
+                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">Rp {{ number_format($ytdPaid, 0, ',', '.') }}</h4>
                         </div>
                     </div>
                 </div>
@@ -95,18 +95,13 @@
                                         {{ $displayCount }} Karyawan
                                     </td>
                                     <td class="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-white">
-                                        Rp 0 <!-- TODO: Calculate actual amount -->
+                                        Rp {{ number_format($period->total_expenditure, 0, ',', '.') }}
                                     </td>
                                     <td class="px-5 py-4">
                                         <div class="flex items-center justify-center gap-2">
                                             <a href="{{ route('payroll.phl.periods.show', $period->id) }}" class="p-2 text-gray-500 hover:bg-gray-100 hover:text-brand-500 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-white/5" title="Detail">
                                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                             </a>
-                                            @if($period->status === 'Open')
-                                                <button class="p-2 text-gray-500 hover:bg-gray-100 hover:text-yellow-500 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-white/5" title="Kunci Periode">
-                                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                                                </button>
-                                            @endif
                                             <button type="button" @click="$dispatch('open-delete-modal', {
                                                 url: '{{ route('payroll.phl.periods.destroy', $period->id) }}',
                                                 title: 'Hapus Periode Gaji',
