@@ -69,8 +69,8 @@
             </div>
         </div>
     </div>
-    
-    <form id="generate-payroll-form" action="{{ route('payroll.phl.periods.generate', $period->id) }}" method="POST" class="hidden">
-        @csrf
-    </form>
 </template>
+
+<form id="generate-payroll-form" action="{{ route('payroll.phl.periods.generate', $period->id) }}" method="POST" class="hidden">
+    @csrf
+</form>

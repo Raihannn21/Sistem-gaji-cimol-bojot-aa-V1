@@ -29,6 +29,8 @@ Route::prefix('payroll/phl')->group(function () {
     Route::get('/periods', [App\Http\Controllers\PhlPayrollController::class, 'index'])->name('payroll.phl.periods');
     Route::post('/periods', [App\Http\Controllers\PhlPayrollController::class, 'store'])->name('payroll.phl.periods.store');
     Route::get('/periods/{id}', [App\Http\Controllers\PhlPayrollController::class, 'show'])->name('payroll.phl.periods.show');
+    Route::get('/periods/{id}/export/pdf', [App\Http\Controllers\PhlPayrollController::class, 'exportPdf'])->name('payroll.phl.periods.export.pdf');
+    Route::get('/periods/{id}/export/excel', [App\Http\Controllers\PhlPayrollController::class, 'exportExcel'])->name('payroll.phl.periods.export.excel');
     Route::post('/periods/{id}/import-attendance', [App\Http\Controllers\PhlPayrollController::class, 'importAttendance'])->name('payroll.phl.periods.import-attendance');
     Route::post('/periods/{id}/generate', [App\Http\Controllers\PhlPayrollController::class, 'generate'])->name('payroll.phl.periods.generate');
     Route::delete('/periods/{id}', [App\Http\Controllers\PhlPayrollController::class, 'destroy'])->name('payroll.phl.periods.destroy');
