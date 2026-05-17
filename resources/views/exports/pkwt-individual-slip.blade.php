@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Slip Gaji - {{ $employee->name }}</title>
+    <title>Slip Gaji PKWT - {{ $employee->name }}</title>
     <style>
         @page {
             size: a5 portrait;
@@ -227,7 +227,7 @@
             </td>
             <td style="text-align: right;">
                 <h2 class="company-name">Cimol Bojot AA</h2>
-                <p class="company-sub">Sistem Payroll Harian Lepas (PHL)</p>
+                <p class="company-sub">Sistem Payroll Kontrak (PKWT)</p>
             </td>
         </tr>
     </table>
@@ -254,7 +254,7 @@
                     <tr>
                         <td class="info-label">Klasifikasi</td>
                         <td class="info-colon">:</td>
-                        <td class="info-value">Pekerja Harian Lepas (PHL)</td>
+                        <td class="info-value">Karyawan Kontrak (PKWT)</td>
                     </tr>
                 </table>
             </td>
@@ -276,42 +276,84 @@
             </tr>
             <tr>
                 <td>
-                    <span class="item-desc">Gaji Pokok Harian</span>
-                    <div class="item-sub">{{ $days_worked }} Hari Kerja x Rp {{ number_format($salary_daily, 0, ',', '.') }}</div>
+                    <span class="item-desc">Gaji Pokok Prorata</span>
+                    <div class="item-sub">{{ $days_worked }} Hari Kerja / {{ $total_days }} Hari Kalender x Rp {{ number_format($tarif_harian, 0, ',', '.') }}</div>
                 </td>
-                <td class="item-amount">Rp {{ number_format($gaji_pokok, 0, ',', '.') }}</td>
+                <td class="item-amount">Rp {{ number_format($pokok, 0, ',', '.') }}</td>
             </tr>
+            @if($lembur > 0)
             <tr>
                 <td>
                     <span class="item-desc">Upah Lembur</span>
                     <div class="item-sub">Kalkulasi jam lembur tervalidasi sistem</div>
                 </td>
-                <td class="item-amount">Rp {{ number_format($overtime_amount, 0, ',', '.') }}</td>
+                <td class="item-amount">Rp {{ number_format($lembur, 0, ',', '.') }}</td>
             </tr>
+            @endif
+            @if($risiko > 0)
             <tr>
                 <td>
                     <span class="item-desc">Tunjangan Risiko</span>
                     <div class="item-sub">Tunjangan operasional risiko lapangan</div>
                 </td>
-                <td class="item-amount">Rp {{ number_format($risk_amount, 0, ',', '.') }}</td>
+                <td class="item-amount">Rp {{ number_format($risiko, 0, ',', '.') }}</td>
             </tr>
+            @endif
+            @if($lain_lain > 0)
+            <tr>
+                <td>
+                    <span class="item-desc">Tunjangan Lainnya</span>
+                    <div class="item-sub">Tunjangan operasional lainnya</div>
+                </td>
+                <td class="item-amount">Rp {{ number_format($lain_lain, 0, ',', '.') }}</td>
+            </tr>
+            @endif
 
             <!-- II. POTONGAN -->
             <tr>
                 <td colspan="2" class="category-row">II. Potongan Gaji</td>
             </tr>
+            @if($bpjs_health > 0)
+            <tr>
+                <td>
+                    <span class="item-desc">BPJS Kesehatan</span>
+                    <div class="item-sub">Iuran Jaminan Kesehatan</div>
+                </td>
+                <td class="item-amount potongan-amount">-Rp {{ number_format($bpjs_health, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+            @if($bpjs_tk > 0)
+            <tr>
+                <td>
+                    <span class="item-desc">BPJS Ketenagakerjaan</span>
+                    <div class="item-sub">Iuran Jaminan Sosial</div>
+                </td>
+                <td class="item-amount potongan-amount">-Rp {{ number_format($bpjs_tk, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+            @if($pph21 > 0)
+            <tr>
+                <td>
+                    <span class="item-desc">PPh 21</span>
+                    <div class="item-sub">Potongan Pajak Penghasilan</div>
+                </td>
+                <td class="item-amount potongan-amount">-Rp {{ number_format($pph21, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+            @if($potongan <= 0)
             <tr>
                 <td>
                     <span class="item-desc">Potongan Terdaftar</span>
                     <div class="item-sub">Tidak ada pemotongan terdaftar</div>
                 </td>
-                <td class="item-amount potongan-amount">Rp 0</td>
+                <td class="item-amount">Rp 0</td>
             </tr>
+            @endif
 
             <!-- GRAND TOTAL -->
             <tr class="total-row">
                 <td class="total-label">TOTAL GAJI BERSIH (TAKE HOME PAY)</td>
-                <td class="total-amount">Rp {{ number_format($take_home_pay, 0, ',', '.') }}</td>
+                <td class="total-amount">Rp {{ number_format($total, 0, ',', '.') }}</td>
             </tr>
         </tbody>
     </table>
@@ -325,7 +367,7 @@
                 <div>Penerima Upah,</div>
                 <div class="signature-space"></div>
                 <div class="signature-name">{{ $employee->name }}</div>
-                <div class="signature-title">Karyawan PHL</div>
+                <div class="signature-title">Karyawan PKWT</div>
             </td>
             <td>
                 <div>Bandung, {{ \Carbon\Carbon::now('Asia/Jakarta')->format('d M Y') }}</div>

@@ -19,7 +19,7 @@
             <th colspan="2" style="text-align: left;">: {{ $period->status === 'Locked' ? 'TERKUNCI / SUDAH DIBAYAR' : 'TERBUKA / DRAFT' }}</th>
             <th colspan="4"></th>
             <th style="font-weight: bold; text-align: right;">Tanggal Cetak</th>
-            <th colspan="3" style="text-align: left;">: {{ date('d-m-Y H:i') }}</th>
+            <th colspan="3" style="text-align: left;">: {{ \Carbon\Carbon::now('Asia/Jakarta')->format('d-m-Y H:i') }}</th>
         </tr>
         <tr>
             <th style="font-weight: bold; text-align: left;">Total Karyawan</th>
@@ -100,7 +100,7 @@
         </tr>
         <!-- Signature Block -->
         <tr>
-            <td colspan="3" style="text-align: center; font-weight: bold;">Bandung, {{ date('d M Y') }}</td>
+            <td colspan="3" style="text-align: center; font-weight: bold;">Bandung, {{ \Carbon\Carbon::now('Asia/Jakarta')->format('d M Y') }}</td>
             <td colspan="5"></td>
             <td colspan="3" style="text-align: center; font-weight: bold;">Disetujui Oleh,</td>
         </tr>

@@ -169,12 +169,14 @@
                     Kirim Email
                 </x-ui.button>
                 <x-ui.button variant="primary"
-                    @click="window.print()"
+                    @click="window.open('/payroll/pkwt/periods/' + selectedSlip.period_id + '/slips/' + selectedSlip.employee_id + '/pdf', '_blank')"
                     className="w-full sm:w-auto text-[11px] py-1.5 px-3 flex items-center justify-center gap-1 bg-brand-500 text-white hover:bg-brand-600">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 9h1.5m-1.5 3h4m-4 3h4" />
                     </svg>
-                    Cetak Slip
+                    Lihat PDF
                 </x-ui.button>
             </div>
         </div>
