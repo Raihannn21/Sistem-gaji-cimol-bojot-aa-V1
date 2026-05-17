@@ -20,9 +20,7 @@ class PhlAttendanceImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        Log::info('Raw Row: ', $row);
         $empNo = $row['emp_no'] ?? $row['no_id'] ?? null;
-        Log::info('EmpNo resolved as: ' . $empNo);
         if (!$empNo)
             return null;
 
@@ -48,10 +46,12 @@ class PhlAttendanceImport implements ToModel, WithHeadingRow
                 $end = Carbon::parse($scanOut);
 
                 if ($end->gt($start)) {
-                    $diffInMinutes = $end->diffInMinutes($start);
+                    $diffInMinutes = abs($end->diffInMinutes($start));
                     $hours = round($diffInMinutes / 60, 2);
-                    $duration = min($hours, 8);
+                    $duration = (int) round(min($hours, 8));
                 }
+            } elseif ($scanIn || $scanOut) {
+                $duration = 8;
             }
 
             $existing = PhlAttendance::where('phl_payroll_period_id', $this->periodId)
