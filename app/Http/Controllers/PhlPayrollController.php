@@ -13,6 +13,7 @@ use App\Imports\PhlAttendanceImport;
 use App\Http\Requests\PhlPayroll\StorePhlOvertimeRequest;
 use App\Http\Requests\PhlPayroll\StorePhlRiskRequest;
 use App\Exports\PhlPayrollExport;
+use App\Exports\BcaPayrollExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class PhlPayrollController extends Controller
@@ -370,5 +371,13 @@ class PhlPayrollController extends Controller
 
         $fileName = 'REKAP_PAYROLL_PHL_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
         return $pdf->download($fileName);
+    }
+
+    public function exportBca($id)
+    {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        $fileName = 'BCA_TRANSFER_LIST_PHL_' . str_replace(' ', '_', strtoupper($period->title)) . '.xlsx';
+        
+        return Excel::download(new BcaPayrollExport($period), $fileName);
     }
 }
