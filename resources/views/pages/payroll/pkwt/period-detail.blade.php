@@ -3,6 +3,9 @@
 @section('content')
     <div class="mx-auto max-w-screen-2xl" x-data="{ 
         activeTab: 'overview',
+        searchQuery: '',
+        showEditAttendanceModal: false,
+        selectedAttendance: { id: null, employee_name: '', date: '', scan_in: '', scan_out: '' },
         // Global Modal States
         showOvertimeModal: false,
         showRiskModal: false,
@@ -115,7 +118,8 @@
             <x-payroll.pkwt.others-modal />
             <x-payroll.pkwt.generate-confirm-modal />
             <x-payroll.pkwt.payslip-modal />
-            <x-payroll.pkwt.attendance-import-modal />
+            <x-payroll.pkwt.attendance-import-modal :period="$period" />
+            <x-payroll.pkwt.attendance-edit-modal :period="$period" />
             <x-payroll.pkwt.import-modal />
         </div>
     </div>

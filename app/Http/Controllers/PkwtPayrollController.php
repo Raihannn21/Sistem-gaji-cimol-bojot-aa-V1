@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\PkwtPayrollPeriod;
+use App\Models\PkwtAttendance;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\PkwtAttendanceImport;
 use Illuminate\Http\Request;
 
 class PkwtPayrollController extends Controller
@@ -111,5 +114,94 @@ class PkwtPayrollController extends Controller
 
         return redirect()->route('payroll.pkwt.periods')
             ->with('success', 'Periode gaji PKWT berhasil dihapus.');
+    }
+
+    public function importAttendance(Request $request, $id)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ], [
+            'file.required' => 'Silakan pilih file Excel terlebih dahulu.',
+            'file.mimes' => 'Format file harus .xlsx, .xls, atau .csv.',
+        ]);
+
+        try {
+            $array = Excel::toArray(new PkwtAttendanceImport($id), $request->file('file'));
+            if (empty($array) || empty($array[0])) {
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'File terbaca kosong.');
+            }
+
+            Excel::import(new PkwtAttendanceImport($id), $request->file('file'));
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi PKWT berhasil diimport.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+        }
+    }
+
+    public function updateAttendance(Request $request, $id, $attendanceId)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        $request->validate([
+            'scan_in' => 'nullable|string',
+            'scan_out' => 'nullable|string',
+        ]);
+
+        try {
+            $attendance = PkwtAttendance::where('pkwt_payroll_period_id', $id)->findOrFail($attendanceId);
+
+            $scanIn = $request->scan_in ? \Carbon\Carbon::parse($request->scan_in)->format('H:i:s') : null;
+            $scanOut = $request->scan_out ? \Carbon\Carbon::parse($request->scan_out)->format('H:i:s') : null;
+
+            $duration = 0;
+            if ($scanIn && $scanOut) {
+                $start = \Carbon\Carbon::parse($scanIn);
+                $end = \Carbon\Carbon::parse($scanOut);
+
+                if ($end->gt($start)) {
+                    $diffInMinutes = abs($end->diffInMinutes($start));
+                    $hours = round($diffInMinutes / 60, 2);
+                    $duration = (int) round(min($hours, 8));
+                }
+            } elseif ($scanIn || $scanOut) {
+                $duration = 8;
+            }
+
+            $attendance->update([
+                'scan_in' => $scanIn,
+                'scan_out' => $scanOut,
+                'duration' => $duration,
+            ]);
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi berhasil diubah.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Terjadi kesalahan saat mengubah data absensi: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyAttendance($id, $attendanceId)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $attendance = PkwtAttendance::where('pkwt_payroll_period_id', $id)->findOrFail($attendanceId);
+            $attendance->delete();
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Gagal menghapus data absensi: ' . $e->getMessage());
+        }
     }
 }

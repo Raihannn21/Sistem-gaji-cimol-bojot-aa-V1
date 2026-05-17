@@ -62,7 +62,7 @@
 
                         <!-- File Input -->
                         <div class="relative group">
-                            <input type="file" name="file" accept=".xlsx, .xls" class="hidden" id="attendanceFileInput" @change="handleFile($event)" required>
+                            <input type="file" name="file" accept=".xlsx, .xls, .csv" class="hidden" id="attendanceFileInput" @change="handleFile($event)" required>
                             <label for="attendanceFileInput" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-3xl cursor-pointer bg-gray-50 hover:bg-gray-100 dark:border-gray-700 dark:bg-dark-900 dark:hover:bg-gray-800 transition-all group-hover:border-brand-500">
                                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                     <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm dark:bg-gray-800 group-hover:scale-110 transition-transform">
