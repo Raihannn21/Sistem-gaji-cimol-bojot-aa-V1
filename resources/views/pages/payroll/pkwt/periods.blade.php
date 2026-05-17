@@ -2,12 +2,8 @@
 
 @section('content')
     <div class="mx-auto max-w-screen-2xl" x-data="{ 
-        showModal: false,
-        periods: [
-            { id: 1, month: 'Juli', year: '2025', status: 'Open', total_employees: 45, total_amount: 'Rp 210.500.000', created_at: '2025-07-01' },
-            { id: 2, month: 'Juni', year: '2025', status: 'Locked', total_employees: 45, total_amount: 'Rp 208.750.000', created_at: '2025-06-01' },
-            { id: 3, month: 'Mei', year: '2025', status: 'Locked', total_employees: 42, total_amount: 'Rp 195.200.000', created_at: '2025-05-01' }
-        ]
+        showModal: {{ $errors->any() ? 'true' : 'false' }},
+        errors: {},
     }">
         <div class="space-y-6">
             <!-- Header Actions -->
@@ -31,7 +27,7 @@
                         </div>
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Periode Aktif</p>
-                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">Juli 2025</h4>
+                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">{{ $periods->where('status', 'Open')->first() ? $periods->where('status', 'Open')->first()->title : 'Belum Ada' }}</h4>
                         </div>
                     </div>
                 </div>
@@ -42,7 +38,7 @@
                         </div>
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Total Terbayar (PKWT YTD)</p>
-                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">Rp 1.450.000.000</h4>
+                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">Rp {{ number_format($ytdPaid, 0, ',', '.') }}</h4>
                         </div>
                     </div>
                 </div>
@@ -53,7 +49,7 @@
                         </div>
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Rata-rata PKWT/Bulan</p>
-                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">44 Karyawan</h4>
+                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">{{ $pkwtEmployeeCount }} Karyawan</h4>
                         </div>
                     </div>
                 </div>
@@ -73,7 +69,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                            <template x-for="period in periods" :key="period.id">
+                            @forelse($periods as $period)
                                 <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
                                     <td class="px-5 py-4">
                                         <div class="flex items-center gap-3">
@@ -81,32 +77,47 @@
                                                 <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-bold text-gray-800 dark:text-white" x-text="period.month + ' ' + period.year"></p>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400" x-text="'Dibuat: ' + period.created_at"></p>
+                                                <p class="text-sm font-bold text-gray-800 dark:text-white">
+                                                    {{ $period->title }}
+                                                    <span class="text-xs font-normal text-gray-400 dark:text-gray-500 ml-1.5">({{ $period->start_date->format('d/m/Y') }} - {{ $period->end_date->format('d/m/Y') }})</span>
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">Dibuat: {{ $period->created_at->format('d-m-Y') }}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-5 py-4">
-                                        <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium" 
-                                              :class="period.status === 'Open' ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-500' : 'bg-gray-100 text-gray-700 dark:bg-white/5 dark:text-gray-400'"
-                                              x-text="period.status"></span>
+                                        <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $period->status === 'Open' ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-500' : 'bg-gray-100 text-gray-700 dark:bg-white/5 dark:text-gray-400' }}">
+                                            {{ $period->status }}
+                                        </span>
                                     </td>
-                                    <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-400" x-text="period.total_employees + ' Karyawan'"></td>
-                                    <td class="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-white" x-text="period.total_amount"></td>
+                                    <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-400">
+                                        {{ $period->total_employees }} Karyawan
+                                    </td>
+                                    <td class="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-white">
+                                        Rp {{ number_format($period->total_expenditure, 0, ',', '.') }}
+                                    </td>
                                     <td class="px-5 py-4">
                                         <div class="flex items-center justify-center gap-2">
-                                            <a :href="'/payroll/pkwt/periods/' + period.id" class="p-2 text-gray-500 hover:bg-gray-100 hover:text-brand-500 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-white/5" title="Detail">
+                                            <a href="{{ route('payroll.pkwt.periods.show', $period->id) }}" class="p-2 text-gray-500 hover:bg-gray-100 hover:text-brand-500 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-white/5" title="Detail">
                                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                             </a>
-                                            <template x-if="period.status === 'Open'">
-                                                <button class="p-2 text-gray-500 hover:bg-gray-100 hover:text-red-500 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-white/5" title="Kunci Periode">
-                                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                                                </button>
-                                            </template>
+                                            <button type="button" @click="$dispatch('open-delete-modal', {
+                                                url: '{{ route('payroll.pkwt.periods.destroy', $period->id) }}',
+                                                title: 'Hapus Periode Gaji PKWT',
+                                                message: 'Apakah Anda yakin ingin menghapus periode {{ $period->title }}? Semua data lembur, risiko, dan tunjangan lainnya terkait periode ini akan dihapus secara permanen.'
+                                            })" class="p-2 text-gray-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-red-500/10" title="Hapus">
+                                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
-                            </template>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-5 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                                        Belum ada periode gaji PKWT yang dibuat.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -117,4 +128,3 @@
         <x-payroll.pkwt.period-modal />
     </div>
 @endsection
-

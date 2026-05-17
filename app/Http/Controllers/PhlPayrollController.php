@@ -63,8 +63,10 @@ class PhlPayrollController extends Controller
 
         $dates = explode(' to ', $request->date_range);
 
-        $startDate = trim($dates[0]);
-        $endDate = isset($dates[1]) ? trim($dates[1]) : $startDate;
+        $startDate = \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[0]))->format('Y-m-d');
+        $endDate = isset($dates[1]) 
+            ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d') 
+            : $startDate;
 
         $period = PhlPayrollPeriod::create([
             'title' => $request->title,

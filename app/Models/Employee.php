@@ -106,4 +106,24 @@ class Employee extends Model
     {
         return $this->hasMany(PhlAttendance::class);
     }
+
+    public function pkwtOvertimes()
+    {
+        return $this->hasMany(PkwtOvertime::class);
+    }
+
+    public function pkwtRiskAllowances()
+    {
+        return $this->hasMany(PkwtRiskAllowance::class);
+    }
+
+    public function pkwtAttendances()
+    {
+        return $this->hasMany(PkwtAttendance::class);
+    }
+
+    public function pkwtOtherAllowances()
+    {
+        return $this->hasMany(PkwtOtherAllowance::class);
+    }
 }

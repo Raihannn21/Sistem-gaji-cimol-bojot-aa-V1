@@ -50,13 +50,10 @@ Route::prefix('payroll/phl')->group(function () {
 
 // Payroll PKWT
 Route::prefix('payroll/pkwt')->group(function () {
-    Route::get('/periods', function () {
-        return view('pages.payroll.pkwt.periods', ['title' => 'Periode Gaji PKWT']);
-    })->name('payroll.pkwt.periods');
-
-    Route::get('/periods/{id}', function ($id) {
-        return view('pages.payroll.pkwt.period-detail', ['title' => 'Detail Periode Gaji PKWT', 'id' => $id]);
-    })->name('payroll.pkwt.periods.show');
+    Route::get('/periods', [App\Http\Controllers\PkwtPayrollController::class, 'index'])->name('payroll.pkwt.periods');
+    Route::post('/periods', [App\Http\Controllers\PkwtPayrollController::class, 'store'])->name('payroll.pkwt.periods.store');
+    Route::get('/periods/{id}', [App\Http\Controllers\PkwtPayrollController::class, 'show'])->name('payroll.pkwt.periods.show');
+    Route::delete('/periods/{id}', [App\Http\Controllers\PkwtPayrollController::class, 'destroy'])->name('payroll.pkwt.periods.destroy');
 });
 
 // Laporan
