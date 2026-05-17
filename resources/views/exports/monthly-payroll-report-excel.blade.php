@@ -120,9 +120,9 @@
         <td colspan="4" style="height: 40px;"></td>
     </tr>
     <tr>
-        <td style="text-align: center; font-weight: bold; text-decoration: underline;">Bella Lestari</td>
-        <td style="text-align: center; font-weight: bold; text-decoration: underline;">Raihan Syahbana</td>
-        <td colspan="2" style="text-align: center; font-weight: bold; text-decoration: underline;">Ahmad Anwar</td>
+        <td style="text-align: center; font-weight: bold; text-decoration: underline;">Nama Staf</td>
+        <td style="text-align: center; font-weight: bold; text-decoration: underline;">Nama Staf</td>
+        <td colspan="2" style="text-align: center; font-weight: bold; text-decoration: underline;">Nama Staf</td>
     </tr>
     <tr>
         <td style="text-align: center; font-size: 9px; color: #64748b;">Staff Finance &amp; Payroll</td>
