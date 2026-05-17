@@ -50,25 +50,31 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
-                            @for ($i = 1; $i <= 3; $i++)
-                                <tr>
-                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-400">
-                                        {{ now()->subDays($i)->format('d M Y') }}</td>
-                                    <td class="px-4 py-3 text-sm text-right font-bold text-brand-600 dark:text-brand-500">Rp
-                                        50.000</td>
-                                    <td class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 italic">Area Berisiko
-                                        Tinggi - Site A...</td>
+                            <template x-for="item in selectedEmployeeRisks" :key="item.id">
+                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01]">
+                                    <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-400" x-text="item.date"></td>
+                                    <td class="px-4 py-3 text-sm text-right font-bold text-brand-600 dark:text-brand-500" x-text="'Rp ' + Number(item.amount).toLocaleString('id-ID')"></td>
+                                    <td class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 italic" x-text="item.note"></td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center justify-center gap-1">
                                             <button
-                                                @click="showEditRiskModal = true; selectedRiskDate = '{{ now()->subDays($i)->format('d M Y') }}'; selectedRiskAmount = 50000; selectedRiskNote = 'Area Berisiko Tinggi - Site A'"
+                                                @click="showEditRiskModal = true; 
+                                                        selectedRiskId = item.id; 
+                                                        selectedRiskDate = item.date; 
+                                                        selectedRiskAmount = item.amount; 
+                                                        selectedRiskNote = item.note"
                                                 class="p-1.5 text-gray-400 hover:text-brand-500 transition-colors">
                                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
                                             </button>
-                                            <button class="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
+                                            <button @click="$dispatch('open-delete-modal', { 
+                                                            url: `/payroll/phl/periods/{{ $period->id }}/risk/${item.id}`,
+                                                            message: `Apakah Anda yakin ingin menghapus tunjangan risiko karyawan ${selectedEmployee.name} pada tanggal ${item.date}?`
+                                                    })"
+                                                    class="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                                                    title="Hapus Risiko">
                                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -77,7 +83,12 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endfor
+                            </template>
+                            <tr x-show="selectedEmployeeRisks.length === 0">
+                                <td colspan="4" class="px-4 py-8 text-center text-sm text-gray-400 italic">
+                                    Tidak ada data tunjangan risiko untuk karyawan ini.
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

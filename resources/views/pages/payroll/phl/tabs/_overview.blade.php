@@ -6,11 +6,12 @@
     $readiness = $employees->count() > 0 ? round(($employeesWithAttendance / $employees->count()) * 100) : 0;
 
     $totalOvertimeAmount = $period->overtimes->sum('amount');
+    $totalRiskAmount = $period->riskAllowances->sum('amount');
     $totalEstimation = $employees->sum(function($employee) use ($period) {
         $employeeAttendances = $period->attendances->where('employee_id', $employee->id);
         $daysWorked = $employeeAttendances->where('duration', '>', 0)->count();
         return $daysWorked * $employee->salary_daily;
-    }) + $totalOvertimeAmount;
+    }) + $totalOvertimeAmount + $totalRiskAmount;
 @endphp
 <div x-show="activeTab === 'overview'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" x-cloak>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -73,7 +74,7 @@
                         
                         $pokok = $daysWorked * $employee->salary_daily;
                         $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
-                        $risiko = 0; // Stub for now
+                        $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
                         $total = $pokok + $lembur + $risiko;
                     @endphp
                     <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
