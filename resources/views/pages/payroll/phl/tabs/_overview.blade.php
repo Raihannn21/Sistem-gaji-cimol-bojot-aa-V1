@@ -74,8 +74,11 @@
     <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
             <h3 class="text-base font-bold text-gray-800 dark:text-white/90">Rangkuman Kalkulasi Gaji</h3>
-            <span
-                class="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2 py-0.5 text-[10px] font-bold text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-500 uppercase tracking-wider">Draft</span>
+            @if($period->status === 'Locked')
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/10 dark:text-green-500 uppercase tracking-wider">Locked</span>
+            @else
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2 py-0.5 text-[10px] font-bold text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-500 uppercase tracking-wider">Draft</span>
+            @endif
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left">
