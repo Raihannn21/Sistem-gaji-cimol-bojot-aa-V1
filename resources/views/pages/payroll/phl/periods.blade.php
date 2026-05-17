@@ -77,7 +77,10 @@
                                                 <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-bold text-gray-800 dark:text-white">{{ $period->title }}</p>
+                                                <p class="text-sm font-bold text-gray-800 dark:text-white">
+                                                    {{ $period->title }}
+                                                    <span class="text-xs font-normal text-gray-400 dark:text-gray-500 ml-1.5">({{ $period->start_date->format('d/m/Y') }} - {{ $period->end_date->format('d/m/Y') }})</span>
+                                                </p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">Dibuat: {{ $period->created_at->format('d-m-Y') }}</p>
                                             </div>
                                         </div>

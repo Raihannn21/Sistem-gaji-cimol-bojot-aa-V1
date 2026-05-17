@@ -67,7 +67,16 @@
                                 {{ $period->status === 'Open' ? 'Aktif' : $period->status }}
                             </span>
                         </div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Pusat kendali penggajian PHL (Security, Driver, & Helper).</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 flex flex-wrap items-center gap-1.5">
+                            <span>Pusat kendali penggajian PHL (Security, Driver, & Helper).</span>
+                            <span class="text-gray-300 dark:text-gray-750 font-normal hidden sm:inline">|</span>
+                            <span class="inline-flex items-center gap-1 font-bold text-brand-600 dark:text-brand-400 text-xs bg-brand-50/50 dark:bg-brand-500/10 px-2 py-0.5 rounded-lg border border-brand-100/50 dark:border-brand-500/20">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                {{ $period->start_date->format('d M Y') }} s/d {{ $period->end_date->format('d M Y') }}
+                            </span>
+                        </p>
                     </div>
                 </div>
                 

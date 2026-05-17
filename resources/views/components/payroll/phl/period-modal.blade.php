@@ -31,7 +31,7 @@
 
                 <!-- Rentang Tanggal -->
                 <x-form.date-picker name="date_range" label="Rentang Tanggal" placeholder="Pilih Rentang Tanggal"
-                    mode="range" :static="true" required />
+                    mode="range" dateFormat="d-m-Y" :static="true" required />
 
                 <div
                     class="rounded-xl bg-brand-50 p-4 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
