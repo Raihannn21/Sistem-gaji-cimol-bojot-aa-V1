@@ -21,18 +21,18 @@ class PkwtPayrollExport implements FromView, WithTitle, WithColumnWidths
     public function view(): View
     {
         $period = PkwtPayrollPeriod::with([
-            'attendances.employee', 
-            'overtimes.employee', 
+            'attendances.employee',
+            'overtimes.employee',
             'riskAllowances.employee',
             'otherAllowances.employee'
         ])->findOrFail($this->period->id);
 
         $employees = Employee::where('employment_type', 'PKWT')
-            ->where(function($q) use ($period) {
+            ->where(function ($q) use ($period) {
                 $q->where('status', 'Aktif')
-                  ->orWhereHas('pkwtAttendances', function($sub) use ($period) {
-                      $sub->where('pkwt_payroll_period_id', $period->id);
-                  });
+                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    });
             })
             ->distinct()
             ->get();
@@ -45,11 +45,7 @@ class PkwtPayrollExport implements FromView, WithTitle, WithColumnWidths
         foreach ($employees as $employee) {
             $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
             $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
-
-            // Rumus Prorata:
-            // Gaji Harian = Gaji Pokok Bulanan / Total Hari Kalender Periode
             $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
-            // Gaji Pokok Didapat = Hari Hadir * Gaji Harian
             $pokok = $daysWorked * $harian;
 
             $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
@@ -89,18 +85,18 @@ class PkwtPayrollExport implements FromView, WithTitle, WithColumnWidths
     public function columnWidths(): array
     {
         return [
-            'A' => 6,   // No
-            'B' => 15,  // NRP
-            'C' => 30,  // Nama Karyawan
-            'D' => 15,  // Hadir (Hari)
-            'E' => 15,  // Absen (Hari)
-            'F' => 20,  // Tarif Harian
-            'G' => 24,  // Gaji Pokok Didapat
-            'H' => 20,  // Lembur
-            'I' => 20,  // Risiko
-            'J' => 20,  // Lain-lain
-            'K' => 20,  // Potongan
-            'L' => 24,  // Total Bersih
+            'A' => 6,
+            'B' => 15,
+            'C' => 30,
+            'D' => 15,
+            'E' => 15,
+            'F' => 20,
+            'G' => 24,
+            'H' => 20,
+            'I' => 20,
+            'J' => 20,
+            'K' => 20,
+            'L' => 24,
         ];
     }
 }

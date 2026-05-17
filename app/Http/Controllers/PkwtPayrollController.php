@@ -22,32 +22,32 @@ class PkwtPayrollController extends Controller
         $periods = PkwtPayrollPeriod::with(['overtimes', 'riskAllowances', 'otherAllowances'])
             ->orderBy('start_date', 'desc')
             ->get();
-            
+
         $pkwtEmployeeCount = Employee::where('employment_type', 'PKWT')
             ->where('status', 'Aktif')
             ->count();
 
         $currentYear = date('Y');
         $ytdPaid = 0;
-        
+
         foreach ($periods as $period) {
             $totalPokok = Employee::where('employment_type', 'PKWT')->where('status', 'Aktif')->sum('salary_monthly');
             $totalOvertime = $period->overtimes->sum('amount');
             $totalRisk = $period->riskAllowances->sum('amount');
             $totalOthers = $period->otherAllowances->sum('amount');
-            
+
             $totalDeductions = Employee::where('employment_type', 'PKWT')
                 ->where('status', 'Aktif')
                 ->get()
                 ->sum(function ($emp) {
                     return ($emp->bpjs_health ?? 0) + ($emp->bpjs_tk ?? 0) + ($emp->pph21 ?? 0);
                 });
-                
+
             $periodTotal = max(0, $totalPokok + $totalOvertime + $totalRisk + $totalOthers - $totalDeductions);
-            
+
             $period->total_expenditure = $periodTotal;
             $period->total_employees = $pkwtEmployeeCount;
-            
+
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
                 $ytdPaid += $periodTotal;
             }
@@ -71,8 +71,8 @@ class PkwtPayrollController extends Controller
         $dates = explode(' to ', $request->date_range);
 
         $startDate = \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[0]))->format('Y-m-d');
-        $endDate = isset($dates[1]) 
-            ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d') 
+        $endDate = isset($dates[1])
+            ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d')
             : $startDate;
 
         $period = PkwtPayrollPeriod::create([
@@ -90,18 +90,17 @@ class PkwtPayrollController extends Controller
     public function show($id)
     {
         $period = PkwtPayrollPeriod::with([
-            'attendances.employee', 
-            'overtimes.employee', 
+            'attendances.employee',
+            'overtimes.employee',
             'riskAllowances.employee',
             'otherAllowances.employee'
         ])->findOrFail($id);
-        
-        // Sort attendances so they don't jump around when updated
+
         $period->setRelation('attendances', $period->attendances->sortBy([
             ['employee.name', 'asc'],
             ['date', 'asc']
         ]));
-        
+
         $employees = Employee::where('employment_type', 'PKWT')
             ->where('status', 'Aktif')
             ->get();

@@ -59,7 +59,7 @@
                                     <p class="text-xs text-gray-400 font-medium italic">{{ $typesList }}</p>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums">
+                            <td class="px-6 py-4 text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums whitespace-nowrap">
                                 Rp {{ number_format($totalAmount, 0, ',', '.') }}
                             </td>
                             <td class="px-6 py-4 text-center">

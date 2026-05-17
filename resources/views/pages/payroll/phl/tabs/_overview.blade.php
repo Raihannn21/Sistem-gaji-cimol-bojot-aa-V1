@@ -110,14 +110,18 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-center font-bold text-gray-700 dark:text-gray-300" style="text-align: center;">
                                 {{ $daysWorked }} Hari</td>
-                            <td class="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400 tabular-nums" style="text-align: center;">Rp
-                                {{ number_format($pokok, 0, ',', '.') }}</td>
-                            <td class="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400 tabular-nums" style="text-align: center;">Rp
-                                {{ number_format($lembur, 0, ',', '.') }}</td>
-                            <td class="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400 tabular-nums" style="text-align: center;">Rp
-                                {{ number_format($risiko, 0, ',', '.') }}</td>
-                            <td class="px-6 py-4 text-sm text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums" style="text-align: right;">
-                                Rp {{ number_format($total, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap" style="text-align: center;">
+                                Rp {{ number_format($pokok, 0, ',', '.') }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap" style="text-align: center;">
+                                Rp {{ number_format($lembur, 0, ',', '.') }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap" style="text-align: center;">
+                                Rp {{ number_format($risiko, 0, ',', '.') }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums whitespace-nowrap" style="text-align: right;">
+                                Rp {{ number_format($total, 0, ',', '.') }}
+                            </td>
                         </tr>
                     @empty
                         <tr>

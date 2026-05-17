@@ -47,7 +47,7 @@
                                     <p class="font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
                                     <p class="text-xs text-gray-400">ID. {{ $employee->emp_no }}</p>
                                 </td>
-                                <td class="px-6 py-4 text-right font-bold text-brand-600 tabular-nums">Rp {{ number_format($total, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4 text-right font-bold text-brand-600 tabular-nums whitespace-nowrap">Rp {{ number_format($total, 0, ',', '.') }}</td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/10 dark:text-green-500 uppercase tracking-wider">Published</span>
                                 </td>

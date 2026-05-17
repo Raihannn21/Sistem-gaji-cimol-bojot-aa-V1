@@ -48,7 +48,7 @@
                                 <p class="text-xs text-gray-400">NRP. {{ $employee->emp_no }}</p>
                             </td>
                             <td class="px-6 py-4 text-center font-bold text-gray-800 dark:text-white/90">{{ $totalHours }} Jam</td>
-                            <td class="px-6 py-4 text-right font-bold text-brand-600 tabular-nums">Rp {{ number_format($totalAmount, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4 text-right font-bold text-brand-600 tabular-nums whitespace-nowrap">Rp {{ number_format($totalAmount, 0, ',', '.') }}</td>
                             <td class="px-6 py-4 text-center">
                                 <button @click="showOvertimeDetailModal = true; 
                                                 selectedEmployee = { id: {{ $employee->id }}, name: '{{ addslashes($employee->name) }}', nrp: '{{ $employee->emp_no }}' };
