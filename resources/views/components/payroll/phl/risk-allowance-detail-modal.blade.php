@@ -42,8 +42,6 @@
                                 <th
                                     class="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-500 text-right">
                                     Nominal</th>
-                                <th class="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-500">
-                                    Keterangan</th>
                                 <th
                                     class="px-4 py-3 text-[10px] font-black uppercase tracking-wider text-gray-500 text-center">
                                     Aksi</th>
@@ -54,7 +52,6 @@
                                 <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01]">
                                     <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-400" x-text="item.date"></td>
                                     <td class="px-4 py-3 text-sm text-right font-bold text-brand-600 dark:text-brand-500" x-text="'Rp ' + Number(item.amount).toLocaleString('id-ID')"></td>
-                                    <td class="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 italic" x-text="item.note"></td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center justify-center gap-1">
                                             <button
