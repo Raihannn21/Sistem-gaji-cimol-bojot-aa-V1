@@ -233,4 +233,20 @@ class PhlPayrollController extends Controller
 
         return redirect()->route('payroll.phl.periods')->with('success', 'Periode gaji berhasil dihapus.');
     }
+
+    public function generate($id)
+    {
+        try {
+            $period = PhlPayrollPeriod::findOrFail($id);
+            $period->update([
+                'status' => 'Locked'
+            ]);
+
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'slips'])
+                ->with('success', 'Payroll berhasil digenerate dan slip gaji telah diterbitkan!');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overview'])
+                ->with('error', 'Terjadi kesalahan saat memproses payroll: ' . $e->getMessage());
+        }
+    }
 }
