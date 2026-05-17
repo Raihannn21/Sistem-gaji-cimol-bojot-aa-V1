@@ -12,6 +12,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PhlAttendanceImport;
 use App\Http\Requests\PhlPayroll\StorePhlOvertimeRequest;
 use App\Http\Requests\PhlPayroll\StorePhlRiskRequest;
+use App\Exports\PhlPayrollExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PhlPayrollController extends Controller
 {
@@ -304,5 +306,69 @@ class PhlPayrollController extends Controller
             return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overview'])
                 ->with('error', 'Terjadi kesalahan saat memproses payroll: ' . $e->getMessage());
         }
+    }
+
+    public function exportExcel($id)
+    {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        $fileName = 'REKAP_PAYROLL_PHL_' . str_replace(' ', '_', strtoupper($period->title)) . '.xlsx';
+        
+        return Excel::download(new PhlPayrollExport($period), $fileName);
+    }
+
+    public function exportPdf($id)
+    {
+        $period = PhlPayrollPeriod::with([
+            'attendances.employee', 
+            'overtimes.employee', 
+            'riskAllowances.employee'
+        ])->findOrFail($id);
+
+        $employees = Employee::where('employment_type', 'PHL')
+            ->where(function($q) use ($period) {
+                $q->where('status', 'Aktif')
+                  ->orWhereHas('phlAttendances', function($sub) use ($period) {
+                      $sub->where('phl_payroll_period_id', $period->id);
+                  });
+            })
+            ->distinct()
+            ->get();
+
+        $rows = [];
+        foreach ($employees as $employee) {
+            $daysWorked = $period->attendances->where('employee_id', $employee->id)->where('duration', '>', 0)->count();
+            $salaryDaily = $employee->salary_daily ?? 0;
+            $gajiPokok = $daysWorked * $salaryDaily;
+
+            $totalOvertimeHours = $period->overtimes->where('employee_id', $employee->id)->sum('hours');
+            $totalOvertimeAmount = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+
+            $totalRiskAmount = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+            $totalRiskDays = $period->riskAllowances->where('employee_id', $employee->id)->count();
+
+            $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
+
+            if ($daysWorked > 0 || $totalOvertimeHours > 0 || $totalRiskAmount > 0) {
+                $rows[] = [
+                    'employee' => $employee,
+                    'days_worked' => $daysWorked,
+                    'salary_daily' => $salaryDaily,
+                    'gaji_pokok' => $gajiPokok,
+                    'overtime_hours' => $totalOvertimeHours,
+                    'overtime_amount' => $totalOvertimeAmount,
+                    'risk_days' => $totalRiskDays,
+                    'risk_amount' => $totalRiskAmount,
+                    'take_home_pay' => $takeHomePay,
+                ];
+            }
+        }
+
+        $pdf = Pdf::loadView('exports.phl-payroll', [
+            'period' => $period,
+            'rows' => $rows
+        ])->setPaper('a4', 'landscape');
+
+        $fileName = 'REKAP_PAYROLL_PHL_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
+        return $pdf->download($fileName);
     }
 }
