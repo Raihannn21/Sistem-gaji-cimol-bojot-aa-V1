@@ -1,5 +1,7 @@
+@props(['period'])
 <template x-teleport="body">
     <div x-show="showEditOvertimeModal" 
+         x-init="$watch('showEditOvertimeModal', value => value && $nextTick(() => { const input = $el.querySelector('[data-currency]'); if (input) formatCurrency(input); }))"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
@@ -24,25 +26,36 @@
             </button>
 
             <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Edit Data Lembur</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" x-text="'Tanggal: ' + selectedOvertimeDate"></p>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <span class="font-semibold text-brand-600" x-text="selectedEmployee.name"></span> | <span x-text="selectedOvertimeDateFormatted"></span>
+            </p>
 
-            <form class="mt-8 space-y-5">
+            <form :action="`/payroll/phl/periods/{{ $period->id }}/overtime/${selectedOvertimeId}`" method="POST" class="mt-8 space-y-5">
+                @csrf
+                @method('PUT')
+
+                <!-- Input Tersembunyi untuk Memenuhi Validasi FormRequest -->
+                <input type="hidden" name="employee_id" :value="selectedEmployee.id">
+                <input type="hidden" name="overtime_date" :value="selectedOvertimeDate">
+
                 <div>
                     <label class="mb-2.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Jumlah Jam Lembur
                     </label>
-                    <input type="number" step="0.5" x-model="selectedOvertimeHours" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white dark:focus:border-brand-500" placeholder="Contoh: 4">
+                    <input type="number" name="hours" x-model="selectedOvertimeHours" required min="1" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white dark:focus:border-brand-500" placeholder="Contoh: 4">
                 </div>
+
+                <x-form.input name="amount" label="Nominal Lembur" prefix="Rp" data-currency placeholder="0" required x-model="selectedOvertimeAmount" @input="formatCurrency($event.target)" />
 
                 <div>
                     <label class="mb-2.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Keterangan / Aktivitas
                     </label>
-                    <textarea x-model="selectedOvertimeNote" rows="3" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white dark:focus:border-brand-500" placeholder="Jelaskan aktivitas lembur..."></textarea>
+                    <textarea name="note" x-model="selectedOvertimeNote" rows="3" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white dark:focus:border-brand-500" placeholder="Jelaskan aktivitas lembur..."></textarea>
                 </div>
 
                 <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
-                    <x-ui.button variant="outline" @click="showEditOvertimeModal = false">Batal</x-ui.button>
+                    <x-ui.button variant="outline" type="button" @click="showEditOvertimeModal = false">Batal</x-ui.button>
                     <x-ui.button variant="primary" type="submit">Simpan Perubahan</x-ui.button>
                 </div>
             </form>

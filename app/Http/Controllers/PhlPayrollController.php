@@ -77,14 +77,14 @@ class PhlPayrollController extends Controller
         try {
             $array = Excel::toArray(new PhlAttendanceImport($id), $request->file('file'));
             if (empty($array) || empty($array[0])) {
-                return redirect()->back()->with('error', 'File Excel terbaca kosong. Jika ini file dari mesin absen (berformat .xls), silakan buka file tersebut di aplikasi Excel lalu pilih "Save As" ke format .xlsx (Excel Workbook) dan coba import kembali file yang baru.');
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'File Excel terbaca kosong. Jika ini file dari mesin absen (berformat .xls), silakan buka file tersebut di aplikasi Excel lalu pilih "Save As" ke format .xlsx (Excel Workbook) dan coba import kembali file yang baru.');
             }
 
             Excel::import(new PhlAttendanceImport($id), $request->file('file'));
 
-            return redirect()->back()->with('success', 'Data absensi berhasil diimport.');
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi berhasil diimport.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
         }
     }
 
@@ -99,7 +99,7 @@ class PhlPayrollController extends Controller
                 ->first();
 
             if ($existing) {
-                return redirect()->back()->with('error', 'Karyawan tersebut sudah memiliki data lembur terdaftar pada tanggal tersebut.');
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Karyawan tersebut sudah memiliki data lembur terdaftar pada tanggal tersebut.');
             }
 
             PhlOvertime::create([
@@ -111,9 +111,9 @@ class PhlPayrollController extends Controller
                 'note' => $request->note,
             ]);
 
-            return redirect()->back()->with('success', 'Data lembur berhasil ditambahkan.');
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil ditambahkan.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -128,7 +128,7 @@ class PhlPayrollController extends Controller
                 ->first();
 
             if ($existing) {
-                return redirect()->back()->with('error', 'Karyawan tersebut sudah memiliki data lembur terdaftar pada tanggal tersebut.');
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Karyawan tersebut sudah memiliki data lembur terdaftar pada tanggal tersebut.');
             }
 
             $overtime->update([
@@ -139,9 +139,9 @@ class PhlPayrollController extends Controller
                 'note' => $request->note,
             ]);
 
-            return redirect()->back()->with('success', 'Data lembur berhasil diubah.');
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil diubah.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengubah data lembur: ' . $e->getMessage());
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Terjadi kesalahan saat mengubah data lembur: ' . $e->getMessage());
         }
     }
 
@@ -151,9 +151,9 @@ class PhlPayrollController extends Controller
             $overtime = PhlOvertime::where('phl_payroll_period_id', $id)->findOrFail($overtimeId);
             $overtime->delete();
 
-            return redirect()->back()->with('success', 'Data lembur berhasil dihapus.');
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil dihapus.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus data lembur: ' . $e->getMessage());
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Gagal menghapus data lembur: ' . $e->getMessage());
         }
     }
 

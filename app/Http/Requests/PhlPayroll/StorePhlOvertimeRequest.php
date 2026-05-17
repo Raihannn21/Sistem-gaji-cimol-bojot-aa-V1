@@ -15,6 +15,29 @@ class StorePhlOvertimeRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $mergeData = [];
+
+        if ($this->has('amount')) {
+            $mergeData['amount'] = preg_replace('/\D/', '', $this->amount);
+        }
+
+        if ($this->has('overtime_date') && !empty($this->overtime_date)) {
+            try {
+                $mergeData['overtime_date'] = \Carbon\Carbon::createFromFormat('d-m-Y', $this->overtime_date)->format('Y-m-d');
+            } catch (\Exception $e) {
+            }
+        }
+
+        if (!empty($mergeData)) {
+            $this->merge($mergeData);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
