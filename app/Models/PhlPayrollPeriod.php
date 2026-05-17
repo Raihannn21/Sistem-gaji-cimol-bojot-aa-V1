@@ -33,4 +33,9 @@ class PhlPayrollPeriod extends Model
     {
         return $this->hasMany(PhlOvertime::class, 'phl_payroll_period_id');
     }
+
+    public function riskAllowances()
+    {
+        return $this->hasMany(PhlRiskAllowance::class, 'phl_payroll_period_id');
+    }
 }
