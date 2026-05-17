@@ -28,4 +28,9 @@ class PhlPayrollPeriod extends Model
     {
         return $this->hasMany(PhlAttendance::class);
     }
+
+    public function overtimes()
+    {
+        return $this->hasMany(PhlOvertime::class, 'phl_payroll_period_id');
+    }
 }
