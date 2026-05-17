@@ -139,7 +139,8 @@
                     </svg>
                     Kirim Email
                 </x-ui.button>
-                <x-ui.button variant="primary" onclick="window.print()"
+                <x-ui.button variant="primary"
+                    @click="window.open('/payroll/phl/periods/' + selectedSlip.period_id + '/slips/' + selectedSlip.employee_id + '/pdf', '_blank')"
                     className="w-full sm:w-auto text-[11px] py-1.5 px-3 flex items-center justify-center gap-1 bg-brand-500 text-white hover:bg-brand-600">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"

@@ -380,4 +380,38 @@ class PhlPayrollController extends Controller
         
         return Excel::download(new BcaPayrollExport($period), $fileName);
     }
+
+    public function exportIndividualPdf($id, $employeeId)
+    {
+        $period = PhlPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances'])->findOrFail($id);
+        $employee = Employee::where('employment_type', 'PHL')->findOrFail($employeeId);
+
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)->where('duration', '>', 0)->count();
+        $salaryDaily = $employee->salary_daily ?? 0;
+        $gajiPokok = $daysWorked * $salaryDaily;
+
+        $totalOvertimeHours = $period->overtimes->where('employee_id', $employee->id)->sum('hours');
+        $totalOvertimeAmount = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+
+        $totalRiskAmount = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+        $totalRiskDays = $period->riskAllowances->where('employee_id', $employee->id)->count();
+
+        $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
+
+        $pdf = Pdf::loadView('exports.phl-individual-slip', [
+            'period' => $period,
+            'employee' => $employee,
+            'days_worked' => $daysWorked,
+            'salary_daily' => $salaryDaily,
+            'gaji_pokok' => $gajiPokok,
+            'overtime_hours' => $totalOvertimeHours,
+            'overtime_amount' => $totalOvertimeAmount,
+            'risk_days' => $totalRiskDays,
+            'risk_amount' => $totalRiskAmount,
+            'take_home_pay' => $takeHomePay,
+        ])->setPaper('a5', 'portrait');
+
+        $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
+        return $pdf->stream($fileName);
+    }
 }

@@ -30,6 +30,7 @@ Route::prefix('payroll/phl')->group(function () {
     Route::post('/periods', [App\Http\Controllers\PhlPayrollController::class, 'store'])->name('payroll.phl.periods.store');
     Route::get('/periods/{id}', [App\Http\Controllers\PhlPayrollController::class, 'show'])->name('payroll.phl.periods.show');
     Route::get('/periods/{id}/export/pdf', [App\Http\Controllers\PhlPayrollController::class, 'exportPdf'])->name('payroll.phl.periods.export.pdf');
+    Route::get('/periods/{id}/slips/{employeeId}/pdf', [App\Http\Controllers\PhlPayrollController::class, 'exportIndividualPdf'])->name('payroll.phl.periods.slip.pdf');
     Route::get('/periods/{id}/export/excel', [App\Http\Controllers\PhlPayrollController::class, 'exportExcel'])->name('payroll.phl.periods.export.excel');
     Route::get('/periods/{id}/export/bca', [App\Http\Controllers\PhlPayrollController::class, 'exportBca'])->name('payroll.phl.periods.export.bca');
     Route::post('/periods/{id}/import-attendance', [App\Http\Controllers\PhlPayrollController::class, 'importAttendance'])->name('payroll.phl.periods.import-attendance');

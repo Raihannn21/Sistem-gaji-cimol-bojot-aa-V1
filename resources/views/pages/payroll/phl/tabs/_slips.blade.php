@@ -54,6 +54,8 @@
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <button @click="showSlipModal = true; selectedSlip = { 
+                                                    period_id: {{ $period->id }},
+                                                    employee_id: {{ $employee->id }},
                                                     name: '{{ $employee->name }}', 
                                                     nrp: '{{ $employee->emp_no }}', 
                                                     days_worked: {{ $daysWorked }},
