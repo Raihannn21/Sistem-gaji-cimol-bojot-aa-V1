@@ -6,7 +6,9 @@ use App\Models\Employee;
 use App\Models\PkwtPayrollPeriod;
 use App\Models\PkwtAttendance;
 use App\Models\PkwtOvertime;
+use App\Models\PkwtRiskAllowance;
 use App\Http\Requests\PkwtPayroll\StorePkwtOvertimeRequest;
+use App\Http\Requests\PkwtPayroll\StorePkwtRiskRequest;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PkwtAttendanceImport;
 use Illuminate\Http\Request;
@@ -286,6 +288,86 @@ class PkwtPayrollController extends Controller
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Gagal menghapus data lembur: ' . $e->getMessage());
+        }
+    }
+
+    public function storeRisk(StorePkwtRiskRequest $request, $id)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $existing = PkwtRiskAllowance::where('pkwt_payroll_period_id', $period->id)
+                ->where('employee_id', $request->employee_id)
+                ->where('date', $request->risk_date)
+                ->first();
+
+            if ($existing) {
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Karyawan tersebut sudah memiliki tunjangan risiko pada tanggal tersebut.');
+            }
+
+            PkwtRiskAllowance::create([
+                'pkwt_payroll_period_id' => $period->id,
+                'employee_id' => $request->employee_id,
+                'date' => $request->risk_date,
+                'amount' => $request->amount,
+                'note' => $request->note,
+            ]);
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('success', 'Tunjangan risiko berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function updateRisk(StorePkwtRiskRequest $request, $id, $riskId)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $risk = PkwtRiskAllowance::where('pkwt_payroll_period_id', $id)->findOrFail($riskId);
+            $existing = PkwtRiskAllowance::where('pkwt_payroll_period_id', $id)
+                ->where('employee_id', $request->employee_id)
+                ->where('date', $request->risk_date)
+                ->where('id', '!=', $riskId)
+                ->first();
+
+            if ($existing) {
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Karyawan tersebut sudah memiliki tunjangan risiko pada tanggal tersebut.');
+            }
+
+            $risk->update([
+                'employee_id' => $request->employee_id,
+                'date' => $request->risk_date,
+                'amount' => $request->amount,
+                'note' => $request->note,
+            ]);
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('success', 'Tunjangan risiko berhasil diubah.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Terjadi kesalahan saat mengubah tunjangan risiko: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyRisk($id, $riskId)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $risk = PkwtRiskAllowance::where('pkwt_payroll_period_id', $id)->findOrFail($riskId);
+            $risk->delete();
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('success', 'Tunjangan risiko berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Gagal menghapus tunjangan risiko: ' . $e->getMessage());
         }
     }
 }
