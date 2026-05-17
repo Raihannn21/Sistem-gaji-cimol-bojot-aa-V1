@@ -24,7 +24,6 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
 
     public function bindValue(Cell $cell, $value)
     {
-        // Force Credited Account column (E) to be a string to avoid scientific notation
         if ($cell->getColumn() === 'E' && is_numeric($value)) {
             $cell->setValueExplicit($value, DataType::TYPE_STRING);
             return true;
@@ -36,18 +35,18 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
     public function view(): View
     {
         $period = PkwtPayrollPeriod::with([
-            'attendances.employee', 
-            'overtimes.employee', 
+            'attendances.employee',
+            'overtimes.employee',
             'riskAllowances.employee',
             'otherAllowances.employee'
         ])->findOrFail($this->period->id);
 
         $employees = Employee::where('employment_type', 'PKWT')
-            ->where(function($q) use ($period) {
+            ->where(function ($q) use ($period) {
                 $q->where('status', 'Aktif')
-                  ->orWhereHas('pkwtAttendances', function($sub) use ($period) {
-                      $sub->where('pkwt_payroll_period_id', $period->id);
-                  });
+                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    });
             })
             ->distinct()
             ->get();
@@ -59,8 +58,7 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
         $rows = [];
         foreach ($employees as $employee) {
             $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-            
-            // Rumus Prorata:
+
             $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
             $pokok = $daysWorked * $harian;
 
@@ -96,19 +94,19 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
     public function columnWidths(): array
     {
         return [
-            'A' => 6,   // No
-            'B' => 15,  // Transaction ID
-            'C' => 15,  // Transfer Type
-            'D' => 15,  // Beneficiary ID
-            'E' => 25,  // Credited Account
-            'F' => 30,  // Receiver Name
-            'G' => 20,  // Amount
-            'H' => 12,  // NIP
-            'I' => 35,  // Remark
-            'J' => 25,  // Beneficiary email address
-            'K' => 20,  // Receiver Swift Code
-            'L' => 20,  // Receiver Cust Type
-            'M' => 20,  // Receiver Cust Residence
+            'A' => 6,
+            'B' => 15,
+            'C' => 15,
+            'D' => 15,
+            'E' => 25,
+            'F' => 30,
+            'G' => 20,
+            'H' => 12,
+            'I' => 35,
+            'J' => 25,
+            'K' => 20,
+            'L' => 20,
+            'M' => 20,
         ];
     }
 }

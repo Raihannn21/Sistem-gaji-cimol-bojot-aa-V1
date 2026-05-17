@@ -153,27 +153,27 @@
                             <td class="px-6 py-4 text-sm text-center font-bold text-red-500 dark:text-red-400 tabular-nums">
                                 {{ $daysAbsent }} Hari
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap">
                                 Rp {{ number_format($harian, 0, ',', '.') }}
                             </td>
                             <td
-                                class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums font-semibold">
+                                class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums font-semibold whitespace-nowrap">
                                 Rp {{ number_format($pokok, 0, ',', '.') }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap">
                                 Rp {{ number_format($lembur, 0, ',', '.') }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap">
                                 Rp {{ number_format($risiko, 0, ',', '.') }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap">
                                 Rp {{ number_format($tunjanganLain, 0, ',', '.') }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-red-600 dark:text-red-500 tabular-nums">
+                            <td class="px-6 py-4 text-sm text-right text-red-600 dark:text-red-500 tabular-nums whitespace-nowrap">
                                 Rp {{ number_format($potongan, 0, ',', '.') }}
                             </td>
                             <td
-                                class="px-6 py-4 text-sm text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums">
+                                class="px-6 py-4 text-sm text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums whitespace-nowrap">
                                 Rp {{ number_format($total, 0, ',', '.') }}
                             </td>
                         </tr>

@@ -21,17 +21,17 @@ class PhlPayrollExport implements FromView, WithTitle, WithColumnWidths
     public function view(): View
     {
         $period = PhlPayrollPeriod::with([
-            'attendances.employee', 
-            'overtimes.employee', 
+            'attendances.employee',
+            'overtimes.employee',
             'riskAllowances.employee'
         ])->findOrFail($this->period->id);
 
         $employees = Employee::where('employment_type', 'PHL')
-            ->where(function($q) use ($period) {
+            ->where(function ($q) use ($period) {
                 $q->where('status', 'Aktif')
-                  ->orWhereHas('phlAttendances', function($sub) use ($period) {
-                      $sub->where('phl_payroll_period_id', $period->id);
-                  });
+                    ->orWhereHas('phlAttendances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    });
             })
             ->distinct()
             ->get();
@@ -79,17 +79,17 @@ class PhlPayrollExport implements FromView, WithTitle, WithColumnWidths
     public function columnWidths(): array
     {
         return [
-            'A' => 6,   // No
-            'B' => 15,  // NRP
-            'C' => 30,  // Nama Karyawan
-            'D' => 15,  // Hadir (Hari)
-            'E' => 22,  // Gaji Pokok / Hari
-            'F' => 22,  // Total Gaji Pokok
-            'G' => 15,  // Lembur (Jam)
-            'H' => 22,  // Nominal Lembur
-            'I' => 15,  // Risiko (Hari)
-            'J' => 22,  // Nominal Risiko
-            'K' => 24,  // Take Home Pay (Total)
+            'A' => 6,
+            'B' => 15,
+            'C' => 30,
+            'D' => 15,
+            'E' => 22,
+            'F' => 22,
+            'G' => 15,
+            'H' => 22,
+            'I' => 15,
+            'J' => 22,
+            'K' => 24,
         ];
     }
 }
