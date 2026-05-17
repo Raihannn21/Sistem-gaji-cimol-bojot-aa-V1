@@ -15,6 +15,7 @@
         showAttendanceImportModal: false,
         showEditAttendanceModal: false,
         selectedAttendance: { id: null, employee_name: '', date: '', scan_in: '', scan_out: '' },
+        searchQuery: '',
         selectedEmployee: {},
         selectedEmployeeOvertimes: [],
         selectedEmployeeRisks: [],
