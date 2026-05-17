@@ -36,6 +36,11 @@ Route::prefix('payroll/phl')->group(function () {
     Route::post('/periods/{id}/overtime', [App\Http\Controllers\PhlPayrollController::class, 'storeOvertime'])->name('payroll.phl.periods.store-overtime');
     Route::put('/periods/{id}/overtime/{overtimeId}', [App\Http\Controllers\PhlPayrollController::class, 'updateOvertime'])->name('payroll.phl.periods.update-overtime');
     Route::delete('/periods/{id}/overtime/{overtimeId}', [App\Http\Controllers\PhlPayrollController::class, 'destroyOvertime'])->name('payroll.phl.periods.destroy-overtime');
+
+    // Tunjangan Risiko (Risk Allowance) PHL
+    Route::post('/periods/{id}/risk', [App\Http\Controllers\PhlPayrollController::class, 'storeRisk'])->name('payroll.phl.periods.store-risk');
+    Route::put('/periods/{id}/risk/{riskId}', [App\Http\Controllers\PhlPayrollController::class, 'updateRisk'])->name('payroll.phl.periods.update-risk');
+    Route::delete('/periods/{id}/risk/{riskId}', [App\Http\Controllers\PhlPayrollController::class, 'destroyRisk'])->name('payroll.phl.periods.destroy-risk');
 });
 
 // Payroll PKWT

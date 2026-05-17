@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\PhlPayrollPeriod;
 use App\Models\Employee;
 use App\Models\PhlOvertime;
+use App\Models\PhlRiskAllowance;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PhlAttendanceImport;
 use App\Http\Requests\PhlPayroll\StorePhlOvertimeRequest;
+use App\Http\Requests\PhlPayroll\StorePhlRiskRequest;
 
 class PhlPayrollController extends Controller
 {
@@ -53,7 +55,7 @@ class PhlPayrollController extends Controller
 
     public function show($id)
     {
-        $period = PhlPayrollPeriod::with(['attendances.employee', 'overtimes.employee'])->findOrFail($id);
+        $period = PhlPayrollPeriod::with(['attendances.employee', 'overtimes.employee', 'riskAllowances.employee'])->findOrFail($id);
         $employees = Employee::where('employment_type', 'PHL')
             ->where('status', 'Aktif')
             ->get();
@@ -154,6 +156,73 @@ class PhlPayrollController extends Controller
             return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Gagal menghapus data lembur: ' . $e->getMessage());
+        }
+    }
+
+    public function storeRisk(StorePhlRiskRequest $request, $id)
+    {
+        $period = PhlPayrollPeriod::findOrFail($id);
+
+        try {
+            $existing = PhlRiskAllowance::where('phl_payroll_period_id', $period->id)
+                ->where('employee_id', $request->employee_id)
+                ->where('date', $request->risk_date)
+                ->first();
+
+            if ($existing) {
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Karyawan tersebut sudah memiliki data tunjangan risiko terdaftar pada tanggal tersebut.');
+            }
+
+            PhlRiskAllowance::create([
+                'phl_payroll_period_id' => $period->id,
+                'employee_id' => $request->employee_id,
+                'date' => $request->risk_date,
+                'amount' => $request->amount,
+                'note' => $request->note,
+            ]);
+
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('success', 'Data tunjangan risiko berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function updateRisk(StorePhlRiskRequest $request, $id, $riskId)
+    {
+        try {
+            $risk = PhlRiskAllowance::where('phl_payroll_period_id', $id)->findOrFail($riskId);
+            $existing = PhlRiskAllowance::where('phl_payroll_period_id', $id)
+                ->where('employee_id', $request->employee_id)
+                ->where('date', $request->risk_date)
+                ->where('id', '!=', $riskId)
+                ->first();
+
+            if ($existing) {
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Karyawan tersebut sudah memiliki data tunjangan risiko terdaftar pada tanggal tersebut.');
+            }
+
+            $risk->update([
+                'employee_id' => $request->employee_id,
+                'date' => $request->risk_date,
+                'amount' => $request->amount,
+                'note' => $request->note,
+            ]);
+
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('success', 'Data tunjangan risiko berhasil diubah.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Terjadi kesalahan saat mengubah data tunjangan risiko: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyRisk($id, $riskId)
+    {
+        try {
+            $risk = PhlRiskAllowance::where('phl_payroll_period_id', $id)->findOrFail($riskId);
+            $risk->delete();
+
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('success', 'Data tunjangan risiko berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Gagal menghapus data tunjangan risiko: ' . $e->getMessage());
         }
     }
 

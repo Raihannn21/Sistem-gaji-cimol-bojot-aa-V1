@@ -96,4 +96,9 @@ class Employee extends Model
     {
         return $this->hasMany(PhlOvertime::class);
     }
+
+    public function phlRiskAllowances()
+    {
+        return $this->hasMany(PhlRiskAllowance::class);
+    }
 }
