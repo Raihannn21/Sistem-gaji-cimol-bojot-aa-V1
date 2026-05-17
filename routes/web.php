@@ -58,6 +58,12 @@ Route::prefix('payroll/pkwt')->group(function () {
     Route::post('/periods/{id}/import-attendance', [App\Http\Controllers\PkwtPayrollController::class, 'importAttendance'])->name('payroll.pkwt.periods.import-attendance');
     Route::put('/periods/{id}/attendance/{attendanceId}', [App\Http\Controllers\PkwtPayrollController::class, 'updateAttendance'])->name('payroll.pkwt.periods.update-attendance');
     Route::delete('/periods/{id}/attendance/{attendanceId}', [App\Http\Controllers\PkwtPayrollController::class, 'destroyAttendance'])->name('payroll.pkwt.periods.destroy-attendance');
+    
+    // Overtime (Lembur) PKWT
+    Route::post('/periods/{id}/overtime', [App\Http\Controllers\PkwtPayrollController::class, 'storeOvertime'])->name('payroll.pkwt.periods.store-overtime');
+    Route::put('/periods/{id}/overtime/{overtimeId}', [App\Http\Controllers\PkwtPayrollController::class, 'updateOvertime'])->name('payroll.pkwt.periods.update-overtime');
+    Route::delete('/periods/{id}/overtime/{overtimeId}', [App\Http\Controllers\PkwtPayrollController::class, 'destroyOvertime'])->name('payroll.pkwt.periods.destroy-overtime');
+    
     Route::delete('/periods/{id}', [App\Http\Controllers\PkwtPayrollController::class, 'destroy'])->name('payroll.pkwt.periods.destroy');
 });
 

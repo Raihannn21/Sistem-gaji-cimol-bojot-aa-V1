@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="mx-auto max-w-screen-2xl" x-data="{ 
-        activeTab: 'overview',
+        activeTab: '{{ request()->query('tab', 'overview') }}',
         searchQuery: '',
         showEditAttendanceModal: false,
         selectedAttendance: { id: null, employee_name: '', date: '', scan_in: '', scan_out: '' },
@@ -19,8 +19,14 @@
         showAttendanceImportModal: false,
         showImportModal: false,
         selectedEmployee: {},
+        selectedEmployeeOvertimes: [],
+        selectedEmployeeRisks: [],
+        selectedOvertimeId: null,
+        selectedRiskId: null,
         selectedOvertimeDate: '',
+        selectedOvertimeDateFormatted: '',
         selectedOvertimeHours: 0,
+        selectedOvertimeAmount: 0,
         selectedOvertimeNote: '',
         selectedRiskDate: '',
         selectedRiskAmount: 0,
@@ -28,6 +34,15 @@
         selectedSlip: {},
         processing: false,
         
+        formatCurrency(el) {
+            let val = el.value.replace(/\D/g, '');
+            if (val === '') {
+                el.value = '';
+                return;
+            }
+            el.value = new Intl.NumberFormat('id-ID').format(val);
+        },
+
         generate() {
             this.processing = true;
             setTimeout(() => {
@@ -109,15 +124,15 @@
             </div>
 
             <!-- Modals (PKWT Isolated Components) -->
-            <x-payroll.pkwt.overtime-modal />
-            <x-payroll.pkwt.overtime-detail-modal />
-            <x-payroll.pkwt.overtime-edit-modal />
-            <x-payroll.pkwt.risk-allowance-modal />
-            <x-payroll.pkwt.risk-allowance-detail-modal />
-            <x-payroll.pkwt.risk-allowance-edit-modal />
-            <x-payroll.pkwt.others-modal />
-            <x-payroll.pkwt.generate-confirm-modal />
-            <x-payroll.pkwt.payslip-modal />
+            <x-payroll.pkwt.overtime-modal :period="$period" :employees="$employees" />
+            <x-payroll.pkwt.overtime-detail-modal :period="$period" />
+            <x-payroll.pkwt.overtime-edit-modal :period="$period" />
+            <x-payroll.pkwt.risk-allowance-modal :period="$period" :employees="$employees" />
+            <x-payroll.pkwt.risk-allowance-detail-modal :period="$period" />
+            <x-payroll.pkwt.risk-allowance-edit-modal :period="$period" />
+            <x-payroll.pkwt.others-modal :period="$period" :employees="$employees" />
+            <x-payroll.pkwt.generate-confirm-modal :period="$period" />
+            <x-payroll.pkwt.payslip-modal :period="$period" />
             <x-payroll.pkwt.attendance-import-modal :period="$period" />
             <x-payroll.pkwt.attendance-edit-modal :period="$period" />
             <x-payroll.pkwt.import-modal />

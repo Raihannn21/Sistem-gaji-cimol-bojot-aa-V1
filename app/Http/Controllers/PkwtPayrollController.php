@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\PkwtPayrollPeriod;
 use App\Models\PkwtAttendance;
+use App\Models\PkwtOvertime;
+use App\Http\Requests\PkwtPayroll\StorePkwtOvertimeRequest;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PkwtAttendanceImport;
 use Illuminate\Http\Request;
@@ -202,6 +204,88 @@ class PkwtPayrollController extends Controller
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Gagal menghapus data absensi: ' . $e->getMessage());
+        }
+    }
+
+    public function storeOvertime(StorePkwtOvertimeRequest $request, $id)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $existing = PkwtOvertime::where('pkwt_payroll_period_id', $period->id)
+                ->where('employee_id', $request->employee_id)
+                ->where('date', $request->overtime_date)
+                ->first();
+
+            if ($existing) {
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Karyawan tersebut sudah memiliki data lembur terdaftar pada tanggal tersebut.');
+            }
+
+            PkwtOvertime::create([
+                'pkwt_payroll_period_id' => $period->id,
+                'employee_id' => $request->employee_id,
+                'date' => $request->overtime_date,
+                'hours' => $request->hours,
+                'amount' => $request->amount,
+                'note' => $request->note,
+            ]);
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function updateOvertime(StorePkwtOvertimeRequest $request, $id, $overtimeId)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $overtime = PkwtOvertime::where('pkwt_payroll_period_id', $id)->findOrFail($overtimeId);
+            $existing = PkwtOvertime::where('pkwt_payroll_period_id', $id)
+                ->where('employee_id', $request->employee_id)
+                ->where('date', $request->overtime_date)
+                ->where('id', '!=', $overtimeId)
+                ->first();
+
+            if ($existing) {
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Karyawan tersebut sudah memiliki data lembur terdaftar pada tanggal tersebut.');
+            }
+
+            $overtime->update([
+                'employee_id' => $request->employee_id,
+                'date' => $request->overtime_date,
+                'hours' => $request->hours,
+                'amount' => $request->amount,
+                'note' => $request->note,
+            ]);
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil diubah.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Terjadi kesalahan saat mengubah data lembur: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyOvertime($id, $overtimeId)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $overtime = PkwtOvertime::where('pkwt_payroll_period_id', $id)->findOrFail($overtimeId);
+            $overtime->delete();
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Gagal menghapus data lembur: ' . $e->getMessage());
         }
     }
 }
