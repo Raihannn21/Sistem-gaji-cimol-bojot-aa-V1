@@ -1,4 +1,16 @@
 <!-- Tab: Overview -->
+@php
+    $employeesWithAttendance = $employees->filter(function($emp) use ($period) {
+        return $period->attendances->where('employee_id', $emp->id)->count() > 0;
+    })->count();
+    $readiness = $employees->count() > 0 ? round(($employeesWithAttendance / $employees->count()) * 100) : 0;
+
+    $totalEstimation = $employees->sum(function($employee) use ($period) {
+        $employeeAttendances = $period->attendances->where('employee_id', $employee->id);
+        $daysWorked = $employeeAttendances->where('duration', '>', 0)->count();
+        return $daysWorked * $employee->salary_daily;
+    });
+@endphp
 <div x-show="activeTab === 'overview'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6" x-cloak>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
@@ -16,7 +28,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Kesiapan Data</p>
-                    <h4 class="mt-1 text-xl font-bold text-gray-800 dark:text-white/90">0% <span class="text-xs font-medium text-yellow-500">Pending</span></h4>
+                    <h4 class="mt-1 text-xl font-bold text-gray-800 dark:text-white/90">{{ $readiness }}% <span class="text-xs font-medium {{ $readiness === 100 ? 'text-green-500' : 'text-yellow-500' }}">{{ $readiness === 100 ? 'Ready' : 'Pending' }}</span></h4>
                 </div>
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-500">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -27,7 +39,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Estimasi Gaji</p>
-                    <h4 class="mt-1 text-xl font-bold text-brand-600 dark:text-brand-500">Rp 0</h4>
+                    <h4 class="mt-1 text-xl font-bold text-brand-600 dark:text-brand-500">Rp {{ number_format($totalEstimation, 0, ',', '.') }}</h4>
                 </div>
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -54,15 +66,24 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     @forelse($employees as $employee)
+                    @php
+                        $employeeAttendances = $period->attendances->where('employee_id', $employee->id);
+                        $daysWorked = $employeeAttendances->where('duration', '>', 0)->count();
+                        
+                        $pokok = $daysWorked * $employee->salary_daily;
+                        $lembur = 0; // Stub for now
+                        $risiko = 0; // Stub for now
+                        $total = $pokok + $lembur + $risiko;
+                    @endphp
                     <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
                         <td class="px-6 py-4">
                             <p class="text-sm font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
                             <p class="text-xs text-gray-400">ID. {{ $employee->emp_no }}</p>
                         </td>
-                        <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp 0</td>
-                        <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp 0</td>
-                        <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp 0</td>
-                        <td class="px-6 py-4 text-sm text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums">Rp 0</td>
+                        <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp {{ number_format($pokok, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp {{ number_format($lembur, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums">Rp {{ number_format($risiko, 0, ',', '.') }}</td>
+                        <td class="px-6 py-4 text-sm text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums">Rp {{ number_format($total, 0, ',', '.') }}</td>
                     </tr>
                     @empty
                     <tr>
