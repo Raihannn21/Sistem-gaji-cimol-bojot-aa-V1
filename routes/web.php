@@ -69,6 +69,10 @@ Route::prefix('payroll/pkwt')->group(function () {
     Route::put('/periods/{id}/risk/{riskId}', [App\Http\Controllers\PkwtPayrollController::class, 'updateRisk'])->name('payroll.pkwt.periods.update-risk');
     Route::delete('/periods/{id}/risk/{riskId}', [App\Http\Controllers\PkwtPayrollController::class, 'destroyRisk'])->name('payroll.pkwt.periods.destroy-risk');
     
+    // Other Allowances (Lain-lain) PKWT
+    Route::post('/periods/{id}/other-allowance', [App\Http\Controllers\PkwtPayrollController::class, 'storeOtherAllowance'])->name('payroll.pkwt.periods.store-other-allowance');
+    Route::delete('/periods/{id}/other-allowance/{allowanceId}', [App\Http\Controllers\PkwtPayrollController::class, 'destroyOtherAllowance'])->name('payroll.pkwt.periods.destroy-other-allowance');
+    
     Route::delete('/periods/{id}', [App\Http\Controllers\PkwtPayrollController::class, 'destroy'])->name('payroll.pkwt.periods.destroy');
 });
 

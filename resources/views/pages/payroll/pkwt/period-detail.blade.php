@@ -12,6 +12,7 @@
         showOthersModal: false,
         showDetailModal: false,
         showRiskDetailModal: false,
+        showOthersDetailModal: false,
         showEditOvertimeModal: false,
         showEditRiskModal: false,
         showSlipModal: false,
@@ -21,6 +22,7 @@
         selectedEmployee: {},
         selectedEmployeeOvertimes: [],
         selectedEmployeeRisks: [],
+        selectedEmployeeOthers: [],
         selectedOvertimeId: null,
         selectedRiskId: null,
         selectedOvertimeDate: '',
@@ -131,6 +133,7 @@
             <x-payroll.pkwt.risk-allowance-detail-modal :period="$period" />
             <x-payroll.pkwt.risk-allowance-edit-modal :period="$period" />
             <x-payroll.pkwt.others-modal :period="$period" :employees="$employees" />
+            <x-payroll.pkwt.others-detail-modal :period="$period" />
             <x-payroll.pkwt.generate-confirm-modal :period="$period" />
             <x-payroll.pkwt.payslip-modal :period="$period" />
             <x-payroll.pkwt.attendance-import-modal :period="$period" />

@@ -1,3 +1,4 @@
+@props(['period' => null, 'employees' => []])
 <template x-teleport="body">
     <div x-show="showOthersModal" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -23,35 +24,33 @@
             <h3 class="text-xl font-bold text-gray-800 dark:text-white/90">Input Tunjangan Lain (PKWT)</h3>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Tambahkan tunjangan manual seperti THR, Bonus, atau insentif untuk karyawan kontrak.</p>
 
-            <form class="mt-8 space-y-5 pb-40">
+            <form action="{{ $period ? url('/payroll/pkwt/periods/' . $period->id . '/other-allowance') : '#' }}" method="POST" class="mt-8 space-y-5 pb-40">
+                @csrf
                 <div class="space-y-5">
                     <x-form.select-custom label="Pilih Karyawan" name="employee_id" placeholder="Cari nama atau NRP...">
-                        <x-form.select-item value="1">Ahmad Fauzi (1001)</x-form.select-item>
-                        <x-form.select-item value="2">Budi Santoso (1002)</x-form.select-item>
+                        @foreach($employees as $employee)
+                            <x-form.select-item value="{{ $employee->id }}">{{ $employee->name }} ({{ $employee->emp_no }})</x-form.select-item>
+                        @endforeach
                     </x-form.select-custom>
 
                     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Jenis Tunjangan</label>
-                            <input type="text" placeholder="Contoh: THR, Bonus, dll"
+                            <input type="text" name="allowance_type" placeholder="Contoh: THR, Bonus, dll" required
                                 class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white">
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Nominal (Rp)</label>
-                            <input type="number" placeholder="Contoh: 1500000"
-                                class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2.5 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white">
-                        </div>
+                        <x-form.input name="amount" label="Nominal (Rp)" prefix="Rp" placeholder="0" required @input="formatCurrency($event.target)" />
                     </div>
 
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Keterangan / Catatan</label>
-                        <textarea placeholder="Masukkan detail keterangan tunjangan..." rows="3"
+                        <textarea name="note" placeholder="Masukkan detail keterangan tunjangan..." rows="3"
                             class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white"></textarea>
                     </div>
                 </div>
 
                 <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
-                    <x-ui.button variant="outline" @click="showOthersModal = false">Batal</x-ui.button>
+                    <x-ui.button variant="outline" type="button" @click="showOthersModal = false">Batal</x-ui.button>
                     <x-ui.button variant="primary" type="submit">Simpan Tunjangan</x-ui.button>
                 </div>
             </form>
