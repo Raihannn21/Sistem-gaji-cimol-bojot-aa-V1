@@ -7,8 +7,10 @@ use App\Models\PkwtPayrollPeriod;
 use App\Models\PkwtAttendance;
 use App\Models\PkwtOvertime;
 use App\Models\PkwtRiskAllowance;
+use App\Models\PkwtOtherAllowance;
 use App\Http\Requests\PkwtPayroll\StorePkwtOvertimeRequest;
 use App\Http\Requests\PkwtPayroll\StorePkwtRiskRequest;
+use App\Http\Requests\PkwtPayroll\StorePkwtOtherAllowanceRequest;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PkwtAttendanceImport;
 use Illuminate\Http\Request;
@@ -368,6 +370,45 @@ class PkwtPayrollController extends Controller
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('success', 'Tunjangan risiko berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Gagal menghapus tunjangan risiko: ' . $e->getMessage());
+        }
+    }
+
+    public function storeOtherAllowance(StorePkwtOtherAllowanceRequest $request, $id)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'others'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            PkwtOtherAllowance::create([
+                'pkwt_payroll_period_id' => $period->id,
+                'employee_id' => $request->employee_id,
+                'allowance_type' => $request->allowance_type,
+                'amount' => $request->amount,
+                'note' => $request->note,
+            ]);
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'others'])->with('success', 'Tunjangan berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'others'])->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyOtherAllowance($id, $allowanceId)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'others'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        try {
+            $allowance = PkwtOtherAllowance::where('pkwt_payroll_period_id', $id)->findOrFail($allowanceId);
+            $allowance->delete();
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'others'])->with('success', 'Tunjangan berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'others'])->with('error', 'Gagal menghapus tunjangan: ' . $e->getMessage());
         }
     }
 }

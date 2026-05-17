@@ -39,7 +39,7 @@
     </div>
     @if($name)
         <!-- Error Client-side (Tanpa Refresh) -->
-        <p x-show="errors && errors.{{ $name }}" x-text="errors.{{ $name }}" class="mt-1.5 text-xs text-red-500 font-medium"></p>
+        <p x-show="typeof errors !== 'undefined' && errors.{{ $name }}" x-text="typeof errors !== 'undefined' ? errors.{{ $name }} : ''" class="mt-1.5 text-xs text-red-500 font-medium"></p>
         
         <!-- Error Server-side (Laravel) -->
         @error($name)

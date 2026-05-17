@@ -5,10 +5,12 @@
             <h3 class="text-base font-bold text-gray-800 dark:text-white/90">Tunjangan Lain-lain</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Input manual untuk tunjangan khusus seperti THR, Bonus, atau insentif lainnya.</p>
         </div>
+        @if($period->status !== 'Locked')
         <x-ui.button variant="primary" @click="showOthersModal = true" className="flex items-center gap-2">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Input Tunjangan
         </x-ui.button>
+        @endif
     </div>
     
     <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
@@ -17,43 +19,66 @@
                 <thead>
                     <tr class="bg-gray-50/50 dark:bg-white/[0.01]">
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider">Karyawan</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider">Jenis Tunjangan</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Nominal</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider">Keterangan</th>
-                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Aksi</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider">Tunjangan Diberikan</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-right">Total Nominal</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium text-sm">
-                    @for ($i = 1; $i <= 2; $i++)
-                    <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                        <td class="px-6 py-4">
-                            <p class="font-bold text-gray-800 dark:text-white/90">Budi Santoso</p>
-                            <p class="text-xs text-gray-400">NRP. 200{{ $i }}</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">THR Keagamaan</span>
-                        </td>
-                        <td class="px-6 py-4 text-right font-bold text-gray-800 dark:text-white tabular-nums">Rp 4.500.000</td>
-                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs italic">Pembayaran THR Tahun 2025</td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="p-2 text-gray-400 hover:text-red-500 transition-colors"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                        </td>
-                    </tr>
-                    @endfor
-                    <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                        <td class="px-6 py-4">
-                            <p class="font-bold text-gray-800 dark:text-white/90">Slamet Riyadi</p>
-                            <p class="text-xs text-gray-400">NRP. 2003</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex rounded-lg bg-green-50 px-2.5 py-1 text-xs font-bold text-green-600 dark:bg-green-500/10 dark:text-green-400">Bonus Kinerja</span>
-                        </td>
-                        <td class="px-6 py-4 text-right font-bold text-gray-800 dark:text-white tabular-nums">Rp 1.500.000</td>
-                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400 text-xs italic">Bonus pencapaian target Q2</td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="p-2 text-gray-400 hover:text-red-500 transition-colors"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                        </td>
-                    </tr>
+                    @php
+                        $groupedOthers = $period->otherAllowances->groupBy('employee_id');
+                    @endphp
+                    @forelse($groupedOthers as $employeeId => $allowances)
+                        @php
+                            $employee = $allowances->first()->employee;
+                            if (!$employee) continue;
+                            $allowanceCount = $allowances->count();
+                            $totalAmount = $allowances->sum('amount');
+                            
+                            $typesList = $allowances->pluck('allowance_type')->unique()->implode(', ');
+                            
+                            $detailItems = $allowances->map(function($a) {
+                                return [
+                                    'id' => $a->id,
+                                    'allowance_type' => $a->allowance_type,
+                                    'amount' => (int) $a->amount,
+                                    'note' => $a->note ?? '-',
+                                ];
+                            });
+                        @endphp
+                        <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                            <td class="px-6 py-4">
+                                <p class="font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
+                                <p class="text-xs text-gray-400">NRP. {{ $employee->emp_no }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-1">
+                                    <span class="inline-flex max-w-fit rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
+                                        {{ $allowanceCount }} Tunjangan
+                                    </span>
+                                    <p class="text-xs text-gray-400 font-medium italic">{{ $typesList }}</p>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums">
+                                Rp {{ number_format($totalAmount, 0, ',', '.') }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <button @click="showOthersDetailModal = true; 
+                                                selectedEmployee = { id: {{ $employee->id }}, name: '{{ addslashes($employee->name) }}', nrp: '{{ $employee->emp_no }}' };
+                                                selectedEmployeeOthers = @js($detailItems);" 
+                                        class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-brand-500 transition-colors"
+                                        title="Lihat Detail Tunjangan">
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-400 italic">
+                                Belum ada data tunjangan lain-lain diinput untuk periode ini.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
