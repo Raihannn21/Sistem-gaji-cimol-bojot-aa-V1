@@ -13,10 +13,10 @@
 <div x-data="{ 
     open: false, 
     selected: '{{ $oldValue }}', 
-    label: '{{ $placeholder }}',
+    search: '',
     select(value, text) {
         this.selected = value;
-        this.label = text;
+        this.search = text;
         this.open = false;
         this.$dispatch('change-' + '{{ $name }}', value);
     },
@@ -25,9 +25,49 @@
         if(this.selected) {
             this.$nextTick(() => {
                 const activeItem = this.$el.querySelector(`[data-value='${this.selected}']`);
-                if(activeItem) this.label = activeItem.innerText.trim();
+                if(activeItem) {
+                    this.search = activeItem.innerText.trim();
+                }
             });
         }
+
+        this.$watch('search', query => {
+            const q = query.toLowerCase().trim();
+            
+            // Find current label to avoid filtering when opened with active selection
+            let currentLabel = '';
+            if (this.selected) {
+                const activeItem = this.$el.querySelector(`[data-value='${this.selected}']`);
+                if (activeItem) currentLabel = activeItem.innerText.trim().toLowerCase();
+            }
+
+            const items = this.$el.querySelectorAll('[data-value]');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (q === '' || q === currentLabel) {
+                    item.style.display = 'flex';
+                } else {
+                    if (text.includes(q)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        this.$watch('open', value => {
+            if (!value) {
+                if (this.selected) {
+                    const activeItem = this.$el.querySelector(`[data-value='${this.selected}']`);
+                    if(activeItem) this.search = activeItem.innerText.trim();
+                } else {
+                    this.search = '';
+                }
+                const items = this.$el.querySelectorAll('[data-value]');
+                items.forEach(item => item.style.display = 'flex');
+            }
+        });
     }
 }" 
 class="relative w-full"
@@ -42,21 +82,31 @@ class="relative w-full"
     <div class="relative">
         <input type="hidden" name="{{ $name }}" x-model="selected" {{ $attributes->has('required') ? 'required' : '' }}>
         
-        <button 
-            type="button"
-            @click="open = !open"
-            class="relative flex h-11 w-full items-center justify-between rounded-lg border bg-white px-4 py-2.5 text-sm outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800 {{ $hasError ? 'border-red-500 ring-4 ring-red-500/10' : 'border-gray-300 dark:border-gray-700' }}"
-            :class="selected ? 'text-gray-800 dark:text-white' : 'text-gray-400 dark:text-white/30'"
-        >
-            <span x-text="label"></span>
-            <svg 
-                class="h-5 w-5 transition-transform duration-200 text-gray-500" 
-                :class="{ 'rotate-180': open }"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        <div class="relative flex items-center group">
+            <input 
+                type="text"
+                x-model="search"
+                placeholder="{{ $placeholder }}"
+                @focus="open = true"
+                @click.stop="open = true"
+                @input="open = true"
+                class="h-11 w-full rounded-lg border bg-white dark:bg-gray-900 px-4 pr-11 py-2.5 text-sm text-gray-800 dark:text-white outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:focus:border-brand-800 {{ $hasError ? 'border-red-500 ring-4 ring-red-500/10' : 'border-gray-300 dark:border-gray-700' }} shadow-theme-xs placeholder:text-gray-400 dark:placeholder:text-white/30"
+                autocomplete="off"
             >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-        </button>
+            <button 
+                type="button" 
+                @click.stop="open = !open" 
+                class="absolute right-4 text-gray-500 hover:text-gray-700 dark:hover:text-white"
+            >
+                <svg 
+                    class="h-5 w-5 transition-transform duration-200" 
+                    :class="{ 'rotate-180': open }"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+        </div>
 
         <div 
             x-show="open" 
