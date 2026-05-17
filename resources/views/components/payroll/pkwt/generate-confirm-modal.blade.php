@@ -31,14 +31,14 @@
          x-cloak>
         
         <div @click.away="!processing && (showConfirmModal = false)" 
-             x-show="showConfirmModal"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 scale-100"
-             x-transition:leave-end="opacity-0 scale-95"
-             class="relative w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl dark:bg-gray-900 sm:p-8">
+              x-show="showConfirmModal"
+              x-transition:enter="transition ease-out duration-300"
+              x-transition:enter-start="opacity-0 scale-95"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100 scale-100"
+              x-transition:leave-end="opacity-0 scale-95"
+              class="relative w-[500px] max-w-full rounded-3xl bg-white p-6 shadow-xl dark:bg-gray-900 sm:p-8 max-h-[90vh] overflow-y-auto custom-scrollbar">
             
             <div class="text-center">
                 <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/10">
@@ -47,14 +47,14 @@
                     </svg>
                 </div>
 
-                <h3 class="text-2xl font-bold text-gray-800 dark:text-white/90">Konfirmasi Generate (PKWT)</h3>
+                <h3 class="text-2xl font-bold text-gray-800 dark:text-white/90">Konfirmasi Generate</h3>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                     Anda akan memproses gaji untuk <span class="font-bold text-gray-700 dark:text-gray-200">{{ $employees->count() }} Karyawan</span> periode <span class="font-bold text-gray-700 dark:text-gray-200">{{ $period->title }}</span>.
                 </p>
 
                 <div class="mt-6 rounded-2xl bg-gray-50 p-4 text-left dark:bg-white/[0.03]">
                     <div class="flex justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-                        <span class="text-xs text-gray-500">Estimasi Total Pengeluaran PKWT:</span>
+                        <span class="text-xs text-gray-500">Estimasi Total Pengeluaran:</span>
                         <span class="text-xs font-bold text-gray-800 dark:text-white">Rp {{ number_format($totalEstimation, 0, ',', '.') }}</span>
                     </div>
                     <div class="mt-2 flex items-start gap-2">
@@ -63,22 +63,19 @@
                     </div>
                 </div>
 
-                <div class="mt-8 flex flex-col gap-3">
-                    <x-ui.button variant="primary" className="w-full py-3.5 flex items-center justify-center gap-2" @click="processing = true; document.getElementById('generate-pkwt-form').submit();" x-bind:disabled="processing">
+                <div class="mt-8 flex items-center gap-3">
+                    <x-ui.button variant="outline" className="flex-1 py-3" @click="showConfirmModal = false" x-bind:disabled="processing">
+                        Batalkan
+                    </x-ui.button>
+                    <x-ui.button variant="primary" className="flex-1 py-3 flex items-center justify-center gap-2" @click="processing = true; document.getElementById('generate-pkwt-form').submit();" x-bind:disabled="processing">
                         <template x-if="processing">
                             <svg class="h-5 w-5 animate-spin text-white mr-2" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                         </template>
-                        <span x-text="processing ? 'Sedang Memproses...' : 'Ya, Generate Gaji PKWT'"></span>
+                        <span x-text="processing ? 'Memproses...' : 'Ya, Generate Gaji'"></span>
                     </x-ui.button>
-                    
-                    <button @click="showConfirmModal = false" 
-                            :disabled="processing"
-                            class="w-full py-3 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50">
-                        Batalkan
-                    </button>
                 </div>
             </div>
         </div>
