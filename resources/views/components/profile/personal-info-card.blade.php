@@ -32,11 +32,6 @@
                         <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Phone</p>
                         <p class="text-sm font-medium text-gray-800 dark:text-white/90">+09 363 398 46</p>
                     </div>
-
-                    <div>
-                        <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Bio</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">Team Manager</p>
-                    </div>
                 </div>
             </div>
 
