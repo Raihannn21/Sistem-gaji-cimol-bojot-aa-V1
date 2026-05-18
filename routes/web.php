@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Report\MonthlyReportController;
+use App\Http\Controllers\Report\EmployeeReportController;
+use App\Http\Controllers\Report\SummaryReportController;
 
 // Dashboard
 Route::get('/', function () {
@@ -84,14 +86,14 @@ Route::prefix('payroll/pkwt')->group(function () {
 
 // Laporan
 Route::prefix('reports')->group(function () {
-    Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
-    Route::get('/monthly/export-pdf', [ReportController::class, 'exportMonthlyPdf'])->name('reports.monthly.export-pdf');
-    Route::get('/monthly/export-excel', [ReportController::class, 'exportMonthlyExcel'])->name('reports.monthly.export-excel');
+    Route::get('/monthly', [MonthlyReportController::class, 'index'])->name('reports.monthly');
+    Route::get('/monthly/export-pdf', [MonthlyReportController::class, 'exportPdf'])->name('reports.monthly.export-pdf');
+    Route::get('/monthly/export-excel', [MonthlyReportController::class, 'exportExcel'])->name('reports.monthly.export-excel');
     
-    Route::get('/employee', [ReportController::class, 'employee'])->name('reports.employee');
-    Route::get('/employee/{id}/history', [ReportController::class, 'employeeHistory'])->name('reports.employee.history');
+    Route::get('/employee', [EmployeeReportController::class, 'index'])->name('reports.employee');
+    Route::get('/employee/{id}/history', [EmployeeReportController::class, 'history'])->name('reports.employee.history');
     
-    Route::get('/summary', [ReportController::class, 'summary'])->name('reports.summary');
+    Route::get('/summary', [SummaryReportController::class, 'index'])->name('reports.summary');
 });
 
 // Pengaturan
