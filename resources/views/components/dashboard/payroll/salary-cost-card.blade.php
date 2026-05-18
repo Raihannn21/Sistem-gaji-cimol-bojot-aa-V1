@@ -1,3 +1,5 @@
+@props(['total', 'pkwt', 'phl'])
+
 <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-white/[0.03] flex flex-col">
     <div class="flex items-center gap-4">
         <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-500">
@@ -5,19 +7,18 @@
         </div>
         <div class="flex-1 min-w-0">
             <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Total Salary Cost</p>
-            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90 tabular-nums">Rp 485.500.000</h4>
+            <h4 class="mt-0.5 text-lg font-bold text-gray-800 dark:text-white/90 tabular-nums">Rp {{ number_format($total, 0, ',', '.') }}</h4>
         </div>
     </div>
 
     <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
         <div class="flex justify-between items-center text-[11px]">
             <span class="font-medium text-gray-400 dark:text-gray-400">PKWT (Kontrak)</span>
-            <span class="font-bold text-gray-800 dark:text-white tabular-nums">Rp 320.000.000</span>
+            <span class="font-bold text-gray-800 dark:text-white tabular-nums">Rp {{ number_format($pkwt, 0, ',', '.') }}</span>
         </div>
         <div class="flex justify-between items-center text-[11px]">
             <span class="font-medium text-gray-400 dark:text-gray-400">PHL</span>
-            <span class="font-bold text-gray-800 dark:text-white tabular-nums">Rp 165.500.000</span>
+            <span class="font-bold text-gray-800 dark:text-white tabular-nums">Rp {{ number_format($phl, 0, ',', '.') }}</span>
         </div>
     </div>
 </div>
-

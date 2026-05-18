@@ -23,30 +23,25 @@
             <!-- Row 1: Top Level Metrics (Full Width Grid) -->
             <div class="col-span-12">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
-                    <x-dashboard.payroll.salary-cost-card />
-                    <x-dashboard.payroll.overtime-cost-card />
-                    <x-dashboard.payroll.manpower-card />
-                    <x-dashboard.payroll.work-effort-card />
+                    <x-dashboard.payroll.salary-cost-card :total="$totalSalaryCost" :pkwt="$totalPkwtSalary" :phl="$totalPhlSalary" />
+                    <x-dashboard.payroll.overtime-cost-card :total="$totalOvertimeCost" :pkwt="$pkwtOvertimeCost" :phl="$phlOvertimeCost" />
+                    <x-dashboard.payroll.manpower-card :total="$totalManpower" :pkwt="$pkwtCount" :phl="$phlCount" />
+                    <x-dashboard.payroll.work-effort-card :total="$totalWorkEffort" :reg="$totalRegHours" :ovt="$totalOvtHours" />
                 </div>
             </div>
 
             <!-- New Row: Payroll Analytics -->
             <div class="col-span-12">
-                <x-dashboard.payroll.analytics-chart />
+                <x-dashboard.payroll.analytics-chart :months="$months" :realData="$payrollRealData" :estData="$payrollEstData" />
             </div>
 
             <!-- Row 2: Trends & Charts -->
             <div class="col-span-12 xl:col-span-7">
-                <x-dashboard.payroll.recruitment-chart />
+                <x-dashboard.payroll.recruitment-chart :months="$months" :pkwt="$recruitmentPkwt" :phl="$recruitmentPhl" />
             </div>
 
             <div class="col-span-12 xl:col-span-5">
-                <x-dashboard.payroll.turnover-chart />
-            </div>
-
-            <!-- Row 3: Operational Health (Bottom) -->
-            <div class="col-span-12 xl:col-span-4">
-                <x-dashboard.payroll.lateness-card />
+                <x-dashboard.payroll.turnover-chart :rate="$turnoverRate" :total="$totalResigned" :pkwt="$pkwtResigned" :phl="$phlResigned" :sparkline="$turnoverSparklineData" />
             </div>
         </div>
     </div>

@@ -8,9 +8,7 @@ use App\Http\Controllers\Report\EmployeeReportController;
 use App\Http\Controllers\Report\SummaryReportController;
 
 // Dashboard
-Route::get('/', function () {
-    return view('pages.dashboard.payroll', ['title' => 'Payroll Analytics']);
-})->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 // Manajemen Karyawan
 Route::prefix('employees')->group(function () {

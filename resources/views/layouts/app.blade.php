@@ -137,7 +137,7 @@
     @include('components.common.toast')
     <x-common.delete-confirm />
     <script>
-        window.showToast = function(message, type = 'success') {
+        window.showToast = function (message, type = 'success') {
             const existing = document.getElementById('app-toast');
             if (existing) {
                 existing.remove();
@@ -145,7 +145,7 @@
 
             const bg = type === 'success' ? '#059669' : '#dc2626';
             const shadow = type === 'success' ? 'rgba(5, 150, 105, 0.4)' : 'rgba(220, 38, 38, 0.4)';
-            const iconSvg = type === 'success' 
+            const iconSvg = type === 'success'
                 ? `<svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>`
                 : `<svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>`;
 
@@ -188,7 +188,7 @@
 
             document.body.appendChild(toastDiv);
 
-            window.closeToast = function() {
+            window.closeToast = function () {
                 const t = document.getElementById('app-toast');
                 if (t) {
                     t.className = 'animate-toast-out';
