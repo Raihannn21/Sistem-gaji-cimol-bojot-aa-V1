@@ -30,7 +30,7 @@
                 }
             }" class="relative z-20">
                 <button @click="open = !open"
-                    class="h-10 inline-flex items-center justify-between gap-2.5 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-theme-sm font-semibold text-gray-700 shadow-theme-xs hover:bg-gray-50 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 min-w-[120px]">
+                    class="h-10 inline-flex items-center justify-between gap-2.5 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-theme-sm font-semibold text-gray-700 shadow-theme-xs hover:bg-gray-50 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 min-w-[120px]">
                     <span class="flex items-center gap-2">
                         <svg class="text-gray-500 dark:text-gray-400" width="18" height="18" viewBox="0 0 20 20"
                             fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -110,7 +110,7 @@
 
             <!-- Row 2: Trends & Charts -->
             <div class="col-span-12 xl:col-span-7 min-w-0">
-                <x-dashboard.payroll.recruitment-chart :months="$months" :pkwt="$recruitmentPkwt" :phl="$recruitmentPhl" />
+                <x-dashboard.payroll.recruitment-chart :months="$months" :pkwt="$recruitmentPkwt" :phl="$recruitmentPhl" :selectedYear="$selectedYear" />
             </div>
 
             <div class="col-span-12 xl:col-span-5 min-w-0">
