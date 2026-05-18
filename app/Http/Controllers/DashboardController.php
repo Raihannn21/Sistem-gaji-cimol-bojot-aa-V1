@@ -122,8 +122,23 @@ class DashboardController extends Controller
 
         $totalWorkEffort = $totalRegHours + $totalOvtHours;
 
-        $pkwtResigned = Employee::where('employment_type', 'PKWT')->where('status', '!=', 'Aktif')->count();
-        $phlResigned = Employee::where('employment_type', 'PHL')->where('status', '!=', 'Aktif')->count();
+        // Filter resignations by selected month and year
+        $resignedEmployees = EmployeeStatus::whereYear('effective_date', $yearNum)
+            ->whereMonth('effective_date', $monthNum)
+            ->with('employee')
+            ->get();
+            
+        $pkwtResigned = 0;
+        $phlResigned = 0;
+        foreach ($resignedEmployees as $statusRecord) {
+            if ($statusRecord->employee) {
+                if ($statusRecord->employee->employment_type === 'PKWT') {
+                    $pkwtResigned++;
+                } elseif ($statusRecord->employee->employment_type === 'PHL') {
+                    $phlResigned++;
+                }
+            }
+        }
         $totalResigned = $pkwtResigned + $phlResigned;
 
         $totalAllTime = $totalManpower + $totalResigned;
@@ -223,7 +238,7 @@ class DashboardController extends Controller
         }
 
         // Sparkline for turnover rate
-        $turnoverSparklineData = array_slice($turnoverData, -7);
+        $turnoverSparklineData = $turnoverData;
 
         return view('pages.dashboard.payroll', [
             'title' => 'Dashboard Penggajian',
