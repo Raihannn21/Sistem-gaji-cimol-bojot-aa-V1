@@ -29,10 +29,32 @@
                                class="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pr-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-transparent dark:text-white dark:focus:border-brand-500 transition-colors"
                                style="padding-left: 2.75rem;">
                     </div>
-                    <x-ui.button variant="outline" @click="alert('Seluruh email slip gaji karyawan periode {{ $period->title }} berhasil dijadwalkan untuk dikirim!')" className="flex items-center gap-2 text-xs py-2 px-4 text-brand-600 border-brand-100 hover:bg-brand-50 shrink-0">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        Kirim Semua Email
-                    </x-ui.button>
+                    <form action="{{ route('payroll.phl.periods.slip.send-all', $period->id) }}" 
+                          method="POST" 
+                          class="w-full sm:w-auto" 
+                          @submit="if(confirm('Apakah Anda yakin ingin mengirim email slip gaji ke seluruh karyawan aktif? Ini mungkin membutuhkan waktu beberapa saat.')) { emailSending = true; } else { $event.preventDefault(); }">
+                        @csrf
+                        <x-ui.button variant="outline" 
+                                     type="submit" 
+                                     ::disabled="emailSending"
+                                     className="flex w-full justify-center items-center gap-2 text-xs py-2 px-4 text-brand-600 border-brand-100 hover:bg-brand-50 shrink-0">
+                            <template x-if="!emailSending">
+                                <span class="flex items-center gap-2">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                    Kirim Semua Email
+                                </span>
+                            </template>
+                            <template x-if="emailSending">
+                                <span class="flex items-center gap-2">
+                                    <svg class="animate-spin h-4 w-4 text-brand-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Sedang mengirim...
+                                </span>
+                            </template>
+                        </x-ui.button>
+                    </form>
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -86,11 +108,26 @@
                                                 title="Lihat Slip Gaji">
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                         </button>
-                                        <button @click="alert('Slip gaji karyawan {{ addslashes($employee->name) }} berhasil dikirim ke email {{ $employee->email ?? 'karyawan@bojot.com' }}!')" 
-                                                class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-brand-500 transition-colors" 
-                                                title="Kirim ke Email">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                        </button>
+                                        <form action="{{ route('payroll.phl.periods.slip.send', [$period->id, $employee->id]) }}" 
+                                              method="POST" 
+                                              class="inline"
+                                              @submit="emailSending = true; emailSendingEmployeeId = {{ $employee->id }}">
+                                            @csrf
+                                            <button type="submit" 
+                                                    ::disabled="emailSending"
+                                                    class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-brand-500 transition-colors flex items-center justify-center" 
+                                                    title="Kirim ke Email">
+                                                <template x-if="!(emailSending && emailSendingEmployeeId === {{ $employee->id }})">
+                                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                                </template>
+                                                <template x-if="emailSending && emailSendingEmployeeId === {{ $employee->id }}">
+                                                    <svg class="animate-spin h-5 w-5 text-brand-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                </template>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

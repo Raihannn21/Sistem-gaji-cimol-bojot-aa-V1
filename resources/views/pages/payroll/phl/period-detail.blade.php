@@ -39,6 +39,8 @@
         },
         selectedSlip: {},
         processing: false,
+        emailSending: false,
+        emailSendingEmployeeId: null,
         errors: {{ $errors->any() ? 'true' : '{}' }},
         @if($errors->any())
             init() {

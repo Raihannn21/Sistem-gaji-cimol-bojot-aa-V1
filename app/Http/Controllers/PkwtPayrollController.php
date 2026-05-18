@@ -14,6 +14,10 @@ use App\Http\Requests\PkwtPayroll\StorePkwtOtherAllowanceRequest;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PkwtAttendanceImport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SalarySlipMail;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class PkwtPayrollController extends Controller
 {
@@ -31,8 +35,8 @@ class PkwtPayrollController extends Controller
         $ytdPaid = 0;
 
         foreach ($periods as $period) {
-            $startDate = \Carbon\Carbon::parse($period->start_date);
-            $endDate = \Carbon\Carbon::parse($period->end_date);
+            $startDate = Carbon::parse($period->start_date);
+            $endDate = Carbon::parse($period->end_date);
             $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
 
             $periodEmployeeIds = $period->attendances->pluck('employee_id')->unique();
@@ -43,7 +47,8 @@ class PkwtPayrollController extends Controller
 
             foreach ($groupedAttendances as $empId => $empAttendances) {
                 $employee = $empAttendances->first()->employee;
-                if (!$employee) continue;
+                if (!$employee)
+                    continue;
 
                 $daysWorked = $empAttendances->count();
                 $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
@@ -63,8 +68,8 @@ class PkwtPayrollController extends Controller
             }
 
             $period->total_expenditure = $periodTotal;
-            $period->total_employees = ($employeesInPeriodCount === 0 && $period->status === 'Open') 
-                ? $pkwtEmployeeCount 
+            $period->total_employees = ($employeesInPeriodCount === 0 && $period->status === 'Open')
+                ? $pkwtEmployeeCount
                 : $employeesInPeriodCount;
 
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
@@ -89,9 +94,9 @@ class PkwtPayrollController extends Controller
 
         $dates = explode(' to ', $request->date_range);
 
-        $startDate = \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[0]))->format('Y-m-d');
+        $startDate = Carbon::createFromFormat('d-m-Y', trim($dates[0]))->format('Y-m-d');
         $endDate = isset($dates[1])
-            ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d')
+            ? Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d')
             : $startDate;
 
         $period = PkwtPayrollPeriod::create([
@@ -120,9 +125,20 @@ class PkwtPayrollController extends Controller
             ['date', 'asc']
         ]));
 
-        $employees = Employee::where('employment_type', 'PKWT')
-            ->where('status', 'Aktif')
-            ->get();
+        if ($period->status === 'Locked') {
+            $employeeIds = collect()
+                ->merge($period->attendances->pluck('employee_id'))
+                ->merge($period->overtimes->pluck('employee_id'))
+                ->merge($period->riskAllowances->pluck('employee_id'))
+                ->merge($period->otherAllowances->pluck('employee_id'))
+                ->unique();
+
+            $employees = Employee::whereIn('id', $employeeIds)->get();
+        } else {
+            $employees = Employee::where('employment_type', 'PKWT')
+                ->where('status', 'Aktif')
+                ->get();
+        }
 
         return view('pages.payroll.pkwt.period-detail', [
             'title' => 'Detail Periode Gaji PKWT',
@@ -196,13 +212,13 @@ class PkwtPayrollController extends Controller
         try {
             $attendance = PkwtAttendance::where('pkwt_payroll_period_id', $id)->findOrFail($attendanceId);
 
-            $scanIn = $request->scan_in ? \Carbon\Carbon::parse($request->scan_in)->format('H:i:s') : null;
-            $scanOut = $request->scan_out ? \Carbon\Carbon::parse($request->scan_out)->format('H:i:s') : null;
+            $scanIn = $request->scan_in ? Carbon::parse($request->scan_in)->format('H:i:s') : null;
+            $scanOut = $request->scan_out ? Carbon::parse($request->scan_out)->format('H:i:s') : null;
 
             $duration = 0;
             if ($scanIn && $scanOut) {
-                $start = \Carbon\Carbon::parse($scanIn);
-                $end = \Carbon\Carbon::parse($scanOut);
+                $start = Carbon::parse($scanIn);
+                $end = Carbon::parse($scanOut);
 
                 if ($end->gt($start)) {
                     $diffInMinutes = abs($end->diffInMinutes($start));
@@ -498,8 +514,8 @@ class PkwtPayrollController extends Controller
             ->distinct()
             ->get();
 
-        $startDate = \Carbon\Carbon::parse($period->start_date);
-        $endDate = \Carbon\Carbon::parse($period->end_date);
+        $startDate = Carbon::parse($period->start_date);
+        $endDate = Carbon::parse($period->end_date);
         $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
 
         $rows = [];
@@ -533,7 +549,7 @@ class PkwtPayrollController extends Controller
             }
         }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.pkwt-payroll', [
+        $pdf = Pdf::loadView('exports.pkwt-payroll', [
             'period' => $period,
             'rows' => $rows
         ])->setPaper('a4', 'landscape');
@@ -553,8 +569,8 @@ class PkwtPayrollController extends Controller
 
         $employee = Employee::where('employment_type', 'PKWT')->findOrFail($employeeId);
 
-        $startDate = \Carbon\Carbon::parse($period->start_date);
-        $endDate = \Carbon\Carbon::parse($period->end_date);
+        $startDate = Carbon::parse($period->start_date);
+        $endDate = Carbon::parse($period->end_date);
         $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
 
         $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
@@ -574,7 +590,7 @@ class PkwtPayrollController extends Controller
 
         $total = max(0, $pokok + $lembur + $risiko + $lain_lain - $potongan);
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.pkwt-individual-slip', [
+        $pdf = Pdf::loadView('exports.pkwt-individual-slip', [
             'period' => $period,
             'employee' => $employee,
             'days_worked' => $daysWorked,
@@ -595,6 +611,150 @@ class PkwtPayrollController extends Controller
 
         $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
         return $pdf->stream($fileName);
+    }
+    public function sendIndividualSlip($id, $employeeId)
+    {
+        $period = PkwtPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances', 'otherAllowances'])->findOrFail($id);
+        $employee = Employee::where('employment_type', 'PKWT')->findOrFail($employeeId);
+
+        if (empty($employee->email)) {
+            return back()->with('error', 'Karyawan ' . $employee->name . ' tidak memiliki alamat email yang terdaftar. Harap perbarui data karyawan di menu Karyawan.');
+        }
+
+        $startDate = Carbon::parse($period->start_date);
+        $endDate = Carbon::parse($period->end_date);
+        $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
+
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
+        $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
+
+        $tarif_harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+        $pokok = $daysWorked * $tarif_harian;
+
+        $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+        $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+        $lain_lain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
+
+        $bpjs_health = (int) ($employee->bpjs_health ?? 0);
+        $bpjs_tk = (int) ($employee->bpjs_tk ?? 0);
+        $pph21 = (int) ($employee->pph21 ?? 0);
+        $potongan = $bpjs_health + $bpjs_tk + $pph21;
+
+        $total = max(0, $pokok + $lembur + $risiko + $lain_lain - $potongan);
+
+        $pdf = Pdf::loadView('exports.pkwt-individual-slip', [
+            'period' => $period,
+            'employee' => $employee,
+            'days_worked' => $daysWorked,
+            'days_absent' => $daysAbsent,
+            'total_days' => $totalPeriodDays,
+            'salary_monthly' => $employee->salary_monthly,
+            'tarif_harian' => $tarif_harian,
+            'pokok' => $pokok,
+            'lembur' => $lembur,
+            'risiko' => $risiko,
+            'lain_lain' => $lain_lain,
+            'bpjs_health' => $bpjs_health,
+            'bpjs_tk' => $bpjs_tk,
+            'pph21' => $pph21,
+            'potongan' => $potongan,
+            'total' => $total,
+        ])->setPaper('a5', 'portrait');
+
+        $pdfData = $pdf->output();
+        $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
+
+        try {
+            Mail::to($employee->email)->send(new SalarySlipMail($employee, $period->title, $total, $pdfData, $fileName));
+            return back()->with('success', 'Slip gaji berhasil dikirim ke email ' . $employee->email);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengirim email: ' . $e->getMessage());
+        }
+    }
+
+    public function sendAllSlips($id)
+    {
+        $period = PkwtPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances', 'otherAllowances'])->findOrFail($id);
+
+        $employees = Employee::where('employment_type', 'PKWT')
+            ->where(function ($q) use ($period) {
+                $q->where('status', 'Aktif')
+                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    });
+            })
+            ->distinct()
+            ->get();
+
+        $successCount = 0;
+        $failCount = 0;
+
+        $startDate = Carbon::parse($period->start_date);
+        $endDate = Carbon::parse($period->end_date);
+        $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
+
+        foreach ($employees as $employee) {
+            if (empty($employee->email)) {
+                $failCount++;
+                continue;
+            }
+
+            $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
+            $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
+
+            $tarif_harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+            $pokok = $daysWorked * $tarif_harian;
+
+            $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+            $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+            $lain_lain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
+
+            $bpjs_health = (int) ($employee->bpjs_health ?? 0);
+            $bpjs_tk = (int) ($employee->bpjs_tk ?? 0);
+            $pph21 = (int) ($employee->pph21 ?? 0);
+            $potongan = $bpjs_health + $bpjs_tk + $pph21;
+
+            $total = max(0, $pokok + $lembur + $risiko + $lain_lain - $potongan);
+
+            if ($daysWorked > 0 || $lembur > 0 || $risiko > 0 || $lain_lain > 0) {
+                $pdf = Pdf::loadView('exports.pkwt-individual-slip', [
+                    'period' => $period,
+                    'employee' => $employee,
+                    'days_worked' => $daysWorked,
+                    'days_absent' => $daysAbsent,
+                    'total_days' => $totalPeriodDays,
+                    'salary_monthly' => $employee->salary_monthly,
+                    'tarif_harian' => $tarif_harian,
+                    'pokok' => $pokok,
+                    'lembur' => $lembur,
+                    'risiko' => $risiko,
+                    'lain_lain' => $lain_lain,
+                    'bpjs_health' => $bpjs_health,
+                    'bpjs_tk' => $bpjs_tk,
+                    'pph21' => $pph21,
+                    'potongan' => $potongan,
+                    'total' => $total,
+                ])->setPaper('a5', 'portrait');
+
+                $pdfData = $pdf->output();
+                $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
+
+                try {
+                    Mail::to($employee->email)->send(new SalarySlipMail($employee, $period->title, $total, $pdfData, $fileName));
+                    $successCount++;
+                } catch (\Exception $e) {
+                    $failCount++;
+                }
+            }
+        }
+
+        $msg = "Proses selesai. Berhasil mengirim $successCount email.";
+        if ($failCount > 0) {
+            $msg .= " Namun, $failCount karyawan gagal dikirim (mungkin tidak ada alamat email atau error SMTP).";
+            return back()->with('warning', $msg);
+        }
+
+        return back()->with('success', $msg);
     }
 }
 

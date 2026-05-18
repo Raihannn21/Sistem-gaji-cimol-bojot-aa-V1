@@ -48,6 +48,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/periods/{id}', [PhlPayrollController::class, 'show'])->name('payroll.phl.periods.show');
         Route::get('/periods/{id}/export/pdf', [PhlPayrollController::class, 'exportPdf'])->name('payroll.phl.periods.export.pdf');
         Route::get('/periods/{id}/slips/{employeeId}/pdf', [PhlPayrollController::class, 'exportIndividualPdf'])->name('payroll.phl.periods.slip.pdf');
+        Route::post('/periods/{id}/slips/{employeeId}/send', [PhlPayrollController::class, 'sendIndividualSlip'])->name('payroll.phl.periods.slip.send');
+        Route::post('/periods/{id}/slips/send-all', [PhlPayrollController::class, 'sendAllSlips'])->name('payroll.phl.periods.slip.send-all');
         Route::get('/periods/{id}/export/excel', [PhlPayrollController::class, 'exportExcel'])->name('payroll.phl.periods.export.excel');
         Route::get('/periods/{id}/export/bca', [PhlPayrollController::class, 'exportBca'])->name('payroll.phl.periods.export.bca');
         Route::post('/periods/{id}/import-attendance', [PhlPayrollController::class, 'importAttendance'])->name('payroll.phl.periods.import-attendance');
@@ -74,6 +76,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/periods/{id}', [PkwtPayrollController::class, 'show'])->name('payroll.pkwt.periods.show');
         Route::get('/periods/{id}/export/pdf', [PkwtPayrollController::class, 'exportPdf'])->name('payroll.pkwt.periods.export.pdf');
         Route::get('/periods/{id}/slips/{employeeId}/pdf', [PkwtPayrollController::class, 'exportIndividualPdf'])->name('payroll.pkwt.periods.slip.pdf');
+        Route::post('/periods/{id}/slips/{employeeId}/send', [PkwtPayrollController::class, 'sendIndividualSlip'])->name('payroll.pkwt.periods.slip.send');
+        Route::post('/periods/{id}/slips/send-all', [PkwtPayrollController::class, 'sendAllSlips'])->name('payroll.pkwt.periods.slip.send-all');
         Route::get('/periods/{id}/export/excel', [PkwtPayrollController::class, 'exportExcel'])->name('payroll.pkwt.periods.export.excel');
         Route::get('/periods/{id}/export/bca', [PkwtPayrollController::class, 'exportBca'])->name('payroll.pkwt.periods.export.bca');
         Route::post('/periods/{id}/generate', [PkwtPayrollController::class, 'generate'])->name('payroll.pkwt.periods.generate');

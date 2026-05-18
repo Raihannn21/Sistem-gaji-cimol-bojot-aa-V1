@@ -16,6 +16,9 @@ use App\Http\Requests\PhlPayroll\StorePhlRiskRequest;
 use App\Exports\PhlPayrollExport;
 use App\Exports\BcaPayrollExport;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SalarySlipMail;
+use Carbon\Carbon;
 
 class PhlPayrollController extends Controller
 {
@@ -64,9 +67,9 @@ class PhlPayrollController extends Controller
 
         $dates = explode(' to ', $request->date_range);
 
-        $startDate = \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[0]))->format('Y-m-d');
+        $startDate = Carbon::createFromFormat('d-m-Y', trim($dates[0]))->format('Y-m-d');
         $endDate = isset($dates[1])
-            ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d')
+            ? Carbon::createFromFormat('d-m-Y', trim($dates[1]))->format('Y-m-d')
             : $startDate;
 
         $period = PhlPayrollPeriod::create([
@@ -90,9 +93,19 @@ class PhlPayrollController extends Controller
             ['date', 'asc']
         ]));
 
-        $employees = Employee::where('employment_type', 'PHL')
-            ->where('status', 'Aktif')
-            ->get();
+        if ($period->status === 'Locked') {
+            $employeeIds = collect()
+                ->merge($period->attendances->pluck('employee_id'))
+                ->merge($period->overtimes->pluck('employee_id'))
+                ->merge($period->riskAllowances->pluck('employee_id'))
+                ->unique();
+
+            $employees = Employee::whereIn('id', $employeeIds)->get();
+        } else {
+            $employees = Employee::where('employment_type', 'PHL')
+                ->where('status', 'Aktif')
+                ->get();
+        }
 
         return view('pages.payroll.phl.period-detail', [
             'title' => 'Detail Periode Gaji PHL',
@@ -452,13 +465,13 @@ class PhlPayrollController extends Controller
         try {
             $attendance = PhlAttendance::where('phl_payroll_period_id', $id)->findOrFail($attendanceId);
 
-            $scanIn = $request->scan_in ? \Carbon\Carbon::parse($request->scan_in)->format('H:i:s') : null;
-            $scanOut = $request->scan_out ? \Carbon\Carbon::parse($request->scan_out)->format('H:i:s') : null;
+            $scanIn = $request->scan_in ? Carbon::parse($request->scan_in)->format('H:i:s') : null;
+            $scanOut = $request->scan_out ? Carbon::parse($request->scan_out)->format('H:i:s') : null;
 
             $duration = 0;
             if ($scanIn && $scanOut) {
-                $start = \Carbon\Carbon::parse($scanIn);
-                $end = \Carbon\Carbon::parse($scanOut);
+                $start = Carbon::parse($scanIn);
+                $end = Carbon::parse($scanOut);
 
                 if ($end->gt($start)) {
                     $diffInMinutes = abs($end->diffInMinutes($start));
@@ -496,5 +509,119 @@ class PhlPayrollController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Gagal menghapus data absensi: ' . $e->getMessage());
         }
+    }
+    public function sendIndividualSlip($id, $employeeId)
+    {
+        $period = PhlPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances'])->findOrFail($id);
+        $employee = Employee::where('employment_type', 'PHL')->findOrFail($employeeId);
+
+        if (empty($employee->email)) {
+            return back()->with('error', 'Karyawan ' . $employee->name . ' tidak memiliki alamat email yang terdaftar. Harap perbarui data karyawan di menu Karyawan.');
+        }
+
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)->where('duration', '>', 0)->count();
+        $salaryDaily = $employee->salary_daily ?? 0;
+        $gajiPokok = $daysWorked * $salaryDaily;
+
+        $totalOvertimeHours = $period->overtimes->where('employee_id', $employee->id)->sum('hours');
+        $totalOvertimeAmount = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+
+        $totalRiskAmount = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+        $totalRiskDays = $period->riskAllowances->where('employee_id', $employee->id)->count();
+
+        $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
+
+        $pdf = Pdf::loadView('exports.phl-individual-slip', [
+            'period' => $period,
+            'employee' => $employee,
+            'days_worked' => $daysWorked,
+            'salary_daily' => $salaryDaily,
+            'gaji_pokok' => $gajiPokok,
+            'overtime_hours' => $totalOvertimeHours,
+            'overtime_amount' => $totalOvertimeAmount,
+            'risk_days' => $totalRiskDays,
+            'risk_amount' => $totalRiskAmount,
+            'take_home_pay' => $takeHomePay,
+        ])->setPaper('a5', 'portrait');
+
+        $pdfData = $pdf->output();
+        $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
+
+        try {
+            Mail::to($employee->email)->send(new SalarySlipMail($employee, $period->title, $takeHomePay, $pdfData, $fileName));
+            return back()->with('success', 'Slip gaji berhasil dikirim ke email ' . $employee->email);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengirim email: ' . $e->getMessage());
+        }
+    }
+
+    public function sendAllSlips($id)
+    {
+        $period = PhlPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances'])->findOrFail($id);
+        
+        $employees = Employee::where('employment_type', 'PHL')
+            ->where(function ($q) use ($period) {
+                $q->where('status', 'Aktif')
+                    ->orWhereHas('phlAttendances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    });
+            })
+            ->distinct()
+            ->get();
+
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($employees as $employee) {
+            if (empty($employee->email)) {
+                $failCount++;
+                continue;
+            }
+
+            $daysWorked = $period->attendances->where('employee_id', $employee->id)->where('duration', '>', 0)->count();
+            $salaryDaily = $employee->salary_daily ?? 0;
+            $gajiPokok = $daysWorked * $salaryDaily;
+
+            $totalOvertimeHours = $period->overtimes->where('employee_id', $employee->id)->sum('hours');
+            $totalOvertimeAmount = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+
+            $totalRiskAmount = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+            $totalRiskDays = $period->riskAllowances->where('employee_id', $employee->id)->count();
+
+            $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
+
+            if ($daysWorked > 0 || $totalOvertimeHours > 0 || $totalRiskAmount > 0) {
+                $pdf = Pdf::loadView('exports.phl-individual-slip', [
+                    'period' => $period,
+                    'employee' => $employee,
+                    'days_worked' => $daysWorked,
+                    'salary_daily' => $salaryDaily,
+                    'gaji_pokok' => $gajiPokok,
+                    'overtime_hours' => $totalOvertimeHours,
+                    'overtime_amount' => $totalOvertimeAmount,
+                    'risk_days' => $totalRiskDays,
+                    'risk_amount' => $totalRiskAmount,
+                    'take_home_pay' => $takeHomePay,
+                ])->setPaper('a5', 'portrait');
+
+                $pdfData = $pdf->output();
+                $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
+
+                try {
+                    Mail::to($employee->email)->send(new SalarySlipMail($employee, $period->title, $takeHomePay, $pdfData, $fileName));
+                    $successCount++;
+                } catch (\Exception $e) {
+                    $failCount++;
+                }
+            }
+        }
+
+        $msg = "Proses selesai. Berhasil mengirim $successCount email.";
+        if ($failCount > 0) {
+            $msg .= " Namun, $failCount karyawan gagal dikirim (mungkin tidak ada alamat email atau error SMTP).";
+            return back()->with('warning', $msg);
+        }
+
+        return back()->with('success', $msg);
     }
 }

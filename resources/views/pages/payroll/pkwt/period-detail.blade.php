@@ -35,6 +35,8 @@
         selectedRiskNote: '',
         selectedSlip: {},
         processing: false,
+        emailSending: false,
+        emailSendingEmployeeId: null,
         
         formatCurrency(el) {
             let val = el.value.replace(/\D/g, '');
