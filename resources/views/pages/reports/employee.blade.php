@@ -100,59 +100,45 @@
                     <div class="space-y-6">
                         <!-- Employee Summary Header: Premium Design -->
                         <div
-                            class="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-                            <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-                                <div class="flex flex-col items-center gap-6 sm:flex-row">
-                                    <!-- Premium Avatar -->
-                                    <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-600 to-brand-400 text-3xl font-bold text-white shadow-xl shadow-brand-500/20"
-                                        x-text="selectedEmployee.name.charAt(0)"></div>
+                            class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="flex items-center gap-5">
+                                <!-- Premium Avatar -->
+                                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-500 text-2xl font-bold text-white shadow-lg shadow-brand-500/10"
+                                    x-text="selectedEmployee.name.charAt(0)"></div>
 
-                                    <div class="text-center sm:text-left">
-                                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight"
-                                            x-text="selectedEmployee.name"></h2>
-                                        <div class="mt-4 flex flex-wrap justify-center sm:justify-start gap-3">
-                                            <!-- Location Badge -->
-                                            <div
-                                                class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-[11px] font-bold text-brand-600 dark:bg-brand-500/10">
-                                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                </svg>
-                                                <span x-text="selectedEmployee.location || 'Bandung'"></span>
-                                            </div>
-                                            <!-- Status Badge -->
-                                            <div
-                                                class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-[11px] font-bold text-brand-600 dark:bg-brand-500/10">
-                                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                <span x-text="selectedEmployee.employment_type"></span>
-                                            </div>
-                                            <!-- NRP Badge -->
-                                            <div
-                                                class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-3 py-1.5 text-[11px] font-bold text-gray-500 dark:bg-white/5 dark:text-gray-400">
-                                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                                </svg>
-                                                <span x-text="selectedEmployee.emp_no"></span>
-                                            </div>
+                                <div class="min-w-0 flex-1">
+                                    <h2 class="text-xl font-bold text-gray-900 dark:text-white tracking-tight truncate"
+                                        x-text="selectedEmployee.name"></h2>
+                                    <div class="mt-2.5 flex flex-wrap gap-2">
+                                        <!-- Location Badge -->
+                                        <div
+                                            class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-600 dark:bg-brand-500/10">
+                                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <span x-text="selectedEmployee.location || 'Padang, Indonesia'"></span>
+                                        </div>
+                                        <!-- Status Badge -->
+                                        <div
+                                            class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-600 dark:bg-brand-500/10">
+                                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span x-text="selectedEmployee.employment_type"></span>
+                                        </div>
+                                        <!-- NRP Badge -->
+                                        <div
+                                            class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[10px] font-bold text-gray-500 dark:bg-white/5 dark:text-gray-400">
+                                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                            </svg>
+                                            <span x-text="selectedEmployee.emp_no"></span>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="flex justify-center shrink-0">
-                                    <x-ui.button variant="outline"
-                                        onclick="window.print()"
-                                        className="flex items-center gap-2 text-xs py-2.5 px-5 bg-white hover:bg-gray-50 transition-all border-gray-200">
-                                        <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                        </svg>
-                                        <span class="font-bold text-gray-700">Cetak Biodata</span>
-                                    </x-ui.button>
                                 </div>
                             </div>
                         </div>
