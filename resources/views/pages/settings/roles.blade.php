@@ -15,7 +15,7 @@
         [
             'name' => 'Musharof Chowdhury',
             'email' => 'randomuser@pimjo.com',
-            'role' => 'Administrator',
+            'phone' => '+62 812-3456-7890',
             'status' => 'Aktif',
             'last_login' => '10 menit yang lalu',
             'avatar' => '/images/user/owner.png'
@@ -23,7 +23,7 @@
         [
             'name' => 'Raihan',
             'email' => 'raihan@cimolbojot.com',
-            'role' => 'Payroll Manager',
+            'phone' => '+62 899-8877-6655',
             'status' => 'Aktif',
             'last_login' => '2 jam yang lalu',
             'avatar' => null
@@ -31,7 +31,7 @@
         [
             'name' => 'Siti Aminah',
             'email' => 'siti@cimolbojot.com',
-            'role' => 'HR Staff',
+            'phone' => '+62 857-1122-3344',
             'status' => 'Non-Aktif',
             'last_login' => '1 hari yang lalu',
             'avatar' => null
@@ -49,11 +49,6 @@
                     ? 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500' 
                     : 'bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500';
             },
-            getRoleClass(role) {
-                if (role === 'Administrator') return 'bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-400';
-                if (role === 'Payroll Manager') return 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400';
-                return 'bg-gray-50 text-gray-700 dark:bg-gray-500/15 dark:text-gray-400';
-            },
             editUser(user) {
                 this.selectedUser = { ...user };
                 this.showEditModal = true;
@@ -63,8 +58,8 @@
             <!-- Header Actions -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">User & Role Management</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Kelola akses pengguna, peran, dan izin sistem.</p>
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">User Management</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Kelola akses pengguna, data profil, dan status keaktifan user sistem.</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
@@ -91,7 +86,7 @@
                         <thead>
                             <tr class="border-b border-gray-100 dark:border-gray-800">
                                 <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">User</th>
-                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Role</th>
+                                <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Nomor HP</th>
                                 <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Status</th>
                                 <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Login Terakhir</th>
                                 <th class="px-5 py-4 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400 text-center">Aksi</th>
@@ -106,10 +101,8 @@
                                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user['email'] }}</p>
                                     </div>
                                 </td>
-                                <td class="px-5 py-4 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="getRoleClass('{{ $user['role'] }}')">
-                                        {{ $user['role'] }}
-                                    </span>
+                                <td class="px-5 py-4 text-center text-sm font-medium text-gray-800 dark:text-white">
+                                    {{ $user['phone'] }}
                                 </td>
                                 <td class="px-5 py-4 text-center">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="getStatusClass('{{ $user['status'] }}')">

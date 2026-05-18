@@ -50,7 +50,7 @@
                 </p>
             </div>
             <form class="flex flex-col">
-                <div class="custom-scrollbar overflow-y-auto p-2">
+                <div class="custom-scrollbar max-h-[400px] overflow-y-auto p-2">
                     <div>
                         <h5 class="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                             Personal Information
@@ -88,8 +88,39 @@
                                 <input type="text" value="+09 363 398 46"
                                     class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             </div>
+                        </div>
+                    </div>
 
+                    <!-- Change Password Section -->
+                    <div class="mt-7 pt-7 border-t border-gray-100 dark:border-gray-800">
+                        <h5 class="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                            Change Password
+                        </h5>
 
+                        <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                            <div class="col-span-2">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Current Password
+                                </label>
+                                <input type="password" placeholder="••••••••"
+                                    class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
+                            </div>
+
+                            <div class="col-span-2 lg:col-span-1">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    New Password
+                                </label>
+                                <input type="password" placeholder="••••••••"
+                                    class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
+                            </div>
+
+                            <div class="col-span-2 lg:col-span-1">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Confirm New Password
+                                </label>
+                                <input type="password" placeholder="••••••••"
+                                    class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
+                            </div>
                         </div>
                     </div>
                 </div>
