@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\EmployeeStatus;
 use App\Models\PkwtPayrollPeriod;
 use App\Models\PhlPayrollPeriod;
 use App\Models\PkwtAttendance;
@@ -17,7 +18,7 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index(\Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $latestPeriod = PkwtPayrollPeriod::orderBy('start_date', 'desc')->first();
         $defaultYear = $latestPeriod ? Carbon::parse($latestPeriod->start_date)->format('Y') : date('Y');
@@ -25,20 +26,20 @@ class DashboardController extends Controller
 
         $selectedYear = $request->query('year', $defaultYear);
         $selectedMonth = $request->query('month', $defaultMonth);
-        
+
         $monthNum = sprintf("%02d", $selectedMonth);
         $yearNum = $selectedYear;
 
         $totalManpower = Employee::where('status', 'Aktif')->count();
         $pkwtCount = Employee::where('employment_type', 'PKWT')->where('status', 'Aktif')->count();
         $phlCount = Employee::where('employment_type', 'PHL')->where('status', 'Aktif')->count();
-        
+
         // Filter by the selected month and year
         $pkwtPeriods = PkwtPayrollPeriod::whereYear('start_date', $yearNum)
             ->whereMonth('start_date', $monthNum)
             ->with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
             ->get();
-            
+
         $totalPkwtSalary = 0;
         foreach ($pkwtPeriods as $period) {
             $startDate = Carbon::parse($period->start_date);
@@ -73,7 +74,7 @@ class DashboardController extends Controller
         $phlPeriods = PhlPayrollPeriod::whereYear('start_date', $yearNum)
             ->whereMonth('start_date', $monthNum)
             ->with(['attendances.employee', 'overtimes', 'riskAllowances'])->get();
-            
+
         $totalPhlSalary = 0;
         foreach ($phlPeriods as $period) {
             $totalPokok = 0;
@@ -157,7 +158,7 @@ class DashboardController extends Controller
             $recruitmentPhl[] = $recPhl;
 
             // Turnover count in this month (Count actual resignation/SPHK transactions from EmployeeStatus)
-            $resignedCount = \App\Models\EmployeeStatus::whereYear('effective_date', $yearNum)
+            $resignedCount = EmployeeStatus::whereYear('effective_date', $yearNum)
                 ->whereMonth('effective_date', $monthNum)
                 ->count();
             $turnoverData[] = $resignedCount;
