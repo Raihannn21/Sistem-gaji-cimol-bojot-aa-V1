@@ -19,11 +19,26 @@ class DashboardController extends Controller
 {
     public function index(\Illuminate\Http\Request $request)
     {
-        $selectedYear = $request->query('year', date('Y'));
+        $latestPeriod = PkwtPayrollPeriod::orderBy('start_date', 'desc')->first();
+        $defaultYear = $latestPeriod ? Carbon::parse($latestPeriod->start_date)->format('Y') : date('Y');
+        $defaultMonth = $latestPeriod ? Carbon::parse($latestPeriod->start_date)->format('m') : date('m');
+
+        $selectedYear = $request->query('year', $defaultYear);
+        $selectedMonth = $request->query('month', $defaultMonth);
+        
+        $monthNum = sprintf("%02d", $selectedMonth);
+        $yearNum = $selectedYear;
+
         $totalManpower = Employee::where('status', 'Aktif')->count();
         $pkwtCount = Employee::where('employment_type', 'PKWT')->where('status', 'Aktif')->count();
         $phlCount = Employee::where('employment_type', 'PHL')->where('status', 'Aktif')->count();
-        $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])->get();
+        
+        // Filter by the selected month and year
+        $pkwtPeriods = PkwtPayrollPeriod::whereYear('start_date', $yearNum)
+            ->whereMonth('start_date', $monthNum)
+            ->with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
+            ->get();
+            
         $totalPkwtSalary = 0;
         foreach ($pkwtPeriods as $period) {
             $startDate = Carbon::parse($period->start_date);
@@ -54,8 +69,11 @@ class DashboardController extends Controller
             }
         }
 
-        // PHL total salary expenditure
-        $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])->get();
+        // PHL total salary expenditure in selected period
+        $phlPeriods = PhlPayrollPeriod::whereYear('start_date', $yearNum)
+            ->whereMonth('start_date', $monthNum)
+            ->with(['attendances.employee', 'overtimes', 'riskAllowances'])->get();
+            
         $totalPhlSalary = 0;
         foreach ($phlPeriods as $period) {
             $totalPokok = 0;
@@ -71,15 +89,34 @@ class DashboardController extends Controller
 
         $totalSalaryCost = $totalPkwtSalary + $totalPhlSalary;
 
-        $pkwtOvertimeCost = PkwtOvertime::sum('amount');
-        $phlOvertimeCost = PhlOvertime::sum('amount');
+        $pkwtOvertimeCost = 0;
+        foreach ($pkwtPeriods as $period) {
+            $pkwtOvertimeCost += $period->overtimes->sum('amount');
+        }
+        $phlOvertimeCost = 0;
+        foreach ($phlPeriods as $period) {
+            $phlOvertimeCost += $period->overtimes->sum('amount');
+        }
         $totalOvertimeCost = $pkwtOvertimeCost + $phlOvertimeCost;
-        $pkwtRegHours = PkwtAttendance::sum('duration');
-        $phlRegHours = PhlAttendance::sum('duration');
+
+        $pkwtRegHours = 0;
+        foreach ($pkwtPeriods as $period) {
+            $pkwtRegHours += $period->attendances->sum('duration');
+        }
+        $phlRegHours = 0;
+        foreach ($phlPeriods as $period) {
+            $phlRegHours += $period->attendances->sum('duration');
+        }
         $totalRegHours = $pkwtRegHours + $phlRegHours;
 
-        $pkwtOvtHours = PkwtOvertime::sum('hours');
-        $phlOvtHours = PhlOvertime::sum('hours');
+        $pkwtOvtHours = 0;
+        foreach ($pkwtPeriods as $period) {
+            $pkwtOvtHours += $period->overtimes->sum('hours');
+        }
+        $phlOvtHours = 0;
+        foreach ($phlPeriods as $period) {
+            $phlOvtHours += $period->overtimes->sum('hours');
+        }
         $totalOvtHours = $pkwtOvtHours + $phlOvtHours;
 
         $totalWorkEffort = $totalRegHours + $totalOvtHours;
@@ -190,6 +227,7 @@ class DashboardController extends Controller
         return view('pages.dashboard.payroll', [
             'title' => 'Dashboard Penggajian',
             'selectedYear' => $selectedYear,
+            'selectedMonth' => $selectedMonth,
 
             // Manpower props
             'totalManpower' => $totalManpower,
