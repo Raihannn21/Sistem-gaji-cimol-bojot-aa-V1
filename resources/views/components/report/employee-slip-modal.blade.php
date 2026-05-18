@@ -54,21 +54,21 @@
                         <div class="space-y-3 pl-6 border-l-2 border-brand-100 dark:border-brand-500/20">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Gaji Pokok</span>
-                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums">Rp 4.500.000</span>
+                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums" x-text="'Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(selectedSlip.detail.gaji_pokok) : '0')"></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Lembur</span>
-                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums">Rp 450.000</span>
+                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums" x-text="'Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(selectedSlip.detail.lembur) : '0')"></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Tunjangan</span>
-                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums">Rp 250.000</span>
+                                <span class="text-sm font-bold text-gray-800 dark:text-white tabular-nums" x-text="'Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(selectedSlip.detail.tunjangan) : '0')"></span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Section: Deductions -->
-                    <div class="space-y-4">
+                    <div class="space-y-4" x-show="selectedSlip.type === 'PKWT'">
                         <div class="flex items-center gap-2 text-xs font-bold text-red-500 uppercase tracking-widest">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
                             Potongan
@@ -76,11 +76,15 @@
                         <div class="space-y-3 pl-6 border-l-2 border-red-100 dark:border-red-500/20">
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">BPJS Kesehatan</span>
-                                <span class="text-sm font-bold text-red-500 tabular-nums">(Rp 120.000)</span>
+                                <span class="text-sm font-bold text-red-500 tabular-nums" x-text="'(Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(selectedSlip.detail.bpjs_kesehatan) : '0') + ')'"></span>
                             </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">BPJS Ketenagakerjaan</span>
-                                <span class="text-sm font-bold text-red-500 tabular-nums">(Rp 135.000)</span>
+                                <span class="text-sm font-bold text-red-500 tabular-nums" x-text="'(Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(selectedSlip.detail.bpjs_tk) : '0') + ')'"></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Pajak PPh21</span>
+                                <span class="text-sm font-bold text-red-500 tabular-nums" x-text="'(Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(selectedSlip.detail.pajak) : '0') + ')'"></span>
                             </div>
                         </div>
                     </div>
