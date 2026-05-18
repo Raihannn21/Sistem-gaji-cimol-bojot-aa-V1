@@ -23,6 +23,8 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt([...$credentials, 'status' => 'Aktif'])) {
+            $user = Auth::user();
+            $user->updateQuietly(['last_seen_at' => now()]);
             $request->session()->regenerate();
             return redirect()->intended('/');
         }

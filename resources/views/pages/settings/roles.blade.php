@@ -124,8 +124,35 @@
                                         {{ $user->status }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $user->updated_at->diffForHumans() }}
+                                @php
+                                    $isOnline = false;
+                                    try {
+                                        $isOnline = \DB::table('sessions')
+                                            ->where('user_id', $user->id)
+                                            ->where('last_activity', '>=', time() - 300)
+                                            ->exists();
+                                    } catch (\Exception $e) {
+                                        $isOnline = auth()->id() === $user->id;
+                                    }
+                                @endphp
+                                <td class="px-5 py-4 text-center">
+                                    <div class="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{ $isOnline ? 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-400' : 'bg-gray-100 text-gray-500 dark:bg-white/5 dark:text-gray-400' }}">
+                                        <!-- Glowing CSS Ping Indicator -->
+                                        <span class="relative flex h-2 w-2">
+                                            @if($isOnline)
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                            @else
+                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-gray-400 dark:bg-gray-600"></span>
+                                            @endif
+                                        </span>
+                                        <span>{{ $isOnline ? 'Sedang Aktif' : 'Offline' }}</span>
+                                    </div>
+                                    @if(!$isOnline)
+                                    <div class="mt-1 text-[10px] text-gray-400 dark:text-gray-500 font-medium">
+                                        {{ $user->last_seen_at ? $user->last_seen_at->diffForHumans() : 'Belum pernah login' }}
+                                    </div>
+                                    @endif
                                 </td>
                                 <td class="px-5 py-4">
                                     <div class="flex items-center justify-center gap-1.5">

@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectTo(
             guests: '/signin'
         );
+        $middleware->web(append: [
+            \App\Http\Middleware\UpdateLastSeen::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
