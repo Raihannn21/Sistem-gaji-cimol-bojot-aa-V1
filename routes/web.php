@@ -12,6 +12,7 @@ use App\Http\Controllers\PkwtPayrollController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Settings\SmtpSettingsController;
 
 // Guest Authentication Routes
 Route::middleware(['guest'])->group(function () {
@@ -116,9 +117,10 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/roles/{user}', [UserController::class, 'update'])->name('settings.roles.update');
         Route::delete('/roles/{user}', [UserController::class, 'destroy'])->name('settings.roles.destroy');
         
-        Route::get('/smtp', function () {
-            return view('pages.settings.smtp', ['title' => 'Konfigurasi SMTP']);
-        })->name('settings.smtp');
+        // SMTP Settings
+        Route::get('/smtp', [SmtpSettingsController::class, 'index'])->name('settings.smtp');
+        Route::post('/smtp', [SmtpSettingsController::class, 'update'])->name('settings.smtp.update');
+        Route::post('/smtp/test', [SmtpSettingsController::class, 'testConnection'])->name('settings.smtp.test');
     });
 
     // User Profile

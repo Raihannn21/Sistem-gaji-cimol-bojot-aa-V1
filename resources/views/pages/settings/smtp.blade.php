@@ -14,6 +14,19 @@
             </div>
         </div>
 
+        <!-- Notifications -->
+        @if(session('success'))
+            <div class="mb-6 rounded-xl bg-green-50 p-4 text-sm font-semibold text-green-700 dark:bg-green-500/15 dark:text-green-500 shadow-sm border border-green-100 dark:border-green-500/25">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 rounded-xl bg-red-50 p-4 text-sm font-semibold text-red-700 dark:bg-red-500/15 dark:text-red-500 shadow-sm border border-red-100 dark:border-red-500/25">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- Form Card -->
         <div class="rounded-3xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
             <!-- Card Header -->
@@ -23,25 +36,26 @@
             </div>
 
             <!-- Card Body -->
-            <form action="#" method="POST">
+            <form action="{{ route('settings.smtp.update') }}" method="POST" id="smtpForm">
+                @csrf
                 <div class="p-6 sm:p-8 space-y-6">
                     <!-- Grid 1: Basic Config -->
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <x-form.input label="Mail Mailer" name="mail_mailer" value="smtp" placeholder="smtp" required />
-                        <x-form.input label="Mail Host" name="mail_host" value="smtp.gmail.com" placeholder="smtp.gmail.com" required />
+                        <x-form.input label="Mail Mailer" name="mail_mailer" value="{{ old('mail_mailer', $config->mail_mailer) }}" placeholder="smtp" required />
+                        <x-form.input label="Mail Host" name="mail_host" value="{{ old('mail_host', $config->mail_host) }}" placeholder="smtp.gmail.com" required />
                     </div>
 
                     <!-- Grid 2: Port & Encryption -->
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <x-form.input label="Mail Port" type="number" name="mail_port" value="587" placeholder="587" required />
+                        <x-form.input label="Mail Port" type="number" name="mail_port" value="{{ old('mail_port', $config->mail_port) }}" placeholder="587" required />
                         
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Mail Encryption</label>
                             <div class="relative">
                                 <select name="mail_encryption" class="w-full h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-white appearance-none transition-colors">
-                                    <option value="tls" selected>TLS</option>
-                                    <option value="ssl">SSL</option>
-                                    <option value="">None</option>
+                                    <option value="tls" {{ old('mail_encryption', $config->mail_encryption) == 'tls' ? 'selected' : '' }}>TLS</option>
+                                    <option value="ssl" {{ old('mail_encryption', $config->mail_encryption) == 'ssl' ? 'selected' : '' }}>SSL</option>
+                                    <option value="" {{ empty(old('mail_encryption', $config->mail_encryption)) || old('mail_encryption', $config->mail_encryption) == 'null' ? 'selected' : '' }}>None</option>
                                 </select>
                                 <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,8 +72,8 @@
                     <div>
                         <h4 class="text-base font-bold text-gray-800 dark:text-white/90 mb-4">Kredensial Autentikasi</h4>
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <x-form.input label="Mail Username" name="mail_username" placeholder="email@perusahaan.com" required />
-                            <x-form.input label="Mail Password" type="password" name="mail_password" placeholder="••••••••••••" required />
+                            <x-form.input label="Mail Username" name="mail_username" value="{{ old('mail_username', $config->mail_username) }}" placeholder="email@perusahaan.com" required />
+                            <x-form.input label="Mail Password" type="password" name="mail_password" value="{{ old('mail_password', $config->mail_password) }}" placeholder="••••••••••••" required />
                         </div>
                     </div>
 
@@ -69,18 +83,89 @@
                     <div>
                         <h4 class="text-base font-bold text-gray-800 dark:text-white/90 mb-4">Informasi Pengirim</h4>
                         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <x-form.input label="Mail From Address" type="email" name="mail_from_address" placeholder="no-reply@cimolbojot.com" required />
-                            <x-form.input label="Mail From Name" name="mail_from_name" placeholder="Payroll Cimol Bojot AA" required />
+                            <x-form.input label="Mail From Address" type="email" name="mail_from_address" value="{{ old('mail_from_address', $config->mail_from_address) }}" placeholder="no-reply@cimolbojot.com" required />
+                            <x-form.input label="Mail From Name" name="mail_from_name" value="{{ old('mail_from_name', $config->mail_from_name) }}" placeholder="Payroll Cimol Bojot AA" required />
                         </div>
                     </div>
                 </div>
 
                 <!-- Footer Actions -->
-                <div class="border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-white/[0.02] px-6 py-5 sm:px-8 flex flex-col sm:flex-row items-center justify-end gap-3">
-                    <x-ui.button variant="outline" type="button" class="w-full sm:w-auto">Tes Koneksi</x-ui.button>
+                <div class="border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-white/[0.02] px-6 py-5 sm:px-8 flex flex-col sm:flex-row items-center justify-end gap-3" x-data>
+                    <x-ui.button variant="outline" type="button" class="w-full sm:w-auto" @click="$dispatch('open-test-modal')">Tes Koneksi</x-ui.button>
                     <x-ui.button variant="primary" type="submit" class="w-full sm:w-auto">Simpan Konfigurasi</x-ui.button>
                 </div>
             </form>
+        </div>
+
+        <!-- Test Connection Modal -->
+        <div x-data="{ open: false }" 
+             @open-test-modal.window="open = true" 
+             @keydown.escape.window="open = false"
+             x-show="open" 
+             class="relative z-50" 
+             style="display: none;">
+             
+            <!-- Backdrop -->
+            <div x-show="open" x-transition.opacity class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm"></div>
+
+            <!-- Modal Panel -->
+            <div class="fixed inset-0 overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center">
+                    <div x-show="open" 
+                         x-transition:enter="ease-out duration-300" 
+                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                         x-transition:leave="ease-in duration-200" 
+                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                         @click.away="open = false" 
+                         class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-gray-900 border border-gray-100 dark:border-gray-800">
+                        
+                        <div class="mb-4">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Kirim Email Tes</h3>
+                            <p class="text-sm text-gray-500 mt-1 dark:text-gray-400">Pengujian ini akan menggunakan kredensial yang sedang ada di form Anda saat ini.</p>
+                        </div>
+                        
+                        <!-- Form submits to test route, but copies all values from main smtpForm -->
+                        <form action="{{ route('settings.smtp.test') }}" method="POST" id="testEmailForm">
+                            @csrf
+                            <!-- Hidden inputs to carry main form data -->
+                            <input type="hidden" name="mail_mailer" value="" id="t_mailer">
+                            <input type="hidden" name="mail_host" value="" id="t_host">
+                            <input type="hidden" name="mail_port" value="" id="t_port">
+                            <input type="hidden" name="mail_username" value="" id="t_user">
+                            <input type="hidden" name="mail_password" value="" id="t_pass">
+                            <input type="hidden" name="mail_encryption" value="" id="t_enc">
+                            <input type="hidden" name="mail_from_address" value="" id="t_from_addr">
+                            <input type="hidden" name="mail_from_name" value="" id="t_from_name">
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Tujuan Tes</label>
+                                    <input type="email" name="test_email" required placeholder="email.anda@gmail.com" 
+                                           class="w-full h-11 rounded-xl border border-gray-200 bg-white px-4 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-white transition-colors" />
+                                </div>
+                                <div class="mt-6 flex justify-end gap-3">
+                                    <x-ui.button variant="outline" type="button" @click="open = false">Batal</x-ui.button>
+                                    <x-ui.button variant="primary" type="submit" 
+                                        onclick="
+                                            document.getElementById('t_mailer').value = document.querySelector('[name=mail_mailer]').value;
+                                            document.getElementById('t_host').value = document.querySelector('[name=mail_host]').value;
+                                            document.getElementById('t_port').value = document.querySelector('[name=mail_port]').value;
+                                            document.getElementById('t_user').value = document.querySelector('[name=mail_username]').value;
+                                            document.getElementById('t_pass').value = document.querySelector('[name=mail_password]').value;
+                                            document.getElementById('t_enc').value = document.querySelector('[name=mail_encryption]').value;
+                                            document.getElementById('t_from_addr').value = document.querySelector('[name=mail_from_address]').value;
+                                            document.getElementById('t_from_name').value = document.querySelector('[name=mail_from_name]').value;
+                                        ">
+                                        Kirim Tes
+                                    </x-ui.button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
