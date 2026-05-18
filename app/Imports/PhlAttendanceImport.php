@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Log;
 class PhlAttendanceImport implements ToModel, WithHeadingRow
 {
     protected $periodId;
+    public $importedCount = 0;
+    public $skippedCount = 0;
+    public $skippedEmployees = [];
 
     public function __construct($periodId)
     {
@@ -21,8 +24,10 @@ class PhlAttendanceImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         $empNo = $row['emp_no'] ?? $row['no_id'] ?? null;
-        if (!$empNo)
+        if (!$empNo) {
+            $this->skippedCount++;
             return null;
+        }
 
         $employee = Employee::where('emp_no', $empNo)
             ->orWhere('no_id', $empNo)
@@ -30,13 +35,17 @@ class PhlAttendanceImport implements ToModel, WithHeadingRow
 
         if (!$employee) {
             Log::warning("Employee with ID {$empNo} not found during attendance import.");
+            $this->skippedCount++;
+            $this->skippedEmployees[] = $empNo;
             return null;
         }
 
         try {
             $date = $this->transformDate($row['tanggal'] ?? null);
-            if (!$date)
+            if (!$date) {
+                $this->skippedCount++;
                 return null;
+            }
 
             $scanIn = $this->transformTime($row['scan_masuk'] ?? $row['scan_masuk'] ?? null);
             $scanOut = $this->transformTime($row['scan_pulang'] ?? $row['scan_pulang'] ?? null);
@@ -65,9 +74,11 @@ class PhlAttendanceImport implements ToModel, WithHeadingRow
                     'scan_out' => $scanOut,
                     'duration' => $duration,
                 ]);
+                $this->importedCount++;
                 return null;
             }
 
+            $this->importedCount++;
             return new PhlAttendance([
                 'phl_payroll_period_id' => $this->periodId,
                 'employee_id' => $employee->id,
@@ -79,6 +90,7 @@ class PhlAttendanceImport implements ToModel, WithHeadingRow
 
         } catch (\Exception $e) {
             Log::error("Error importing attendance row: " . $e->getMessage());
+            $this->skippedCount++;
             return null;
         }
     }

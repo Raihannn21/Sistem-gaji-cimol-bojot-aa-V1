@@ -121,9 +121,22 @@ class PhlPayrollController extends Controller
                 return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'File Excel terbaca kosong. Jika ini file dari mesin absen (berformat .xls), silakan buka file tersebut di aplikasi Excel lalu pilih "Save As" ke format .xlsx (Excel Workbook) dan coba import kembali file yang baru.');
             }
 
-            Excel::import(new PhlAttendanceImport($id), $request->file('file'));
+            $import = new PhlAttendanceImport($id);
+            Excel::import($import, $request->file('file'));
 
-            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi berhasil diimport.');
+            $imported = $import->importedCount;
+            $skipped = $import->skippedCount;
+            $skippedList = array_unique($import->skippedEmployees);
+
+            if ($imported === 0 && $skipped > 0) {
+                $msg = 'Peringatan: Tidak ada data absensi yang diimpor. Semua baris (' . $skipped . ' data) dilewati karena nomor ID karyawan berikut tidak terdaftar di sistem: (' . implode(', ', $skippedList) . ').';
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', $msg);
+            } elseif ($skipped > 0) {
+                $msg = 'Berhasil mengimpor ' . $imported . ' data absensi. Sebanyak ' . $skipped . ' baris data dilewati karena nomor ID karyawan berikut tidak terdaftar: (' . implode(', ', $skippedList) . ').';
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('warning', $msg);
+            }
+
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi berhasil diimport (' . $imported . ' data).');
         } catch (\Exception $e) {
             return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
         }

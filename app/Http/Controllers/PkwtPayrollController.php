@@ -63,7 +63,9 @@ class PkwtPayrollController extends Controller
             }
 
             $period->total_expenditure = $periodTotal;
-            $period->total_employees = $employeesInPeriodCount;
+            $period->total_employees = ($employeesInPeriodCount === 0 && $period->status === 'Open') 
+                ? $pkwtEmployeeCount 
+                : $employeesInPeriodCount;
 
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
                 $ytdPaid += $periodTotal;
@@ -158,9 +160,22 @@ class PkwtPayrollController extends Controller
                 return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'File terbaca kosong.');
             }
 
-            Excel::import(new PkwtAttendanceImport($id), $request->file('file'));
+            $import = new PkwtAttendanceImport($id);
+            Excel::import($import, $request->file('file'));
 
-            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi PKWT berhasil diimport.');
+            $imported = $import->importedCount;
+            $skipped = $import->skippedCount;
+            $skippedList = array_unique($import->skippedEmployees);
+
+            if ($imported === 0 && $skipped > 0) {
+                $msg = 'Peringatan: Tidak ada data absensi PKWT yang diimpor. Semua baris (' . $skipped . ' data) dilewati karena nomor ID karyawan berikut tidak terdaftar di sistem: (' . implode(', ', $skippedList) . ').';
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', $msg);
+            } elseif ($skipped > 0) {
+                $msg = 'Berhasil mengimpor ' . $imported . ' data absensi PKWT. Sebanyak ' . $skipped . ' baris data dilewati karena nomor ID karyawan berikut tidak terdaftar: (' . implode(', ', $skippedList) . ').';
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('warning', $msg);
+            }
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('success', 'Data absensi PKWT berhasil diimport (' . $imported . ' data).');
         } catch (\Exception $e) {
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'attendance'])->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
         }
