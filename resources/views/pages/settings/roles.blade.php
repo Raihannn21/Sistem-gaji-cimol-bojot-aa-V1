@@ -40,6 +40,7 @@
             showModal: false, 
             showEditModal: false, 
             selectedUser: {},
+            search: '',
             getStatusClass(status) {
                 return status === 'Aktif' 
                     ? 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500' 
@@ -78,7 +79,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </span>
-                        <input type="text" placeholder="Cari user..."
+                        <input type="text" placeholder="Cari user..." x-model="search"
                             class="h-11 w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-12 pr-14 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-white/90 dark:focus:border-brand-500 sm:w-80 shadow-theme-xs">
                     </div>
                     
@@ -103,7 +104,8 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                             @foreach($users as $user)
-                            <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
+                            <tr x-show="!search || '{{ strtolower($user->name) }}'.includes(search.toLowerCase()) || '{{ strtolower($user->email) }}'.includes(search.toLowerCase())"
+                                class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
                                 <td class="px-5 py-4">
                                     <div class="flex items-center gap-3">
                                         <!-- Dynamic Premium Squircle Letter Avatar -->
