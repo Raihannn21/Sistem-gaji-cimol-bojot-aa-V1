@@ -1,6 +1,6 @@
-<div x-data="{saveProfile(){
-    console.log('Saving profile...');
-}}">
+@props(['user'])
+
+<div>
     <div class="p-5 mb-6 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
@@ -11,26 +11,32 @@
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
                     <div class="lg:col-span-2">
                         <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Nama Lengkap</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">Musharof Chowdhury</p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ $user->name }}</p>
                     </div>
 
                     <div>
-                        <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                            Alamat Email
-                        </p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">
-                            randomuser@pimjo.com
-                        </p>
+                        <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Alamat Email</p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ $user->email }}</p>
                     </div>
 
                     <div>
                         <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Nomor HP</p>
-                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">+09 363 398 46</p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ $user->phone }}</p>
+                    </div>
+
+                    <div>
+                        <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Peran Akses (Role)</p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ $user->role }}</p>
+                    </div>
+
+                    <div>
+                        <p class="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Status Akun</p>
+                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ $user->status }}</p>
                     </div>
                 </div>
             </div>
 
-            <button class="edit-button" @click="$dispatch('open-profile-info-modal')">
+            <button class="edit-button flex items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]" @click="$dispatch('open-profile-info-modal')">
                 <svg class="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"

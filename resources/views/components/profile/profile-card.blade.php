@@ -1,27 +1,48 @@
-<div x-data="{saveProfile(){
-    console.log('Saving profile...');
-}}">
+@props(['user'])
+
+@php
+    $name = $user->name;
+    
+    // Get the first letter of the name
+    $firstLetter = !empty(trim($name)) ? strtoupper(substr(trim($name), 0, 1)) : '?';
+
+    // Deterministic premium solid hex colors matching your screenshot
+    $bgColors = [
+        '#dc2626', // Red
+        '#2563eb', // Blue
+        '#16a34a', // Green
+        '#ea580c', // Orange
+        '#9333ea', // Purple
+        '#db2777', // Pink
+        '#0d9488', // Teal
+        '#4f46e5', // Indigo
+    ];
+    $colorIndex = abs(crc32($name)) % count($bgColors);
+    $bgColor = $bgColors[$colorIndex];
+@endphp
+
+<div>
     <div class="mb-6 rounded-2xl border border-gray-200 p-5 lg:p-6 dark:border-gray-800">
         <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
             <div class="flex w-full flex-col items-center gap-6 xl:flex-row">
-                <div class="h-20 w-20 overflow-hidden rounded-full border border-gray-200 dark:border-gray-800">
-                    <img src="./images/user/owner.jpg" alt="user" />
+                <!-- Dynamic Premium Squircle Letter Avatar -->
+                <div class="h-20 w-20 flex items-center justify-center rounded-[20px] text-white font-extrabold text-4xl uppercase shadow-md shrink-0 select-none" style="background-color: {{ $bgColor }};">
+                    {{ $firstLetter }}
                 </div>
                 <div class="order-3 xl:order-2">
                     <h4 class="mb-2 text-center text-lg font-semibold text-gray-800 xl:text-left dark:text-white/90">
-                        Musharof Chowdhury
+                        {{ $user->name }}
                     </h4>
                     <div class="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Team Manager
+                            {{ $user->role }}
                         </p>
                         <div class="hidden h-3.5 w-px bg-gray-300 xl:block dark:bg-gray-700"></div>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            Garut, Jawa Barat
+                            {{ $user->phone }}
                         </p>
                     </div>
                 </div>
-
             </div>
 
             <button @click="$dispatch('open-profile-info-modal')"
@@ -49,7 +70,11 @@
                     Perbarui detail profil Anda agar selalu mutakhir.
                 </p>
             </div>
-            <form class="flex flex-col">
+            
+            <form method="POST" action="{{ route('profile.update') }}" class="flex flex-col">
+                @csrf
+                @method('PUT')
+                
                 <div class="custom-scrollbar max-h-[400px] overflow-y-auto p-2">
                     <div>
                         <h5 class="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
@@ -61,7 +86,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Nama Lengkap
                                 </label>
-                                <input type="text" value="Musharof Chowdhury"
+                                <input type="text" name="name" value="{{ old('name', $user->name) }}" required
                                     class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             </div>
 
@@ -69,7 +94,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Alamat Email
                                 </label>
-                                <input type="text" value="randomuser@pimjo.com"
+                                <input type="email" name="email" value="{{ old('email', $user->email) }}" required
                                     class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             </div>
 
@@ -77,7 +102,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Nomor HP
                                 </label>
-                                <input type="text" value="+09 363 398 46"
+                                <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" required
                                     class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             </div>
                         </div>
@@ -86,7 +111,7 @@
                     <!-- Change Password Section -->
                     <div class="mt-7 pt-7 border-t border-gray-100 dark:border-gray-800">
                         <h5 class="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                            Ganti Password
+                            Ganti Password (Kosongkan jika tidak diganti)
                         </h5>
 
                         <div class="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
@@ -94,7 +119,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Password Saat Ini
                                 </label>
-                                <input type="password" placeholder="••••••••"
+                                <input type="password" name="current_password" placeholder="••••••••"
                                     class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             </div>
 
@@ -102,7 +127,7 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Password Baru
                                 </label>
-                                <input type="password" placeholder="••••••••"
+                                <input type="password" name="new_password" placeholder="••••••••"
                                     class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             </div>
 
@@ -110,18 +135,19 @@
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Konfirmasi Password Baru
                                 </label>
-                                <input type="password" placeholder="••••••••"
+                                <input type="password" name="new_password_confirmation" placeholder="••••••••"
                                     class="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                             </div>
                         </div>
                     </div>
                 </div>
+                
                 <div class="flex items-center gap-3 px-2 mt-6 lg:justify-end">
                     <button @click="open = false" type="button"
                         class="flex w-full justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] sm:w-auto">
-                        Tutup
+                        Batal
                     </button>
-                    <button @click="saveProfile" type="button"
+                    <button type="submit"
                         class="flex w-full justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 sm:w-auto">
                         Simpan Perubahan
                     </button>

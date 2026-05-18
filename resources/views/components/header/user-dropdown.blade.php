@@ -1,3 +1,26 @@
+@php
+    $user = auth()->user();
+    $name = $user ? $user->name : 'Guest';
+    $email = $user ? $user->email : '';
+    
+    // Get the first letter of the name
+    $firstLetter = !empty(trim($name)) ? strtoupper(substr(trim($name), 0, 1)) : '?';
+
+    // Bulletproof solid flat colors matching your screenshot
+    $bgColors = [
+        '#dc2626', // Red (Exactly like your screenshot)
+        '#2563eb', // Blue
+        '#16a34a', // Green
+        '#ea580c', // Orange
+        '#9333ea', // Purple
+        '#db2777', // Pink
+        '#0d9488', // Teal
+        '#4f46e5', // Indigo
+    ];
+    $colorIndex = abs(crc32($name)) % count($bgColors);
+    $bgColor = $bgColors[$colorIndex];
+@endphp
+
 <div class="relative" x-data="{
     dropdownOpen: false,
     toggleDropdown() {
@@ -13,11 +36,12 @@
         @click.prevent="toggleDropdown()"
         type="button"
     >
-        <span class="mr-3 overflow-hidden rounded-full h-11 w-11">
-            <img src="/images/user/owner.png" alt="User" />
+        <!-- Dynamic Premium Squircle Avatar -->
+        <span class="mr-3 overflow-hidden rounded-xl h-10 w-10 flex items-center justify-center text-white font-extrabold text-lg uppercase shadow-sm shrink-0 select-none" style="background-color: {{ $bgColor }};">
+            {{ $firstLetter }}
         </span>
 
-       <span class="block mr-1 font-medium text-theme-sm">Musharof</span>
+       <span class="block mr-1 font-medium text-theme-sm">{{ explode(' ', $name)[0] }}</span>
 
         <!-- Chevron Icon -->
         <svg
@@ -44,13 +68,19 @@
         style="display: none;"
     >
         <!-- User Info -->
-        <div>
-            <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">Musharof Chowdhury</span>
-            <span class="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">randomuser@pimjo.com</span>
+        <div class="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-800">
+            <!-- Squircle Avatar inside dropdown -->
+            <span class="rounded-xl h-10 w-10 flex items-center justify-center text-white font-extrabold text-lg uppercase shadow-sm shrink-0 select-none" style="background-color: {{ $bgColor }};">
+                {{ $firstLetter }}
+            </span>
+            <div>
+                <span class="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">{{ $name }}</span>
+                <span class="block text-theme-xs text-gray-500 dark:text-gray-400 truncate max-w-[170px]">{{ $email }}</span>
+            </div>
         </div>
 
         <!-- Menu Items -->
-        <ul class="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+        <ul class="flex flex-col gap-1 pt-3 pb-3 border-b border-gray-200 dark:border-gray-800">
             @php
                 $menuItems = [
                     [
@@ -83,12 +113,12 @@
             @endforeach
         </ul>
 
-        <!-- Sign Out -->
-        {{-- <form method="POST" action="#">
-            @csrf --}}
-            <a
-                href="/signin"
-                class="flex items-center w-full gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+        <!-- Secure POST Sign Out Action -->
+        <form method="POST" action="{{ route('signout') }}" class="mt-3 block">
+            @csrf
+            <button
+                type="submit"
+                class="flex items-center w-full gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300 text-left"
                 @click="closeDropdown()"
             >
                 <span class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300">
@@ -97,8 +127,8 @@
                     </svg>
                 </span>
                 Sign out
-            </a>
-        {{-- </form> --}}
+            </button>
+        </form>
     </div>
     <!-- Dropdown End -->
 </div>

@@ -36,7 +36,9 @@
             </div>
 
             <!-- Form -->
-            <form class="space-y-6">
+            <form method="POST" :action="'/settings/roles/' + selectedUser.id" class="space-y-6">
+                @csrf
+                @method('PUT')
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <!-- Nama Lengkap -->
                     <x-form.input label="Nama Lengkap" name="name" x-model="selectedUser.name" required />

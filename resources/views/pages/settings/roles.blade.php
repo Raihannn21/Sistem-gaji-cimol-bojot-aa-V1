@@ -10,33 +10,29 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
         ');
-    
-    $users = [
-        [
-            'name' => 'Musharof Chowdhury',
-            'email' => 'randomuser@pimjo.com',
-            'phone' => '+62 812-3456-7890',
-            'status' => 'Aktif',
-            'last_login' => '10 menit yang lalu',
-            'avatar' => '/images/user/owner.png'
-        ],
-        [
-            'name' => 'Raihan',
-            'email' => 'raihan@cimolbojot.com',
-            'phone' => '+62 899-8877-6655',
-            'status' => 'Aktif',
-            'last_login' => '2 jam yang lalu',
-            'avatar' => null
-        ],
-        [
-            'name' => 'Siti Aminah',
-            'email' => 'siti@cimolbojot.com',
-            'phone' => '+62 857-1122-3344',
-            'status' => 'Non-Aktif',
-            'last_login' => '1 hari yang lalu',
-            'avatar' => null
-        ],
-    ];
+
+    if (!function_exists('getFirstLetter')) {
+        function getFirstLetter($name) {
+            return !empty(trim($name)) ? strtoupper(substr(trim($name), 0, 1)) : '?';
+        }
+    }
+
+    if (!function_exists('getBgColorHex')) {
+        function getBgColorHex($name) {
+            $bgColors = [
+                '#dc2626', // Red
+                '#2563eb', // Blue
+                '#16a34a', // Green
+                '#ea580c', // Orange
+                '#9333ea', // Purple
+                '#db2777', // Pink
+                '#0d9488', // Teal
+                '#4f46e5', // Indigo
+            ];
+            $index = abs(crc32($name)) % count($bgColors);
+            return $bgColors[$index];
+        }
+    }
 @endphp
 
 @section('content')
@@ -55,6 +51,19 @@
             }
         }">
         <div class="space-y-6">
+            <!-- Notifications -->
+            @if(session('success'))
+                <div class="rounded-xl bg-green-50 p-4 text-xs font-semibold text-green-700 dark:bg-green-500/15 dark:text-green-500 shadow-sm border border-green-100 dark:border-green-500/25">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="rounded-xl bg-red-50 p-4 text-xs font-semibold text-red-700 dark:bg-red-500/15 dark:text-red-500 shadow-sm border border-red-100 dark:border-red-500/25">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <!-- Header Actions -->
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -96,30 +105,43 @@
                             @foreach($users as $user)
                             <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
                                 <td class="px-5 py-4">
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ $user['name'] }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user['email'] }}</p>
+                                    <div class="flex items-center gap-3">
+                                        <!-- Dynamic Premium Squircle Letter Avatar -->
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white font-extrabold text-lg uppercase shadow-sm select-none" style="background-color: {{ getBgColorHex($user->name) }};">
+                                            {{ getFirstLetter($user->name) }}
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ $user->name }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</p>
+                                        </div>
                                     </div>
                                 </td>
                                 <td class="px-5 py-4 text-center text-sm font-medium text-gray-800 dark:text-white">
-                                    {{ $user['phone'] }}
+                                    {{ $user->phone }}
                                 </td>
                                 <td class="px-5 py-4 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="getStatusClass('{{ $user['status'] }}')">
-                                        {{ $user['status'] }}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="getStatusClass('{{ $user->status }}')">
+                                        {{ $user->status }}
                                     </span>
                                 </td>
                                 <td class="px-5 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $user['last_login'] }}
+                                    {{ $user->updated_at->diffForHumans() }}
                                 </td>
                                 <td class="px-5 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <button class="p-1.5 text-gray-500 hover:text-brand-500 transition-colors" title="Edit" @click="editUser({{ json_encode($user) }})">
                                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                                         </button>
-                                        <button class="p-1.5 text-gray-500 hover:text-red-500 transition-colors" title="Hapus">
-                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                        </button>
+                                        
+                                        @if(auth()->id() !== $user->id)
+                                        <form method="POST" action="{{ route('settings.roles.destroy', $user->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-1.5 text-gray-500 hover:text-red-500 transition-colors" title="Hapus">
+                                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            </button>
+                                        </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

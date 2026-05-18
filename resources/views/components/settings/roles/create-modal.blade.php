@@ -36,7 +36,8 @@
             </div>
 
             <!-- Form -->
-            <form class="space-y-6">
+            <form method="POST" action="{{ route('settings.roles.store') }}" class="space-y-6">
+                @csrf
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <!-- Nama Lengkap -->
                     <x-form.input label="Nama Lengkap" name="name" placeholder="Contoh: Musharof Chowdhury" required />
