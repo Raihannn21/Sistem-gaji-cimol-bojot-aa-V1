@@ -1,16 +1,45 @@
 @extends('layouts.app')
 
 @section('content')
-        <div class="mx-auto max-w-screen-2xl" x-data="{ 
-            searchQuery: '',
-            selectedEmployee: null,
-            showSlipModal: false,
-            selectedSlip: {},
-            employees: [
-                { id: 1, name: 'Ahmad Fauzi', nrp: '1001', dept: 'Security', status: 'PHL', email: 'fauzi@example.com' },
-                { id: 2, name: 'Budi Santoso', nrp: '2001', dept: 'Production', status: 'PKWT', email: 'budi@example.com' },
-                { id: 3, name: 'Siti Aminah', nrp: '2002', dept: 'Production', status: 'PKWT', email: 'siti@example.com' }
-            ]
+    <script>
+        window.employeeData = @json($employees);
+    </script>
+    <div class="mx-auto max-w-screen-2xl" x-data="{ 
+        searchQuery: '',
+        selectedEmployee: null,
+        showSlipModal: false,
+        selectedSlip: {},
+        employees: window.employeeData,
+        payrollHistory: [],
+        isLoadingHistory: false,
+            filteredEmployees() {
+                var query = this.searchQuery.toLowerCase();
+                return this.employees.filter(function(e) {
+                    var nameMatch = e.name && e.name.toLowerCase().indexOf(query) !== -1;
+                    var nrpMatch = e.emp_no && e.emp_no.toLowerCase().indexOf(query) !== -1;
+                    return nameMatch || nrpMatch;
+                });
+            },
+            selectEmployee(emp) {
+                this.selectedEmployee = emp;
+                if (!emp) {
+                    this.payrollHistory = [];
+                    return;
+                }
+                this.isLoadingHistory = true;
+                this.payrollHistory = [];
+                var self = this;
+                fetch('/reports/employee/' + emp.id + '/history')
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        self.payrollHistory = data;
+                        self.isLoadingHistory = false;
+                    })
+                    .catch(function(err) {
+                        console.error(err);
+                        self.isLoadingHistory = false;
+                    });
+            }
         }">
 
         <!-- Header Section -->
@@ -46,9 +75,9 @@
                     <!-- Employee List -->
                     <div class="space-y-2 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                         <template
-                            x-for="emp in employees.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase()) || e.nrp.includes(searchQuery))"
+                            x-for="emp in filteredEmployees()"
                             :key="emp.id">
-                            <div @click="selectedEmployee = emp"
+                            <div @click="selectEmployee(emp)"
                                 :class="selectedEmployee?.id === emp.id ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/10' : 'border-gray-50 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/[0.02]'"
                                 class="flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer group">
                                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 font-bold text-gray-400 dark:bg-gray-800 group-hover:bg-brand-100 group-hover:text-brand-600 transition-colors"
@@ -57,7 +86,7 @@
                                     <p class="text-sm font-bold text-gray-800 dark:text-white truncate" x-text="emp.name">
                                     </p>
                                     <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5"
-                                        x-text="'NRP. ' + emp.nrp + ' • ' + emp.status"></p>
+                                        x-text="'NRP. ' + emp.emp_no + ' • ' + emp.employment_type"></p>
                                 </div>
                             </div>
                         </template>
@@ -82,14 +111,15 @@
                                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight"
                                             x-text="selectedEmployee.name"></h2>
                                         <div class="mt-4 flex flex-wrap justify-center sm:justify-start gap-3">
-                                            <!-- Dept Badge -->
+                                            <!-- Location Badge -->
                                             <div
                                                 class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-[11px] font-bold text-brand-600 dark:bg-brand-500/10">
                                                 <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
-                                                <span x-text="selectedEmployee.dept"></span>
+                                                <span x-text="selectedEmployee.location || 'Bandung'"></span>
                                             </div>
                                             <!-- Status Badge -->
                                             <div
@@ -98,7 +128,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                <span x-text="selectedEmployee.status"></span>
+                                                <span x-text="selectedEmployee.employment_type"></span>
                                             </div>
                                             <!-- NRP Badge -->
                                             <div
@@ -107,13 +137,14 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                 </svg>
-                                                <span x-text="selectedEmployee.nrp"></span>
+                                                <span x-text="selectedEmployee.emp_no"></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="flex justify-center shrink-0">
                                     <x-ui.button variant="outline"
+                                        onclick="window.print()"
                                         className="flex items-center gap-2 text-xs py-2.5 px-5 bg-white hover:bg-gray-50 transition-all border-gray-200">
                                         <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -130,8 +161,7 @@
                         <div
                             class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
                             <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800">
-                                <h3 class="text-sm font-bold text-gray-800 dark:text-white uppercase tracking-wide">Riwayat
-                                    Penggajian (6 Bulan Terakhir)</h3>
+                                <h3 class="text-sm font-bold text-gray-800 dark:text-white uppercase tracking-wide">Riwayat Penggajian</h3>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
@@ -151,31 +181,49 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                                        <template x-for="m in ['Juli', 'Juni', 'Mei', 'April', 'Maret', 'Februari']"
-                                            :key="m">
-                                            <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
-                                                <td class="px-6 py-4 text-sm font-bold text-gray-800 dark:text-white/90"
-                                                    x-text="m + ' 2025'"></td>
-                                                <td
-                                                    class="px-6 py-4 text-right text-sm font-medium text-gray-600 dark:text-gray-400 tabular-nums">
-                                                    22 Hari</td>
-                                                <td
-                                                    class="px-6 py-4 text-right text-sm font-bold text-brand-600 tabular-nums">
-                                                    Rp 5.200.000</td>
-                                                <td class="px-6 py-4 text-center">
-                                                    <button @click="selectedSlip = { name: selectedEmployee.name, nrp: selectedEmployee.nrp, total: '5.030.000', type: selectedEmployee.status.toLowerCase(), period: m + ' 2025' }; showSlipModal = true" 
-                                                        class="text-gray-400 hover:text-brand-500 transition-colors p-2 hover:bg-brand-50 rounded-lg dark:hover:bg-brand-500/10 group">
-                                                        <svg class="h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                        </svg>
-                                                    </button>
+                                        <!-- Loading state -->
+                                        <template x-if="isLoadingHistory">
+                                            <tr>
+                                                <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <svg class="animate-spin h-5 w-5 text-brand-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                                        Memuat riwayat penggajian...
+                                                    </div>
                                                 </td>
                                             </tr>
+                                        </template>
+                                        
+                                        <!-- Empty state -->
+                                        <template x-if="!isLoadingHistory && payrollHistory.length === 0">
+                                            <tr>
+                                                <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500 italic">
+                                                    Belum ada riwayat penggajian untuk karyawan ini.
+                                                </td>
+                                            </tr>
+                                        </template>
+
+                                        <!-- Data rows -->
+                                        <template x-if="!isLoadingHistory && payrollHistory.length > 0">
+                                            <template x-for="p in payrollHistory" :key="p.period_id">
+                                                <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
+                                                    <td class="px-6 py-4 text-sm font-bold text-gray-800 dark:text-white/90" x-text="p.period"></td>
+                                                    <td class="px-6 py-4 text-right text-sm font-medium text-gray-600 dark:text-gray-400 tabular-nums" x-text="p.days_worked + ' Hari'"></td>
+                                                    <td class="px-6 py-4 text-right text-sm font-bold text-brand-600 tabular-nums" x-text="'Rp ' + p.total"></td>
+                                                    <td class="px-6 py-4 text-center">
+                                                        <button @click="selectedSlip = { name: selectedEmployee.name, nrp: selectedEmployee.emp_no, total: p.total, type: p.type, period: p.period, detail: p }; showSlipModal = true" 
+                                                            class="text-gray-400 hover:text-brand-500 transition-colors p-2 hover:bg-brand-50 rounded-lg dark:hover:bg-brand-500/10 group">
+                                                            <svg class="h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor"
+                                                                viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                            </svg>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </template>
                                         </template>
                                     </tbody>
                                 </table>
@@ -199,6 +247,7 @@
                             laporan detail.</p>
                     </div>
                 </template>
+            </div>
         </div>
 
         <x-report.employee-slip-modal />

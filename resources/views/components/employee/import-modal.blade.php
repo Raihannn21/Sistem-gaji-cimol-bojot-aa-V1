@@ -47,6 +47,27 @@
                 <form id="importEmployeeForm" action="{{ route('employees.import') }}" method="POST" enctype="multipart/form-data" @submit="isUploading = true">
                     @csrf
                     <div class="space-y-6">
+                        <!-- Template Download Link -->
+                        <div class="rounded-2xl border border-blue-100 bg-blue-50/50 p-4 dark:border-blue-900/30 dark:bg-blue-950/20">
+                            <div class="flex items-start gap-3">
+                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500 text-white shadow-md shadow-blue-500/10">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-800 dark:text-white/90">Belum punya template Excel?</h4>
+                                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Unduh template Excel resmi untuk menghindari kesalahan pengisian data.</p>
+                                    <a href="/templates/employee_import_template.xlsx" download class="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                                        Unduh Template Excel (.xlsx)
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 13l-7 7-7-7m14-6l-7 7-7-7" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Tipe Jabatan Selection -->
                         <div>
                             <label class="mb-3 block text-sm font-bold text-gray-700 dark:text-gray-300">Pilih Tipe Karyawan:</label>
