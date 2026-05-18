@@ -19,7 +19,7 @@ class PkwtPayrollController extends Controller
 {
     public function index()
     {
-        $periods = PkwtPayrollPeriod::with(['overtimes', 'riskAllowances', 'otherAllowances'])
+        $periods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
             ->orderBy('start_date', 'desc')
             ->get();
 
@@ -31,22 +31,39 @@ class PkwtPayrollController extends Controller
         $ytdPaid = 0;
 
         foreach ($periods as $period) {
-            $totalPokok = Employee::where('employment_type', 'PKWT')->where('status', 'Aktif')->sum('salary_monthly');
-            $totalOvertime = $period->overtimes->sum('amount');
-            $totalRisk = $period->riskAllowances->sum('amount');
-            $totalOthers = $period->otherAllowances->sum('amount');
+            $startDate = \Carbon\Carbon::parse($period->start_date);
+            $endDate = \Carbon\Carbon::parse($period->end_date);
+            $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
 
-            $totalDeductions = Employee::where('employment_type', 'PKWT')
-                ->where('status', 'Aktif')
-                ->get()
-                ->sum(function ($emp) {
-                    return ($emp->bpjs_health ?? 0) + ($emp->bpjs_tk ?? 0) + ($emp->pph21 ?? 0);
-                });
+            $periodEmployeeIds = $period->attendances->pluck('employee_id')->unique();
+            $employeesInPeriodCount = count($periodEmployeeIds);
 
-            $periodTotal = max(0, $totalPokok + $totalOvertime + $totalRisk + $totalOthers - $totalDeductions);
+            $periodTotal = 0;
+            $groupedAttendances = $period->attendances->groupBy('employee_id');
+
+            foreach ($groupedAttendances as $empId => $empAttendances) {
+                $employee = $empAttendances->first()->employee;
+                if (!$employee) continue;
+
+                $daysWorked = $empAttendances->count();
+                $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                $pokok = $daysWorked * $harian;
+
+                $lembur = $period->overtimes->where('employee_id', $empId)->sum('amount');
+                $risiko = $period->riskAllowances->where('employee_id', $empId)->sum('amount');
+                $other = $period->otherAllowances->where('employee_id', $empId)->sum('amount');
+
+                $bpjsHealth = $employee->bpjs_health ?? 0;
+                $bpjsTk = $employee->bpjs_tk ?? 0;
+                $pph21 = $employee->pph21 ?? 0;
+                $potongan = $bpjsHealth + $bpjsTk + $pph21;
+
+                $netPay = max(0, $pokok + $lembur + $risiko + $other - $potongan);
+                $periodTotal += $netPay;
+            }
 
             $period->total_expenditure = $periodTotal;
-            $period->total_employees = $pkwtEmployeeCount;
+            $period->total_employees = $employeesInPeriodCount;
 
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
                 $ytdPaid += $periodTotal;

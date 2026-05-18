@@ -57,7 +57,8 @@
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-bold text-gray-800 dark:text-white/90">Belum punya template Excel?</h4>
-                                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Unduh template Excel resmi untuk menghindari kesalahan pengisian data.</p>
+                                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Unduh template Excel resmi di bawah ini untuk menghindari kesalahan pengisian data.</p>
+                                    
                                     <a href="/templates/employee_import_template.xlsx" download class="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">
                                         Unduh Template Excel (.xlsx)
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
