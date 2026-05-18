@@ -17,8 +17,9 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
+        $selectedYear = $request->query('year', date('Y'));
         $totalManpower = Employee::where('status', 'Aktif')->count();
         $pkwtCount = Employee::where('employment_type', 'PKWT')->where('status', 'Aktif')->count();
         $phlCount = Employee::where('employment_type', 'PHL')->where('status', 'Aktif')->count();
@@ -97,8 +98,8 @@ class DashboardController extends Controller
         $recruitmentPhl = [];
         $turnoverData = [];
 
-        for ($i = 11; $i >= 0; $i--) {
-            $date = Carbon::now()->subMonths($i);
+        for ($m = 1; $m <= 12; $m++) {
+            $date = Carbon::createFromDate($selectedYear, $m, 1);
             $monthName = $date->format('M');
             $monthNum = $date->format('m');
             $yearNum = $date->format('Y');
@@ -188,6 +189,7 @@ class DashboardController extends Controller
 
         return view('pages.dashboard.payroll', [
             'title' => 'Dashboard Penggajian',
+            'selectedYear' => $selectedYear,
 
             // Manpower props
             'totalManpower' => $totalManpower,

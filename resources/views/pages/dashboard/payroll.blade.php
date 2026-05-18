@@ -31,16 +31,16 @@
             </div>
 
             <!-- New Row: Payroll Analytics -->
-            <div class="col-span-12">
-                <x-dashboard.payroll.analytics-chart :months="$months" :realData="$payrollRealData" :estData="$payrollEstData" />
+            <div class="col-span-12 min-w-0">
+                <x-dashboard.payroll.analytics-chart :months="$months" :realData="$payrollRealData" :estData="$payrollEstData" :selectedYear="$selectedYear" />
             </div>
 
             <!-- Row 2: Trends & Charts -->
-            <div class="col-span-12 xl:col-span-7">
+            <div class="col-span-12 xl:col-span-7 min-w-0">
                 <x-dashboard.payroll.recruitment-chart :months="$months" :pkwt="$recruitmentPkwt" :phl="$recruitmentPhl" />
             </div>
 
-            <div class="col-span-12 xl:col-span-5">
+            <div class="col-span-12 xl:col-span-5 min-w-0">
                 <x-dashboard.payroll.turnover-chart :rate="$turnoverRate" :total="$totalResigned" :pkwt="$pkwtResigned" :phl="$phlResigned" :sparkline="$turnoverSparklineData" />
             </div>
         </div>
