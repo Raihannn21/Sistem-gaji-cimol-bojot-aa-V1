@@ -91,9 +91,7 @@ Route::prefix('reports')->group(function () {
     Route::get('/employee', [ReportController::class, 'employee'])->name('reports.employee');
     Route::get('/employee/{id}/history', [ReportController::class, 'employeeHistory'])->name('reports.employee.history');
     
-    Route::get('/summary', function () {
-        return view('pages.reports.summary', ['title' => 'Rekap PHL & PKWT']);
-    })->name('reports.summary');
+    Route::get('/summary', [ReportController::class, 'summary'])->name('reports.summary');
 });
 
 // Pengaturan
