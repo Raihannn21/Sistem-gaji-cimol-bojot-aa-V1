@@ -11,6 +11,7 @@ use App\Http\Controllers\PhlPayrollController;
 use App\Http\Controllers\PkwtPayrollController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 
 // Guest Authentication Routes
 Route::middleware(['guest'])->group(function () {
@@ -121,8 +122,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // User Profile
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
-    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Error 404
     Route::get('/error-404', function () {

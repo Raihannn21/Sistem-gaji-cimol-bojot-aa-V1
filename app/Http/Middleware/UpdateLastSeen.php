@@ -15,7 +15,6 @@ class UpdateLastSeen
     {
         if (Auth::check()) {
             $user = Auth::user();
-            // Update last_seen_at if it's null or has been more than 1 minute since last update
             if (!$user->last_seen_at || $user->last_seen_at->diffInMinutes(now()) >= 1) {
                 $user->updateQuietly([
                     'last_seen_at' => now(),

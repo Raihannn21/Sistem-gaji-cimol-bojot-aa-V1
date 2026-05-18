@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -29,7 +30,7 @@ class AuthController extends Controller
             return redirect()->intended('/');
         }
 
-        $user = \App\Models\User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
         if ($user && $user->status !== 'Aktif') {
             return back()->withErrors([
                 'email' => 'Akun Anda dinonaktifkan. Silakan hubungi Super Admin.',
