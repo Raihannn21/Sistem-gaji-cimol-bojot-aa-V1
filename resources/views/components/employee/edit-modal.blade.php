@@ -116,7 +116,12 @@
                             </x-form.select>
                             <x-form.input name="location" label="Lokasi" x-model="selectedEmployee.location" />
                             
-                            <x-form.input name="salary" label="Gaji Pokok" prefix="Rp" data-currency x-model="selectedEmployee.salary" @input="formatCurrency($event.target)" />
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Gaji Pokok <span x-text="selectedEmployee.role === 'PHL' ? '(Harian)' : (selectedEmployee.role === 'PKWT' ? '(Bulanan)' : '')"></span>
+                                </label>
+                                <x-form.input name="salary" prefix="Rp" data-currency x-model="selectedEmployee.salary" @input="formatCurrency($event.target)" />
+                            </div>
                             
                             <x-form.input name="bank_name" label="Nama Bank" x-model="selectedEmployee.bank_name" />
                             <x-form.input name="bank_account" label="Nomor Rekening" x-model="selectedEmployee.bank_account" />

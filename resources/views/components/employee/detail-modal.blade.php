@@ -77,7 +77,7 @@
                             <p class="text-sm font-medium text-gray-800 dark:text-white/90" x-text="selectedEmployee.location || '-'"></p>
                         </div>
                         <div>
-                            <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">Gaji Pokok</p>
+                            <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">Gaji Pokok <span x-text="selectedEmployee.role === 'PHL' ? '(Harian)' : (selectedEmployee.role === 'PKWT' ? '(Bulanan)' : '')"></span></p>
                             <p class="text-sm font-semibold text-gray-800 dark:text-white/90" x-text="'Rp ' + formatPrice(selectedEmployee.salary)"></p>
                         </div>
                         <div>

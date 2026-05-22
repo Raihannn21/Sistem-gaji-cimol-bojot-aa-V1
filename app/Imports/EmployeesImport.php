@@ -35,7 +35,7 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
         if (!in_array($status, ['Aktif', 'Resign', 'SPHK']))
             $status = 'Aktif';
 
-        $salaryAmount = $this->cleanNumber($data['salary'] ?? $data['gaji_pokok'] ?? $data['gaji'] ?? null);
+        $salaryAmount = $this->cleanNumber($data['salary'] ?? $data['gaji_pokok'] ?? $data['gaji'] ?? $data['gaji_pokok_harian'] ?? $data['gaji_pokok_bulanan'] ?? null);
         $riskAmount = $this->cleanNumber($data['risk_daily_amount'] ?? $data['tunjangan_risiko'] ?? $data['risk_allowance'] ?? null);
 
         $bpjsHealth = $this->cleanNumber($data['bpjs_health'] ?? $data['bpjs_kesehatan'] ?? null);

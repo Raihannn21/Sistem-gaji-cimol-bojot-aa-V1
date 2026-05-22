@@ -97,7 +97,12 @@
                             <x-form.input name="location" label="Lokasi" placeholder="HO / Site" />
                             
                             <!-- Gaji Pokok with Rp and Format -->
-                            <x-form.input name="salary" label="Gaji Pokok" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            <div>
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Gaji Pokok <span x-text="selectedRole === 'PHL' ? '(Harian)' : (selectedRole === 'PKWT' ? '(Bulanan)' : '')"></span>
+                                </label>
+                                <x-form.input name="salary" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            </div>
                             
                             <x-form.input name="bank_name" label="Nama Bank" placeholder="Contoh: BCA" />
                             <x-form.input name="bank_account" label="Nomor Rekening" placeholder="12345678" />
