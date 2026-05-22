@@ -38,12 +38,12 @@
                     
                     <div class="custom-scrollbar max-h-[458px] overflow-y-auto p-2 space-y-6 pb-20">
                         <div class="space-y-5">
-                            <!-- Judul Periode -->
-                            <x-form.input label="Judul Periode" name="title" placeholder="Contoh: Gaji PHL Juli 2025" required />
+                                <!-- Judul Periode -->
+                                <x-form.input label="Judul Periode" name="title" placeholder="Contoh: Gaji PHL Juli 2025" required />
 
-                            <!-- Rentang Tanggal -->
-                            <x-form.date-picker name="date_range" label="Rentang Tanggal" placeholder="Pilih Rentang Tanggal"
-                                mode="range" dateFormat="d-m-Y" :static="true" required />
+                                <!-- Rentang Tanggal -->
+                                <x-form.date-picker name="date_range" label="Rentang Tanggal" placeholder="Pilih Rentang Tanggal"
+                                    mode="range" dateFormat="d-m-Y" :static="true" required />
 
                             <div class="rounded-xl bg-brand-50 p-4 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
                                 <div class="flex gap-3">
