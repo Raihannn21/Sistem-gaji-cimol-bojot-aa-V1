@@ -36,6 +36,7 @@ class MenuHelper
         return [
             ['name' => 'Data Karyawan', 'path' => '/employees', 'icon' => 'user-profile'],
             ['name' => 'Resign & SPHK', 'path' => '/employees/status', 'icon' => 'user-minus'],
+            ['name' => 'Data Tim', 'path' => '/employees/teams', 'icon' => 'task'],
         ];
     }
 

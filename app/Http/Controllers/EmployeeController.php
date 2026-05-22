@@ -18,6 +18,7 @@ class EmployeeController extends Controller
         $search = trim($request->query('search'));
 
         $employees = Employee::query()
+            ->with('team')
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -35,7 +36,8 @@ class EmployeeController extends Controller
                 'nik' => $employee->nik,
                 'role' => $employee->employment_type,
                 'status' => $employee->status,
-                'team' => $employee->team,
+                'team' => $employee->team?->name,
+                'team_id' => $employee->team_id,
                 'location' => $employee->location,
                 'salary' => $this->formatAmount($employee->salary),
                 'risk_allowance' => $this->formatAmount($employee->risk_daily_amount),
@@ -57,10 +59,13 @@ class EmployeeController extends Controller
             'sphk' => $employees->where('status', 'SPHK')->count(),
         ];
 
+        $teams = \App\Models\Team::orderBy('name')->get();
+
         return view('pages.employees.index', [
             'title' => 'Data Karyawan',
             'employees' => $employees,
             'stats' => $stats,
+            'teams' => $teams,
         ]);
     }
     public function store(StoreEmployeeRequest $request): RedirectResponse
@@ -120,7 +125,7 @@ class EmployeeController extends Controller
             'name' => $data['name'] ?? null,
             'email' => $data['email'] ?? null,
             'phone' => $data['phone'] ?? null,
-            'team' => $data['team'] ?? null,
+            'team_id' => $data['team_id'] ?? null,
             'location' => $data['location'] ?? null,
             'employment_type' => $employmentType,
             'salary_daily' => $employmentType === 'PHL' ? $salary : $this->normalizeDecimal($data['salary_daily'] ?? null),

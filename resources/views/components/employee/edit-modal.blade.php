@@ -1,4 +1,4 @@
-@props(['employee' => null])
+@props(['employee' => null, 'teams' => []])
 
 <div x-show="showEditModal" 
      x-data="{ 
@@ -112,7 +112,11 @@
                             
                             <x-form.input name="email" label="Email" type="email" x-model="selectedEmployee.email" />
                             <x-form.input name="phone" label="No. Telepon" x-model="selectedEmployee.phone" />
-                            <x-form.input name="team" label="Nomor Tim" x-model="selectedEmployee.team" />
+                            <x-form.select name="team_id" label="Nomor Tim" placeholder="Pilih Tim" x-model="selectedEmployee.team_id">
+                                @foreach($teams as $team)
+                                    <option value="{{ $team->id }}">{{ $team->name }}</option>
+                                @endforeach
+                            </x-form.select>
                             <x-form.input name="location" label="Lokasi" x-model="selectedEmployee.location" />
                             
                             <x-form.input name="salary" label="Gaji Pokok" prefix="Rp" data-currency x-model="selectedEmployee.salary" @input="formatCurrency($event.target)" />

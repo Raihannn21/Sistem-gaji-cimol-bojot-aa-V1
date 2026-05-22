@@ -141,8 +141,8 @@
         </div>
 
         <!-- Employee Modal Components -->
-        <x-employee.create-modal />
-        <x-employee.edit-modal />
+        <x-employee.create-modal :teams="$teams" />
+        <x-employee.edit-modal :teams="$teams" />
         <x-employee.detail-modal />
         <x-employee.import-modal />
     </div>

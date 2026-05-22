@@ -1,4 +1,4 @@
-@props(['show' => false])
+@props(['show' => false, 'teams' => []])
 
 <div x-show="showModal" 
      x-data="{ 
@@ -92,7 +92,11 @@
                             
                             <x-form.input name="email" label="Email" type="email" placeholder="mail@example.com" />
                             <x-form.input name="phone" label="No. Telepon" placeholder="0812xxx" />
-                            <x-form.input name="team" label="Nomor Tim" placeholder="T0x" />
+                            <x-form.select name="team_id" label="Nomor Tim" placeholder="Pilih Tim">
+                                @foreach($teams as $team)
+                                    <option value="{{ $team->id }}">{{ $team->name }}</option>
+                                @endforeach
+                            </x-form.select>
                             <x-form.input name="location" label="Lokasi" placeholder="HO / Site" />
                             
                             <!-- Gaji Pokok with Rp and Format -->

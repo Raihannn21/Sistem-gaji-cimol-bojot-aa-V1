@@ -14,7 +14,7 @@ class Employee extends Model
         'name',
         'email',
         'phone',
-        'team',
+        'team_id',
         'location',
         'employment_type',
         'status',
@@ -52,7 +52,7 @@ class Employee extends Model
     public function getCompletenessPercentageAttribute(): int
     {
         $fields = [
-            'nik', 'email', 'phone', 'team', 'location', 
+            'nik', 'email', 'phone', 'team_id', 'location', 
             'bank_name', 'bank_account'
         ];
         
@@ -85,6 +85,11 @@ class Employee extends Model
         if ($percentage >= 70) return 'blue';
         if ($percentage >= 40) return 'yellow';
         return 'red';
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 
     public function statuses()

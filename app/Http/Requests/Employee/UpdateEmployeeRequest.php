@@ -22,7 +22,7 @@ class UpdateEmployeeRequest extends FormRequest
             'nik' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
-            'team' => ['nullable', 'string', 'max:50'],
+            'team_id' => ['nullable', 'exists:teams,id'],
             'location' => ['nullable', 'string', 'max:100'],
             'employment_type' => ['nullable', 'in:PHL,PKWT'],
             'jabatan' => ['nullable', 'in:PHL,PKWT'],

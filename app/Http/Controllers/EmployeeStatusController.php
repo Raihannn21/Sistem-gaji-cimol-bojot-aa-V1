@@ -18,7 +18,7 @@ class EmployeeStatusController extends Controller
         $search = trim($request->query('search'));
 
         $statuses = EmployeeStatus::query()
-            ->with('employee')
+            ->with('employee.team')
             ->when($search, function ($query, $search) {
                 $query->whereHas('employee', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -38,7 +38,7 @@ class EmployeeStatusController extends Controller
                 'type' => $status->type,
                 'date' => Carbon::parse($status->effective_date)->format('d-m-Y'),
                 'reason' => $status->reason,
-                'team' => $status->employee->team ?? '-',
+                'team' => $status->employee->team?->name ?? '-',
                 'location' => $status->employee->location ?? '-',
             ]);
 

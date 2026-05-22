@@ -42,6 +42,13 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
         $bpjsTk = $this->cleanNumber($data['bpjs_tk'] ?? $data['bpjs_ketenagakerjaan'] ?? null);
         $pph21 = $this->cleanNumber($data['pph21'] ?? $data['pajak'] ?? $data['pph_21'] ?? null);
 
+        $teamName = $data['team'] ?? $data['tim'] ?? $data['nomor_tim'] ?? null;
+        $teamId = null;
+        if ($teamName !== null && trim($teamName) !== '') {
+            $team = \App\Models\Team::firstOrCreate(['name' => trim($teamName)]);
+            $teamId = $team->id;
+        }
+
         return new Employee([
             'name' => $data['nama'] ?? $data['name'] ?? $data['nama_lengkap'] ?? $data['employee_name'],
             'emp_no' => $data['emp_no'] ?? $data['nomor_karyawan'] ?? $data['employee_id'] ?? $data['nip'],
@@ -49,7 +56,7 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
             'nik' => $data['nik'] ?? $data['nomor_induk_kependudukan'] ?? null,
             'email' => $data['email'] ?? $data['surel'] ?? null,
             'phone' => $data['phone'] ?? $data['telepon'] ?? $data['hp'] ?? $data['no_hp'] ?? null,
-            'team' => $data['team'] ?? $data['tim'] ?? $data['nomor_tim'] ?? null,
+            'team_id' => $teamId,
             'location' => $data['location'] ?? $data['lokasi'] ?? $data['penempatan'] ?? null,
             'employment_type' => $type,
             'status' => $status,

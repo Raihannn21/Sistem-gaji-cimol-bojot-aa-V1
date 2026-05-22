@@ -7,6 +7,7 @@ use App\Http\Controllers\Report\MonthlyReportController;
 use App\Http\Controllers\Report\EmployeeReportController;
 use App\Http\Controllers\Report\SummaryReportController;
 use App\Http\Controllers\EmployeeStatusController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\PhlPayrollController;
 use App\Http\Controllers\PkwtPayrollController;
 use App\Http\Controllers\AuthController;
@@ -39,6 +40,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/status', [EmployeeStatusController::class, 'index'])->name('employees.status');
         Route::post('/status', [EmployeeStatusController::class, 'store'])->name('employees.status.store');
         Route::delete('/status/{id}', [EmployeeStatusController::class, 'destroy'])->name('employees.status.destroy');
+
+        Route::get('/teams', [TeamController::class, 'index'])->name('employees.teams');
+        Route::post('/teams', [TeamController::class, 'store'])->name('employees.teams.store');
+        Route::put('/teams/{team}', [TeamController::class, 'update'])->name('employees.teams.update');
+        Route::delete('/teams/{team}', [TeamController::class, 'destroy'])->name('employees.teams.destroy');
     });
 
     // Payroll PHL
