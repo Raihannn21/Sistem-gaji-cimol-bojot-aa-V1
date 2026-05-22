@@ -46,7 +46,7 @@
                             x-text="selectedSlip.name"></span>
                     </div>
                     <div class="flex gap-1.5 items-center">
-                        <span class="text-gray-500 font-medium w-20 shrink-0">NRP</span>
+                        <span class="text-gray-500 font-medium w-20 shrink-0">ID</span>
                         <span class="text-gray-500">:</span>
                         <span class="font-semibold text-gray-800 dark:text-gray-200"
                             x-text="selectedSlip.nrp"></span>

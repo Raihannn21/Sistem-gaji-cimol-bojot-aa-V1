@@ -28,7 +28,6 @@
                     <template x-for="item in statusChanges" :key="item.id">
                         <tr x-show="!search || 
                                     item.name.toLowerCase().includes(search.toLowerCase()) || 
-                                    item.emp_no.toLowerCase().includes(search.toLowerCase()) || 
                                     item.no_id.toLowerCase().includes(search.toLowerCase()) || 
                                     item.nik.toLowerCase().includes(search.toLowerCase()) || 
                                     (item.reason && item.reason.toLowerCase().includes(search.toLowerCase()))"
@@ -36,7 +35,7 @@
                             <td class="px-5 py-4">
                                 <div>
                                     <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90" x-text="item.name"></span>
-                                    <span class="block text-gray-500 text-theme-xs dark:text-gray-400" x-text="item.emp_no"></span>
+                                    <span class="block text-gray-500 text-theme-xs dark:text-gray-400" x-text="item.no_id"></span>
                                 </div>
                             </td>
                             <td class="px-5 py-4">

@@ -7,7 +7,7 @@
                 <thead>
                     <tr class="border-b border-gray-100 dark:border-gray-800">
                         <th class="px-5 py-3 text-left">
-                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Nama / Emp No</p>
+                            <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Nama / ID Karyawan</p>
                         </th>
                         <th class="px-5 py-3 text-left">
                             <p class="font-medium text-gray-500 text-theme-xs dark:text-gray-400">Jabatan</p>
@@ -51,7 +51,6 @@
                         @endphp
                         <tr x-show="(!search || 
                                      '{{ strtolower($employee['name']) }}'.includes(search.toLowerCase()) || 
-                                     '{{ strtolower($employee['emp_no']) }}'.includes(search.toLowerCase()) || 
                                      '{{ strtolower($employee['id_no']) }}'.includes(search.toLowerCase())) &&
                                      (!onlyIncomplete || {{ $employee['completeness_percentage'] ?? 0 }} < 100)"
                             class="hover:bg-gray-50 dark:hover:bg-white/[0.01]">
@@ -59,7 +58,7 @@
                                 <div class="flex items-center gap-3">
                                     <div>
                                         <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ $employee['name'] }}</span>
-                                        <span class="block text-gray-500 text-theme-xs dark:text-gray-400">Emp: {{ $employee['emp_no'] }}</span>
+                                        <span class="block text-gray-500 text-theme-xs dark:text-gray-400">ID: {{ $employee['id_no'] }}</span>
                                     </div>
                                 </div>
                             </td>

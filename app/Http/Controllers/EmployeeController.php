@@ -22,7 +22,6 @@ class EmployeeController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('emp_no', 'like', "%{$search}%")
                       ->orWhere('no_id', 'like', "%{$search}%");
                 });
             })
@@ -31,7 +30,6 @@ class EmployeeController extends Controller
             ->map(fn(Employee $employee) => [
                 'id' => $employee->id,
                 'name' => $employee->name,
-                'emp_no' => $employee->emp_no,
                 'id_no' => $employee->no_id,
                 'nik' => $employee->nik,
                 'role' => $employee->employment_type,
@@ -41,6 +39,7 @@ class EmployeeController extends Controller
                 'location' => $employee->location,
                 'salary' => $this->formatAmount($employee->salary),
                 'risk_allowance' => $this->formatAmount($employee->risk_daily_amount),
+                'attendance_allowance' => $this->formatAmount($employee->attendance_allowance),
                 'bpjs_health' => $this->formatAmount($employee->bpjs_health),
                 'bpjs_tk' => $this->formatAmount($employee->bpjs_tk),
                 'pph21' => $this->formatAmount($employee->pph21),
@@ -117,9 +116,9 @@ class EmployeeController extends Controller
     {
         $salary = $this->normalizeCurrency($data['salary'] ?? null);
         $riskAllowance = $this->normalizeCurrency($data['risk_allowance'] ?? null);
+        $attendanceAllowance = $this->normalizeCurrency($data['attendance_allowance'] ?? null);
 
         return [
-            'emp_no' => $data['emp_no'] ?? null,
             'no_id' => $data['no_id'] ?? null,
             'nik' => $data['nik'] ?? null,
             'name' => $data['name'] ?? null,
@@ -131,6 +130,7 @@ class EmployeeController extends Controller
             'salary_daily' => $employmentType === 'PHL' ? $salary : $this->normalizeDecimal($data['salary_daily'] ?? null),
             'salary_monthly' => $employmentType === 'PKWT' ? $salary : $this->normalizeDecimal($data['salary_monthly'] ?? null),
             'risk_daily_amount' => $riskAllowance,
+            'attendance_allowance' => $attendanceAllowance,
             'bpjs_health' => $this->normalizeCurrency($data['bpjs_health'] ?? null),
             'bpjs_tk' => $this->normalizeCurrency($data['bpjs_tk'] ?? null),
             'pph21' => $this->normalizeCurrency($data['pph21'] ?? null),

@@ -25,7 +25,7 @@
                         </span>
                         <input type="text" 
                                x-model="searchQuery" 
-                               placeholder="Cari nama atau NRP..." 
+                               placeholder="Cari nama atau ID..." 
                                class="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pr-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-transparent dark:text-white dark:focus:border-brand-500 transition-colors"
                                style="padding-left: 2.75rem;">
                     </div>
@@ -78,11 +78,11 @@
                                 $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
                                 $total = $pokok + $lembur + $risiko;
                             @endphp
-                            <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] slip-row"
-                                x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->emp_no)) }}'.includes(searchQuery.toLowerCase())">
+                             <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] slip-row"
+                                x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->no_id)) }}'.includes(searchQuery.toLowerCase())">
                                 <td class="px-6 py-4">
                                     <p class="font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
-                                    <p class="text-xs text-gray-400">ID. {{ $employee->emp_no }}</p>
+                                    <p class="text-xs text-gray-400">ID. {{ $employee->no_id }}</p>
                                 </td>
                                 <td class="px-6 py-4 text-right font-bold text-brand-600 tabular-nums whitespace-nowrap">Rp {{ number_format($total, 0, ',', '.') }}</td>
                                 <td class="px-6 py-4 text-center">
@@ -94,7 +94,7 @@
                                                     period_id: {{ $period->id }},
                                                     employee_id: {{ $employee->id }},
                                                     name: '{{ addslashes($employee->name) }}', 
-                                                    nrp: '{{ $employee->emp_no }}', 
+                                                    nrp: '{{ $employee->no_id }}', 
                                                     days_worked: {{ $daysWorked }},
                                                     salary_daily: {{ $employee->salary_daily }},
                                                     pokok: {{ $pokok }}, 

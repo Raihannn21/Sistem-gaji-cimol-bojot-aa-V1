@@ -15,7 +15,6 @@ class StoreEmployeeRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'emp_no' => ['required', 'string', 'max:50', 'unique:employees,emp_no'],
             'no_id' => ['required', 'string', 'max:50', 'unique:employees,no_id'],
             'nik' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
@@ -28,6 +27,7 @@ class StoreEmployeeRequest extends FormRequest
             'salary_daily' => ['nullable', 'numeric'],
             'salary_monthly' => ['nullable', 'numeric'],
             'risk_allowance' => ['nullable'],
+            'attendance_allowance' => ['nullable', 'numeric'],
             'bpjs_health' => ['nullable'],
             'bpjs_tk' => ['nullable'],
             'pph21' => ['nullable'],
@@ -40,8 +40,6 @@ class StoreEmployeeRequest extends FormRequest
     {
         return [
             'name.required' => 'Nama lengkap wajib diisi.',
-            'emp_no.required' => 'Emp No wajib diisi.',
-            'emp_no.unique' => 'Emp No sudah terdaftar.',
             'no_id.required' => 'No. ID wajib diisi.',
             'no_id.unique' => 'No. ID sudah terdaftar.',
             'email.email' => 'Format email tidak valid.',

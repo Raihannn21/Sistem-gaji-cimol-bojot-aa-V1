@@ -17,12 +17,10 @@
             let hasError = false;
             
             const name = this.$el.querySelector('[name=name]').value;
-            const emp_no = this.$el.querySelector('[name=emp_no]').value;
             const no_id = this.$el.querySelector('[name=no_id]').value;
             const jabatan = this.$el.querySelector('[name=jabatan]').value;
 
             if (!name) { this.errors.name = 'Nama lengkap wajib diisi.'; hasError = true; }
-            if (!emp_no) { this.errors.emp_no = 'Emp No wajib diisi.'; hasError = true; }
             if (!no_id) { this.errors.no_id = 'No. ID wajib diisi.'; hasError = true; }
             if (!jabatan) { this.errors.jabatan = 'Jabatan wajib diisi.'; hasError = true; }
 
@@ -81,7 +79,6 @@
                         <h5 class="mb-4 text-base font-bold text-gray-800 dark:text-white/90">Informasi Umum</h5>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                             <x-form.input name="name" label="Nama Lengkap" placeholder="Nama" @input="delete errors.name" />
-                            <x-form.input name="emp_no" label="Emp No" placeholder="EMP001" @input="delete errors.emp_no" />
                             <x-form.input name="no_id" label="No. ID" placeholder="ID1001" @input="delete errors.no_id" />
                             <x-form.input name="nik" label="NIK" placeholder="16 digit NIK" />
 
@@ -124,6 +121,7 @@
                             <x-form.input name="bpjs_tk" label="Bpjs TK" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                             <x-form.input name="pph21" label="PPH 21" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                             <x-form.input name="risk_allowance" label="Tunjangan Risiko" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            <x-form.input name="attendance_allowance" label="Tunjangan Kehadiran" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                         </div>
                     </div>
                 </div>

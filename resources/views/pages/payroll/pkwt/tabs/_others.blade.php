@@ -24,7 +24,7 @@
                 </span>
                 <input type="text" 
                        x-model="searchQuery" 
-                       placeholder="Cari nama atau NRP..." 
+                       placeholder="Cari nama atau ID..." 
                        class="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pr-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-transparent dark:text-white dark:focus:border-brand-500 transition-colors"
                        style="padding-left: 2.75rem;">
             </div>
@@ -62,10 +62,10 @@
                             });
                         @endphp
                         <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors others-row"
-                            x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->emp_no)) }}'.includes(searchQuery.toLowerCase())">
+                            x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->no_id)) }}'.includes(searchQuery.toLowerCase())">
                             <td class="px-6 py-4">
                                 <p class="font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
-                                <p class="text-xs text-gray-400">NRP. {{ $employee->emp_no }}</p>
+                                <p class="text-xs text-gray-400">ID. {{ $employee->no_id }}</p>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-1">
@@ -80,7 +80,7 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <button @click="showOthersDetailModal = true; 
-                                                selectedEmployee = { id: {{ $employee->id }}, name: '{{ addslashes($employee->name) }}', nrp: '{{ $employee->emp_no }}' };
+                                                selectedEmployee = { id: {{ $employee->id }}, name: '{{ addslashes($employee->name) }}', nrp: '{{ $employee->no_id }}' };
                                                 selectedEmployeeOthers = @js($detailItems);" 
                                         class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-brand-500 transition-colors"
                                         title="Lihat Detail Tunjangan">
@@ -99,7 +99,7 @@
                     <!-- Empty State for Search Results -->
                     <tr x-show="searchQuery && document.querySelectorAll('.others-row[style*=\'display: none\']').length === document.querySelectorAll('.others-row').length">
                         <td colspan="4" class="px-6 py-8 text-center text-gray-400 italic">
-                            Karyawan dengan nama atau NRP tersebut tidak ditemukan di rekap tunjangan lain.
+                            Karyawan dengan nama atau ID tersebut tidak ditemukan di rekap tunjangan lain.
                         </td>
                     </tr>
                 </tbody>

@@ -16,7 +16,7 @@
                 var query = this.searchQuery.toLowerCase();
                 return this.employees.filter(function(e) {
                     var nameMatch = e.name && e.name.toLowerCase().indexOf(query) !== -1;
-                    var nrpMatch = e.emp_no && e.emp_no.toLowerCase().indexOf(query) !== -1;
+                    var nrpMatch = e.no_id && e.no_id.toLowerCase().indexOf(query) !== -1;
                     return nameMatch || nrpMatch;
                 });
             },
@@ -68,7 +68,7 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input type="text" x-model="searchQuery" placeholder="Nama atau NRP..."
+                        <input type="text" x-model="searchQuery" placeholder="Nama atau ID..."
                             class="block h-12 w-full rounded-xl border border-gray-100 bg-gray-50/50 pl-12 pr-4 text-sm font-medium text-gray-700 outline-none transition-all focus:border-brand-500 focus:bg-white dark:border-gray-800 dark:bg-white/[0.02] dark:text-white">
                     </div>
 
@@ -86,7 +86,7 @@
                                     <p class="text-sm font-bold text-gray-800 dark:text-white truncate" x-text="emp.name">
                                     </p>
                                     <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5"
-                                        x-text="'NRP. ' + emp.emp_no + ' • ' + emp.employment_type"></p>
+                                        x-text="'ID. ' + emp.no_id + ' • ' + emp.employment_type"></p>
                                 </div>
                             </div>
                         </template>
@@ -129,14 +129,14 @@
                                             </svg>
                                             <span x-text="selectedEmployee.employment_type"></span>
                                         </div>
-                                        <!-- NRP Badge -->
+                                        <!-- ID Badge -->
                                         <div
                                             class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[10px] font-bold text-gray-500 dark:bg-white/5 dark:text-gray-400">
                                             <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                             </svg>
-                                            <span x-text="selectedEmployee.emp_no"></span>
+                                            <span x-text="selectedEmployee.no_id"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -196,7 +196,7 @@
                                                     <td class="px-6 py-4 text-right text-sm font-medium text-gray-600 dark:text-gray-400 tabular-nums" x-text="p.days_worked + ' Hari'"></td>
                                                     <td class="px-6 py-4 text-right text-sm font-bold text-brand-600 tabular-nums" x-text="'Rp ' + p.total"></td>
                                                     <td class="px-6 py-4 text-center">
-                                                        <button @click="selectedSlip = { name: selectedEmployee.name, nrp: selectedEmployee.emp_no, total: p.total, type: p.type, period: p.period, detail: p }; showSlipModal = true" 
+                                                        <button @click="selectedSlip = { name: selectedEmployee.name, nrp: selectedEmployee.no_id, total: p.total, type: p.type, period: p.period, detail: p }; showSlipModal = true" 
                                                             class="text-gray-400 hover:text-brand-500 transition-colors p-2 hover:bg-brand-50 rounded-lg dark:hover:bg-brand-500/10 group">
                                                             <svg class="h-5 w-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor"
                                                                 viewBox="0 0 24 24">

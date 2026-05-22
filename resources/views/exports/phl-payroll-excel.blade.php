@@ -34,7 +34,7 @@
         <!-- Table Headers -->
         <tr>
             <th style="font-weight: bold; text-align: center; border: 1px solid #000000; background-color: #1e3a8a; color: #ffffff;">No</th>
-            <th style="font-weight: bold; text-align: center; border: 1px solid #000000; background-color: #1e3a8a; color: #ffffff;">NRP</th>
+            <th style="font-weight: bold; text-align: center; border: 1px solid #000000; background-color: #1e3a8a; color: #ffffff;">ID</th>
             <th style="font-weight: bold; text-align: left; border: 1px solid #000000; background-color: #1e3a8a; color: #ffffff;">Nama Karyawan</th>
             <th style="font-weight: bold; text-align: center; border: 1px solid #000000; background-color: #1e3a8a; color: #ffffff;">Hadir (Hari)</th>
             <th style="font-weight: bold; text-align: right; border: 1px solid #000000; background-color: #1e3a8a; color: #ffffff;">Gaji Pokok / Hari</th>
@@ -67,7 +67,7 @@
             @endphp
             <tr>
                 <td style="text-align: center; border: 1px solid #000000;">{{ $no++ }}</td>
-                <td style="text-align: center; border: 1px solid #000000;">{{ $row['employee']->emp_no }}</td>
+                <td style="text-align: center; border: 1px solid #000000;">{{ $row['employee']->no_id }}</td>
                 <td style="font-weight: bold; border: 1px solid #000000;">{{ $row['employee']->name }}</td>
                 <td style="text-align: center; border: 1px solid #000000;">{{ $row['days_worked'] }}</td>
                 <td style="text-align: right; border: 1px solid #000000;">Rp {{ number_format($row['salary_daily'], 0, ',', '.') }}</td>

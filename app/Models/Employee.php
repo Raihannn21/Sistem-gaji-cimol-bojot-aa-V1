@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class Employee extends Model
 {
     protected $fillable = [
-        'emp_no',
         'no_id',
         'nik',
         'name',
@@ -21,6 +20,7 @@ class Employee extends Model
         'salary_daily',
         'salary_monthly',
         'risk_daily_amount',
+        'attendance_allowance',
         'bpjs_health',
         'bpjs_tk',
         'pph21',
@@ -32,6 +32,7 @@ class Employee extends Model
         'salary_daily' => 'decimal:2',
         'salary_monthly' => 'decimal:2',
         'risk_daily_amount' => 'decimal:2',
+        'attendance_allowance' => 'decimal:2',
         'bpjs_health' => 'decimal:2',
         'bpjs_tk' => 'decimal:2',
         'pph21' => 'decimal:2',
@@ -64,6 +65,7 @@ class Employee extends Model
             $fields[] = 'bpjs_health';
             $fields[] = 'bpjs_tk';
             $fields[] = 'pph21';
+            $fields[] = 'attendance_allowance';
         }
 
         $totalFields = count($fields);

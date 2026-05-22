@@ -160,7 +160,7 @@
         <thead>
             <tr>
                 <th style="width: 3%;">No</th>
-                <th style="width: 8%;">NRP</th>
+                <th style="width: 8%;">ID</th>
                 <th>Nama Karyawan</th>
                 <th style="width: 6%;">Hadir<br>(Hari)</th>
                 <th style="width: 6%;">Absen<br>(Hari)</th>
@@ -198,7 +198,7 @@
                 @endphp
                 <tr>
                     <td class="text-center">{{ $no++ }}</td>
-                    <td class="text-center">{{ $row['employee']->emp_no }}</td>
+                    <td class="text-center">{{ $row['employee']->no_id }}</td>
                     <td class="font-bold">{{ $row['employee']->name }}</td>
                     <td class="text-center">{{ $row['days_worked'] }} H</td>
                     <td class="text-center">{{ $row['days_absent'] }} H</td>

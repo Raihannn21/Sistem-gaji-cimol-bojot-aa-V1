@@ -23,20 +23,18 @@ class PhlAttendanceImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        $empNo = $row['emp_no'] ?? $row['no_id'] ?? null;
-        if (!$empNo) {
+        $noId = $row['no_id'] ?? $row['id_no'] ?? $row['emp_no'] ?? null;
+        if (!$noId) {
             $this->skippedCount++;
             return null;
         }
 
-        $employee = Employee::where('emp_no', $empNo)
-            ->orWhere('no_id', $empNo)
-            ->first();
+        $employee = Employee::where('no_id', $noId)->first();
 
         if (!$employee) {
-            Log::warning("Employee with ID {$empNo} not found during attendance import.");
+            Log::warning("Employee with ID {$noId} not found during attendance import.");
             $this->skippedCount++;
-            $this->skippedEmployees[] = $empNo;
+            $this->skippedEmployees[] = $noId;
             return null;
         }
 

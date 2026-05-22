@@ -101,7 +101,7 @@
                 </span>
                 <input type="text" 
                        x-model="searchQuery" 
-                       placeholder="Cari nama atau NRP..." 
+                       placeholder="Cari nama atau ID..." 
                        class="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pr-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-transparent dark:text-white dark:focus:border-brand-500 transition-colors"
                        style="padding-left: 2.75rem;">
             </div>
@@ -152,10 +152,10 @@
                             $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
                         @endphp
                         <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors overview-row"
-                            x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->emp_no)) }}'.includes(searchQuery.toLowerCase())">
+                            x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->no_id)) }}'.includes(searchQuery.toLowerCase())">
                             <td class="px-6 py-4">
                                 <p class="text-sm font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
-                                <p class="text-xs text-gray-400">ID. {{ $employee->emp_no }}</p>
+                                <p class="text-xs text-gray-400">ID. {{ $employee->no_id }}</p>
                             </td>
                             <td
                                 class="px-6 py-4 text-sm text-center font-bold text-green-600 dark:text-green-400 tabular-nums">
@@ -199,7 +199,7 @@
                     <!-- Empty State for Search Results -->
                     <tr x-show="searchQuery && document.querySelectorAll('.overview-row[style*=\'display: none\']').length === document.querySelectorAll('.overview-row').length">
                         <td colspan="10" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400 italic">
-                            Karyawan dengan nama atau NRP tersebut tidak ditemukan.
+                            Karyawan dengan nama atau ID tersebut tidak ditemukan.
                         </td>
                     </tr>
                 </tbody>

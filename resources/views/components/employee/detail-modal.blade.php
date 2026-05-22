@@ -53,10 +53,6 @@
                     <h5 class="mb-4 text-base font-bold text-gray-800 dark:text-white/90">Informasi Umum</h5>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                         <div>
-                            <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">Emp No</p>
-                            <p class="text-sm font-medium text-gray-800 dark:text-white/90" x-text="selectedEmployee.emp_no"></p>
-                        </div>
-                        <div>
                             <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">No. ID</p>
                             <p class="text-sm font-medium text-gray-800 dark:text-white/90" x-text="selectedEmployee.id_no || '-'"></p>
                         </div>
@@ -125,6 +121,10 @@
                         <div>
                             <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">Tunjangan Risiko</p>
                             <p class="text-sm font-semibold text-gray-800 dark:text-white/90" x-text="'Rp ' + formatPrice(selectedEmployee.risk_allowance)"></p>
+                        </div>
+                        <div>
+                            <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">Tunjangan Kehadiran</p>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-white/90" x-text="'Rp ' + formatPrice(selectedEmployee.attendance_allowance)"></p>
                         </div>
                     </div>
                 </div>

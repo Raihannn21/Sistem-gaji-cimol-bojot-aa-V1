@@ -32,7 +32,7 @@
                 </div>
                 <div>
                     <h3 class="text-xl font-bold text-gray-800 dark:text-white/90" x-text="selectedEmployee.name"></h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400" x-text="'NRP. ' + selectedEmployee.nrp"></p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400" x-text="'ID. ' + selectedEmployee.nrp"></p>
                 </div>
             </div>
 

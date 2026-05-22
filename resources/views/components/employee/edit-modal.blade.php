@@ -23,11 +23,9 @@
             let hasError = false;
             
             const name = this.$el.querySelector('[name=name]').value;
-            const emp_no = this.$el.querySelector('[name=emp_no]').value;
             const no_id = this.$el.querySelector('[name=no_id]').value;
 
             if (!name) { this.errors.name = 'Nama lengkap wajib diisi.'; hasError = true; }
-            if (!emp_no) { this.errors.emp_no = 'Emp No wajib diisi.'; hasError = true; }
             if (!no_id) { this.errors.no_id = 'No. ID wajib diisi.'; hasError = true; }
 
             if (hasError) {
@@ -86,7 +84,6 @@
                         <h5 class="mb-4 text-base font-bold text-gray-800 dark:text-white/90">Informasi Umum</h5>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                             <x-form.input name="name" label="Nama Lengkap" x-model="selectedEmployee.name" @input="delete errors.name" />
-                            <x-form.input name="emp_no" label="Emp No" x-model="selectedEmployee.emp_no" @input="delete errors.emp_no" />
                             <x-form.input name="no_id" label="No. ID" x-model="selectedEmployee.id_no" @input="delete errors.no_id" />
                             <x-form.input name="nik" label="NIK" x-model="selectedEmployee.nik" />
 
@@ -143,6 +140,7 @@
                             <x-form.input name="bpjs_tk" label="Bpjs TK" prefix="Rp" data-currency x-model="selectedEmployee.bpjs_tk" @input="formatCurrency($event.target)" />
                             <x-form.input name="pph21" label="PPH 21" prefix="Rp" data-currency x-model="selectedEmployee.pph21" @input="formatCurrency($event.target)" />
                             <x-form.input name="risk_allowance" label="Tunjangan Risiko" prefix="Rp" data-currency x-model="selectedEmployee.risk_allowance" @input="formatCurrency($event.target)" />
+                            <x-form.input name="attendance_allowance" label="Tunjangan Kehadiran" prefix="Rp" data-currency x-model="selectedEmployee.attendance_allowance" @input="formatCurrency($event.target)" />
                         </div>
                     </div>
                 </div>

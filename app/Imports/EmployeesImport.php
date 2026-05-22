@@ -49,9 +49,10 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
             $teamId = $team->id;
         }
 
+        $attendanceAllowance = $this->cleanNumber($data['attendance_allowance'] ?? $data['tunjangan_kehadiran'] ?? null);
+
         return new Employee([
             'name' => $data['nama'] ?? $data['name'] ?? $data['nama_lengkap'] ?? $data['employee_name'],
-            'emp_no' => $data['emp_no'] ?? $data['nomor_karyawan'] ?? $data['employee_id'] ?? $data['nip'],
             'no_id' => $data['no_id'] ?? $data['id_no'] ?? $data['nomor_id'] ?? $data['id_karyawan'],
             'nik' => $data['nik'] ?? $data['nomor_induk_kependudukan'] ?? null,
             'email' => $data['email'] ?? $data['surel'] ?? null,
@@ -63,6 +64,7 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
             'salary_daily' => ($type === 'PHL') ? $salaryAmount : null,
             'salary_monthly' => ($type === 'PKWT') ? $salaryAmount : null,
             'risk_daily_amount' => $riskAmount,
+            'attendance_allowance' => ($type === 'PKWT') ? $attendanceAllowance : null,
             'bpjs_health' => ($type === 'PKWT') ? $bpjsHealth : null,
             'bpjs_tk' => ($type === 'PKWT') ? $bpjsTk : null,
             'pph21' => ($type === 'PKWT') ? $pph21 : null,
@@ -74,7 +76,6 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
     public function rules(): array
     {
         return [
-            '*.emp_no' => ['required_without_all:*.nomor_karyawan,*.employee_id,*.nip'],
             '*.name' => ['required_without_all:*.nama,*.nama_lengkap,*.employee_name'],
             '*.no_id' => ['required_without_all:*.id_no,*.nomor_id,*.id_karyawan'],
         ];

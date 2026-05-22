@@ -42,9 +42,9 @@
                         <div class="space-y-5">
                             <!-- Searchable Employee Select -->
                             <div class="relative z-50">
-                                <x-form.select-custom label="Pilih Karyawan" placeholder="Cari nama atau NRP..." name="employee_id">
+                                <x-form.select-custom label="Pilih Karyawan" placeholder="Cari nama atau ID..." name="employee_id">
                                     @foreach($activeEmployees as $emp)
-                                        <x-form.select-item value="{{ $emp->id }}">{{ $emp->name }} ({{ $emp->emp_no }})</x-form.select-item>
+                                        <x-form.select-item value="{{ $emp->id }}">{{ $emp->name }} ({{ $emp->no_id }})</x-form.select-item>
                                     @endforeach
                                 </x-form.select-custom>
                             </div>

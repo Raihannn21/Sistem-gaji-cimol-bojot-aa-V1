@@ -20,7 +20,7 @@
                     </span>
                     <input type="text" 
                            x-model="searchQuery" 
-                           placeholder="Cari nama atau NRP..." 
+                           placeholder="Cari nama atau ID..." 
                            class="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pr-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-transparent dark:text-white dark:focus:border-brand-500 transition-colors"
                            style="padding-left: 2.75rem;">
                 </div>
@@ -54,7 +54,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     @forelse($period->attendances as $attendance)
-                        <tr x-show="!searchQuery || '{{ strtolower(addslashes($attendance->employee->name ?? '')) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($attendance->employee->emp_no ?? '')) }}'.includes(searchQuery.toLowerCase())"
+                        <tr x-show="!searchQuery || '{{ strtolower(addslashes($attendance->employee->name ?? '')) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($attendance->employee->no_id ?? '')) }}'.includes(searchQuery.toLowerCase())"
                             class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors" x-cloak>
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
@@ -65,8 +65,8 @@
                                     <div>
                                         <p class="text-sm font-bold text-gray-800 dark:text-white">
                                             {{ $attendance->employee->name ?? 'Unknown' }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">NRP.
-                                            {{ $attendance->employee->emp_no ?? '-' }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">ID.
+                                            {{ $attendance->employee->no_id ?? '-' }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -150,7 +150,7 @@
                         class="no-results-row" x-cloak>
                         <td colspan="{{ $period->status !== 'Locked' ? 6 : 5 }}"
                             class="px-6 py-12 text-center text-sm text-gray-400 italic">
-                            Tidak ada karyawan dengan nama atau NRP "<span x-text="searchQuery"
+                            Tidak ada karyawan dengan nama atau ID "<span x-text="searchQuery"
                                 class="font-bold"></span>" ditemukan dalam absensi.
                         </td>
                     </tr>

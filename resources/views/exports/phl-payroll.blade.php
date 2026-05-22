@@ -160,7 +160,7 @@
         <thead>
             <tr>
                 <th style="width: 4%;">No</th>
-                <th style="width: 10%;">NRP</th>
+                <th style="width: 10%;">ID</th>
                 <th>Nama Karyawan</th>
                 <th style="width: 7%;">Hadir<br>(Hari)</th>
                 <th style="width: 10%;">Gaji Pokok / Hari</th>
@@ -193,7 +193,7 @@
                 @endphp
                 <tr>
                     <td class="text-center">{{ $no++ }}</td>
-                    <td class="text-center">{{ $row['employee']->emp_no }}</td>
+                    <td class="text-center">{{ $row['employee']->no_id }}</td>
                     <td class="font-bold">{{ $row['employee']->name }}</td>
                     <td class="text-center">{{ $row['days_worked'] }}</td>
                     <td class="currency">Rp {{ number_format($row['salary_daily'], 0, ',', '.') }}</td>

@@ -40,7 +40,7 @@
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Karyawan</label>
                                 <div class="w-full rounded-lg border border-gray-200 bg-gray-50/30 px-4 py-3 dark:border-gray-800 dark:bg-white/[0.03]">
-                                    <p class="text-sm font-semibold text-gray-800 dark:text-white" x-text="selectedItem.name + ' (' + selectedItem.emp_no + ')'"></p>
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-white" x-text="selectedItem.name + ' (' + selectedItem.no_id + ')'"></p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400" x-text="selectedItem.role"></p>
                                 </div>
                             </div>

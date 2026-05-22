@@ -22,7 +22,6 @@ class EmployeeStatusController extends Controller
             ->when($search, function ($query, $search) {
                 $query->whereHas('employee', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('emp_no', 'like', "%{$search}%")
                         ->orWhere('no_id', 'like', "%{$search}%");
                 })->orWhere('reason', 'like', "%{$search}%");
             })
@@ -31,7 +30,6 @@ class EmployeeStatusController extends Controller
             ->map(fn(EmployeeStatus $status) => [
                 'id' => $status->id,
                 'name' => $status->employee->name ?? '-',
-                'emp_no' => $status->employee->emp_no ?? '-',
                 'no_id' => $status->employee->no_id ?? '-',
                 'nik' => $status->employee->nik ?? '-',
                 'role' => $status->employee->employment_type ?? '-',
@@ -50,7 +48,7 @@ class EmployeeStatusController extends Controller
 
         $activeEmployees = Employee::where('status', 'Aktif')
             ->orderBy('name')
-            ->select('id', 'name', 'emp_no')
+            ->select('id', 'name', 'no_id')
             ->get();
 
         return view('pages.employees.status', [

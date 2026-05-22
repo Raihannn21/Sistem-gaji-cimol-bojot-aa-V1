@@ -40,9 +40,9 @@
             <form action="{{ $period ? url('/payroll/pkwt/periods/' . $period->id . '/other-allowance') : '#' }}" method="POST" class="space-y-6 pb-32">
                 @csrf
                 <div class="space-y-6">
-                    <x-form.select-custom label="Pilih Karyawan" name="employee_id" placeholder="Cari nama atau NRP...">
+                    <x-form.select-custom label="Pilih Karyawan" name="employee_id" placeholder="Cari nama atau ID...">
                         @foreach($employees as $employee)
-                            <x-form.select-item value="{{ $employee->id }}">{{ $employee->name }} ({{ $employee->emp_no }})</x-form.select-item>
+                            <x-form.select-item value="{{ $employee->id }}">{{ $employee->name }} ({{ $employee->no_id }})</x-form.select-item>
                         @endforeach
                     </x-form.select-custom>
 
