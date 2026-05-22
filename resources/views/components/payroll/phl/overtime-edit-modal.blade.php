@@ -1,7 +1,7 @@
 @props(['period'])
 <template x-teleport="body">
     <div x-show="showEditOvertimeModal" 
-         x-init="$watch('showEditOvertimeModal', value => value && $nextTick(() => { const input = $el.querySelector('[data-currency]'); if (input) formatCurrency(input); }))"
+         x-init="$watch('showEditOvertimeModal', value => value && $nextTick(() => { $el.querySelectorAll('[data-currency]').forEach(input => formatCurrency(input)); }))"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
@@ -51,13 +51,32 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Jumlah Jam Lembur
                         </label>
-                        <input type="number" name="hours" x-model="selectedOvertimeHours" required min="1" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150" placeholder="Contoh: 4">
+                        <input type="number" name="hours" x-model="selectedOvertimeHours" 
+                            @input="selectedOvertimeAmount = (parseFloat(selectedOvertimeHours) || 0) * (parseFloat(String(selectedOvertimeRate).replace(/\D/g, '')) || 0)"
+                            required min="1" 
+                            class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150" 
+                            placeholder="Contoh: 4">
                     </div>
 
                     <div>
-                        <x-form.input name="amount" label="Nominal Lembur" prefix="Rp" data-currency placeholder="0" required x-model="selectedOvertimeAmount" @input="formatCurrency($event.target)" />
+                        <x-form.input name="rate" label="Nominal Per Jam" prefix="Rp" data-currency placeholder="0" required 
+                            x-model="selectedOvertimeRate" 
+                            @input="formatCurrency($event.target); selectedOvertimeAmount = (parseFloat(selectedOvertimeHours) || 0) * (parseFloat(String(selectedOvertimeRate).replace(/\D/g, '')) || 0)" />
                     </div>
                 </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Hasil (Otomatis)</label>
+                    <div class="relative flex items-center group">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                            <span class="text-sm font-semibold text-gray-550 dark:text-gray-400">Rp</span>
+                        </div>
+                        <input type="text" :value="new Intl.NumberFormat('id-ID').format(selectedOvertimeAmount)" readonly
+                            class="pl-12 px-4 h-11 w-full rounded-lg border border-gray-200 bg-gray-50 dark:bg-gray-800 py-2.5 text-sm text-gray-500 outline-none dark:text-white/70 shadow-theme-xs">
+                    </div>
+                </div>
+
+                <input type="hidden" name="amount" :value="selectedOvertimeAmount">
 
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">

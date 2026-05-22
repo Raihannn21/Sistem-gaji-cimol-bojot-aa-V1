@@ -14,15 +14,12 @@ class StorePkwtOvertimeRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Prepare the data for validation.
-     */
     protected function prepareForValidation(): void
     {
         $mergeData = [];
 
-        if ($this->has('amount')) {
-            $mergeData['amount'] = preg_replace('/\D/', '', $this->amount);
+        if ($this->has('rate')) {
+            $mergeData['rate'] = preg_replace('/\D/', '', $this->rate);
         }
 
         if ($this->has('overtime_date') && !empty($this->overtime_date)) {
@@ -35,6 +32,13 @@ class StorePkwtOvertimeRequest extends FormRequest
         if (!empty($mergeData)) {
             $this->merge($mergeData);
         }
+
+        // Set amount automatically
+        $hours = (float) ($this->hours ?? 0);
+        $rate = (float) ($this->rate ?? 0);
+        $this->merge([
+            'amount' => $hours * $rate
+        ]);
     }
 
     /**
@@ -48,6 +52,7 @@ class StorePkwtOvertimeRequest extends FormRequest
             'employee_id' => 'required|exists:employees,id',
             'overtime_date' => 'required|date',
             'hours' => 'required|integer|min:1',
+            'rate' => 'required|numeric|min:0',
             'amount' => 'required|numeric|min:0',
             'note' => 'nullable|string|max:255',
         ];
@@ -66,7 +71,10 @@ class StorePkwtOvertimeRequest extends FormRequest
             'hours.required' => 'Masukkan jumlah jam lembur.',
             'hours.integer' => 'Jumlah jam harus berupa angka bulat.',
             'hours.min' => 'Jumlah jam minimal adalah 1 jam.',
-            'amount.required' => 'Masukkan nominal uang lembur.',
+            'rate.required' => 'Masukkan nominal per jam.',
+            'rate.numeric' => 'Nominal per jam harus berupa angka.',
+            'rate.min' => 'Nominal per jam tidak boleh bernilai negatif.',
+            'amount.required' => 'Nominal lembur harus dihitung.',
             'amount.numeric' => 'Nominal lembur harus berupa angka.',
             'amount.min' => 'Nominal lembur tidak boleh bernilai negatif.',
             'note.max' => 'Keterangan lembur tidak boleh melebihi 255 karakter.',

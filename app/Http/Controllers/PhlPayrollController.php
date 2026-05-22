@@ -11,6 +11,7 @@ use App\Models\PhlRiskAllowance;
 use App\Models\PhlAttendance;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PhlAttendanceImport;
+use App\Imports\PhlOvertimeImport;
 use App\Http\Requests\PhlPayroll\StorePhlOvertimeRequest;
 use App\Http\Requests\PhlPayroll\StorePhlRiskRequest;
 use App\Exports\PhlPayrollExport;
@@ -234,6 +235,47 @@ class PhlPayrollController extends Controller
             return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Gagal menghapus data lembur: ' . $e->getMessage());
+        }
+    }
+
+    public function importOvertime(Request $request, $id)
+    {
+        $period = PhlPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ], [
+            'file.required' => 'Silakan pilih file Excel terlebih dahulu.',
+            'file.mimes' => 'Format file harus .xlsx, .xls, atau .csv.',
+        ]);
+
+        try {
+            $array = Excel::toArray(new PhlOvertimeImport($id), $request->file('file'));
+            if (empty($array) || empty($array[0])) {
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'File terbaca kosong.');
+            }
+
+            $import = new PhlOvertimeImport($id);
+            Excel::import($import, $request->file('file'));
+
+            $imported = $import->importedCount;
+            $skipped = $import->skippedCount;
+            $skippedList = array_unique($import->skippedEmployees);
+
+            if ($imported === 0 && $skipped > 0) {
+                $msg = 'Peringatan: Tidak ada data lembur PHL yang diimpor. Semua baris (' . $skipped . ' data) dilewati karena nomor ID karyawan tidak terdaftar, bukan PHL, atau tanggal di luar periode: (' . implode(', ', $skippedList) . ').';
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', $msg);
+            } elseif ($skipped > 0) {
+                $msg = 'Berhasil mengimpor ' . $imported . ' data lembur PHL. Sebanyak ' . $skipped . ' baris data dilewati karena nomor ID karyawan tidak terdaftar, bukan PHL, atau tanggal di luar periode: (' . implode(', ', $skippedList) . ').';
+                return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('warning', $msg);
+            }
+
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur PHL berhasil diimport (' . $imported . ' data).');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
         }
     }
 

@@ -29,7 +29,20 @@
             </div>
 
             <!-- Form -->
-            <form action="{{ route('payroll.phl.periods.store-overtime', $period->id) }}" method="POST" class="space-y-6 pb-32">
+            <form action="{{ route('payroll.phl.periods.store-overtime', $period->id) }}" method="POST" class="space-y-6 pb-32"
+                x-data="{
+                    hours: '',
+                    rate: '',
+                    amount: 0,
+                    calculate() {
+                        let h = parseFloat(this.hours) || 0;
+                        let r = parseFloat(String(this.rate).replace(/\D/g, '')) || 0;
+                        this.amount = h * r;
+                    },
+                    get formattedAmount() {
+                        return new Intl.NumberFormat('id-ID').format(this.amount);
+                    }
+                }">
                 @csrf
                 <div class="space-y-6">
                     <x-form.select-custom label="Pilih Karyawan" name="employee_id" placeholder="Cari nama atau ID...">
@@ -43,12 +56,27 @@
                             dateFormat="d-m-Y" :static="true" />
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Jam</label>
-                            <input type="number" name="hours" placeholder="Contoh: 4" required min="1"
+                            <input type="number" name="hours" x-model="hours" @input="calculate()" placeholder="Contoh: 4" required min="1"
                                 class="w-full rounded-xl border border-gray-200 bg-transparent px-4 py-3 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150">
                         </div>
                     </div>
 
-                    <x-form.input name="amount" label="Nominal Lembur" prefix="Rp" placeholder="0" required @input="formatCurrency($event.target)" />
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <x-form.input name="rate" x-model="rate" label="Nominal Per Jam" prefix="Rp" placeholder="0" required @input="formatCurrency($event.target); calculate();" />
+                        
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Hasil (Otomatis)</label>
+                            <div class="relative flex items-center group">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                                    <span class="text-sm font-semibold text-gray-550 dark:text-gray-400">Rp</span>
+                                </div>
+                                <input type="text" :value="formattedAmount" readonly
+                                    class="pl-12 px-4 h-11 w-full rounded-lg border border-gray-200 bg-gray-50 dark:bg-gray-800 py-2.5 text-sm text-gray-500 outline-none dark:text-white/70 shadow-theme-xs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="amount" :value="amount">
  
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Keterangan / Aktivitas</label>

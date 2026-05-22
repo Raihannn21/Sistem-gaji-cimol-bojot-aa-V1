@@ -68,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/periods/{id}/overtime', [PhlPayrollController::class, 'storeOvertime'])->name('payroll.phl.periods.store-overtime');
         Route::put('/periods/{id}/overtime/{overtimeId}', [PhlPayrollController::class, 'updateOvertime'])->name('payroll.phl.periods.update-overtime');
         Route::delete('/periods/{id}/overtime/{overtimeId}', [PhlPayrollController::class, 'destroyOvertime'])->name('payroll.phl.periods.destroy-overtime');
+        Route::post('/periods/{id}/import-overtime', [PhlPayrollController::class, 'importOvertime'])->name('payroll.phl.periods.import-overtime');
 
         // Tunjangan Risiko (Risk Allowance) PHL
         Route::post('/periods/{id}/risk', [PhlPayrollController::class, 'storeRisk'])->name('payroll.phl.periods.store-risk');
@@ -95,6 +96,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/periods/{id}/overtime', [PkwtPayrollController::class, 'storeOvertime'])->name('payroll.pkwt.periods.store-overtime');
         Route::put('/periods/{id}/overtime/{overtimeId}', [PkwtPayrollController::class, 'updateOvertime'])->name('payroll.pkwt.periods.update-overtime');
         Route::delete('/periods/{id}/overtime/{overtimeId}', [PkwtPayrollController::class, 'destroyOvertime'])->name('payroll.pkwt.periods.destroy-overtime');
+        Route::post('/periods/{id}/import-overtime', [PkwtPayrollController::class, 'importOvertime'])->name('payroll.pkwt.periods.import-overtime');
         
         // Risk Allowance (Risiko) PKWT
         Route::post('/periods/{id}/risk', [PkwtPayrollController::class, 'storeRisk'])->name('payroll.pkwt.periods.store-risk');

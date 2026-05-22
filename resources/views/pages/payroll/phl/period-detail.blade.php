@@ -24,11 +24,13 @@
         selectedOvertimeDate: '',
         selectedOvertimeDateFormatted: '',
         selectedOvertimeHours: 0,
+        selectedOvertimeRate: 0,
         selectedOvertimeAmount: 0,
         selectedOvertimeNote: '',
         selectedRiskDate: '',
         selectedRiskAmount: 0,
         selectedRiskNote: '',
+        showImportOvertimeModal: false,
         formatCurrency(el) {
             let val = el.value.replace(/\D/g, '');
             if (val === '') {
@@ -170,6 +172,9 @@
         </div>
         <!-- Modal: Import Absensi -->
         <x-payroll.phl.attendance-import-modal :period="$period" />
+        
+        <!-- Modal: Import Lembur -->
+        <x-payroll.phl.overtime-import-modal :period="$period" />
         
         <!-- Modal: Edit Absensi -->
         <x-payroll.phl.attendance-edit-modal :period="$period" />

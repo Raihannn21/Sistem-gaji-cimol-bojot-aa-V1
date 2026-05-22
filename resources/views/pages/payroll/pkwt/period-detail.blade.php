@@ -28,11 +28,13 @@
         selectedOvertimeDate: '',
         selectedOvertimeDateFormatted: '',
         selectedOvertimeHours: 0,
+        selectedOvertimeRate: 0,
         selectedOvertimeAmount: 0,
         selectedOvertimeNote: '',
         selectedRiskDate: '',
         selectedRiskAmount: 0,
         selectedRiskNote: '',
+        showImportOvertimeModal: false,
         selectedSlip: {},
         processing: false,
         emailSending: false,
@@ -164,6 +166,7 @@
             <x-payroll.pkwt.generate-confirm-modal :period="$period" :employees="$employees" />
             <x-payroll.pkwt.payslip-modal :period="$period" />
             <x-payroll.pkwt.attendance-import-modal :period="$period" />
+            <x-payroll.pkwt.overtime-import-modal :period="$period" />
             <x-payroll.pkwt.attendance-edit-modal :period="$period" />
             <x-payroll.pkwt.import-modal />
         </div>

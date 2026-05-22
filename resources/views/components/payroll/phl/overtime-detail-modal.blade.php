@@ -65,6 +65,7 @@
                                                             selectedOvertimeDate = item.raw_date;
                                                             selectedOvertimeDateFormatted = item.date;
                                                             selectedOvertimeHours = item.hours;
+                                                            selectedOvertimeRate = item.rate;
                                                             selectedOvertimeAmount = item.amount;
                                                             selectedOvertimeNote = item.note;"
                                                      class="p-1.5 text-gray-400 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10 rounded-lg transition-colors"
