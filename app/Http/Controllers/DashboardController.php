@@ -37,7 +37,7 @@ class DashboardController extends Controller
         // Filter by the selected month and year
         $pkwtPeriods = PkwtPayrollPeriod::whereYear('start_date', $yearNum)
             ->whereMonth('start_date', $monthNum)
-            ->with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
+            ->with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
             ->get();
 
         $totalPkwtSalary = 0;
@@ -53,7 +53,10 @@ class DashboardController extends Controller
                     continue;
 
                 $daysWorked = $empAttendances->count();
-                $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+                $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
                 $pokok = $daysWorked * $harian;
 
                 $lembur = $period->overtimes->where('employee_id', $empId)->sum('amount');
@@ -183,7 +186,7 @@ class DashboardController extends Controller
             $mPkwtPeriodTotal = 0;
             $mPkwtPeriods = PkwtPayrollPeriod::whereYear('start_date', $yearNum)
                 ->whereMonth('start_date', $monthNum)
-                ->with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
+                ->with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
                 ->get();
             foreach ($mPkwtPeriods as $period) {
                 $startDate = Carbon::parse($period->start_date);
@@ -197,7 +200,10 @@ class DashboardController extends Controller
                         continue;
 
                     $daysWorked = $empAttendances->count();
-                    $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                    $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                    $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+                    $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                    $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
                     $pokok = $daysWorked * $harian;
 
                     $lembur = $period->overtimes->where('employee_id', $empId)->sum('amount');

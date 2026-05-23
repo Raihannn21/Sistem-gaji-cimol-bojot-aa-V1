@@ -49,7 +49,7 @@ class MonthlyReportController extends Controller
                     });
             })->get();
 
-        $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
+        $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
             ->where(function ($q) use ($startDate, $endDate) {
                 $q->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate])
@@ -93,7 +93,12 @@ class MonthlyReportController extends Controller
             $employees = Employee::whereIn('id', $periodEmployeeIds)->get();
             foreach ($employees as $employee) {
                 $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-                $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                
+                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+                $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
+                
                 $pkwtPokok += ($daysWorked * $harian);
 
                 $pkwtPotongan += ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
@@ -174,7 +179,7 @@ class MonthlyReportController extends Controller
                     });
             })->get();
 
-        $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
+        $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
             ->where(function ($q) use ($startDate, $endDate) {
                 $q->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate])
@@ -219,7 +224,12 @@ class MonthlyReportController extends Controller
             $employees = Employee::whereIn('id', $periodEmployeeIds)->get();
             foreach ($employees as $employee) {
                 $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-                $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                
+                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+                $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
+                
                 $pkwtPokok += ($daysWorked * $harian);
                 $pkwtPotongan += ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
             }
@@ -302,7 +312,7 @@ class MonthlyReportController extends Controller
                     });
             })->get();
 
-        $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
+        $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
             ->where(function ($q) use ($startDate, $endDate) {
                 $q->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate])
@@ -347,7 +357,12 @@ class MonthlyReportController extends Controller
             $employees = Employee::whereIn('id', $periodEmployeeIds)->get();
             foreach ($employees as $employee) {
                 $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-                $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                
+                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+                $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
+                
                 $pkwtPokok += ($daysWorked * $harian);
                 $pkwtPotongan += ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
             }

@@ -83,7 +83,8 @@ class EmployeeReportController extends Controller
                 },
                 'otherAllowances' => function ($q) use ($id) {
                     $q->where('employee_id', $id);
-                }
+                },
+                'periodTeams'
             ])
                 ->whereHas('attendances', function ($q) use ($id) {
                     $q->where('employee_id', $id);
@@ -94,7 +95,11 @@ class EmployeeReportController extends Controller
             foreach ($periods as $period) {
                 $daysWorked = $period->attendances->count();
                 $totalPeriodDays = Carbon::parse($period->start_date)->diffInDays(Carbon::parse($period->end_date)) + 1;
-                $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                
+                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+                $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
                 $pokok = $daysWorked * $harian;
 
                 $lembur = $period->overtimes->sum('amount');
@@ -108,14 +113,20 @@ class EmployeeReportController extends Controller
 
                 $totalBersih = max(0, $pokok + $lembur + $risiko + $other - $potongan);
 
+                $daysAbsent = max(0, $workDays - $daysWorked);
+                $potonganAbsen = $daysAbsent * $harian;
+
                 if ($daysWorked > 0 || $lembur > 0 || $risiko > 0 || $other > 0) {
                     $history[] = [
                         'period_id' => $period->id,
                         'period' => $period->title,
                         'days_worked' => $daysWorked,
+                        'days_absent' => $daysAbsent,
                         'type' => 'PKWT',
+                        'gaji_full' => $totalMonthly,
                         'gaji_pokok' => $pokok,
-                        'total_days' => $totalPeriodDays,
+                        'potongan_absen' => $potonganAbsen,
+                        'total_days' => $workDays,
                         'tarif_harian' => $harian,
                         'lembur' => $lembur,
                         'tunjangan_risiko' => $risiko,

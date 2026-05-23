@@ -71,12 +71,12 @@
                             <div class="flex justify-between items-start gap-4">
                                 <div class="min-w-0">
                                     <span class="font-bold text-gray-800 dark:text-gray-200"
-                                        x-text="selectedSlip.type === 'PKWT' ? 'Gaji Pokok Prorata' : 'Gaji Pokok Harian'"></span>
+                                        x-text="selectedSlip.type === 'PKWT' ? 'Gaji Pokok & Tunjangan Bulanan' : 'Gaji Pokok Harian'"></span>
                                     <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5"
-                                        x-text="selectedSlip.type === 'PKWT' ? (selectedSlip.detail ? (selectedSlip.detail.days_worked + ' Hari Kerja / ' + selectedSlip.detail.total_days + ' Hari Kalender x Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.detail.tarif_harian))) : '') : (selectedSlip.detail ? (selectedSlip.detail.days_worked + ' Hari Kerja x Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.detail.salary_daily))) : '')"></p>
+                                        x-text="selectedSlip.type === 'PKWT' ? (selectedSlip.detail ? ('Gaji Bulanan Penuh: Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.detail.gaji_full)) + ' (' + selectedSlip.detail.total_days + ' Hari Kerja Efektif Tim)') : '') : (selectedSlip.detail ? (selectedSlip.detail.days_worked + ' Hari Kerja x Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.detail.salary_daily))) : '')"></p>
                                 </div>
                                 <span class="font-bold text-gray-900 dark:text-white tabular-nums shrink-0"
-                                    x-text="'Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.detail.gaji_pokok)) : '0')"></span>
+                                    x-text="'Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.type === 'PKWT' ? selectedSlip.detail.gaji_full : selectedSlip.detail.gaji_pokok)) : '0')"></span>
                             </div>
                             <div class="flex justify-between items-start gap-4" x-show="selectedSlip.detail && selectedSlip.detail.lembur > 0">
                                 <div class="min-w-0">
@@ -112,6 +112,17 @@
                             II. Potongan Gaji / Deduksi
                         </div>
                         <div class="space-y-2 px-1">
+                            <!-- Potongan Tidak Hadir (Only for PKWT) -->
+                            <div class="flex justify-between items-center gap-4" x-show="selectedSlip.type === 'PKWT' && selectedSlip.detail && selectedSlip.detail.potongan_absen > 0">
+                                <div class="min-w-0">
+                                    <span class="font-bold text-gray-800 dark:text-gray-200 text-red-600 dark:text-red-400">Potongan Tidak Hadir</span>
+                                    <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5"
+                                        x-text="selectedSlip.detail.days_absent + ' Hari Absen x Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.detail.tarif_harian))">
+                                    </p>
+                                </div>
+                                <span class="font-bold text-red-600 dark:text-red-400 tabular-nums shrink-0"
+                                    x-text="'-Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.detail.potongan_absen))"></span>
+                            </div>
                             <div class="flex justify-between items-center gap-4" x-show="selectedSlip.detail && selectedSlip.detail.bpjs_kesehatan > 0">
                                 <div class="min-w-0">
                                     <span class="font-bold text-gray-800 dark:text-gray-200">BPJS Kesehatan</span>
@@ -135,6 +146,13 @@
                                 </div>
                                 <span class="font-bold text-red-600 dark:text-red-400 tabular-nums shrink-0"
                                     x-text="'-Rp ' + (selectedSlip.detail ? new Intl.NumberFormat('id-ID').format(Math.round(selectedSlip.detail.pajak)) : '0')"></span>
+                            </div>
+                            <div class="flex justify-between items-center gap-4" x-show="selectedSlip.detail && selectedSlip.detail.bpjs_kesehatan <= 0 && selectedSlip.detail.bpjs_tk <= 0 && selectedSlip.detail.pajak <= 0 && (!selectedSlip.detail.potongan_absen || selectedSlip.detail.potongan_absen <= 0)">
+                                <div class="min-w-0">
+                                    <span class="font-bold text-gray-800 dark:text-gray-200">Potongan Terdaftar</span>
+                                    <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5">Tidak ada pemotongan terdaftar</p>
+                                </div>
+                                <span class="font-bold text-gray-900 dark:text-white tabular-nums shrink-0">Rp 0</span>
                             </div>
                         </div>
                     </div>
