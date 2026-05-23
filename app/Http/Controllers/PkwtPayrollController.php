@@ -14,6 +14,7 @@ use App\Http\Requests\PkwtPayroll\StorePkwtOtherAllowanceRequest;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\PkwtAttendanceImport;
 use App\Imports\PkwtOvertimeImport;
+use App\Imports\PkwtRiskImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SalarySlipMail;
@@ -379,6 +380,47 @@ class PkwtPayrollController extends Controller
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('success', 'Data lembur PKWT berhasil diimport (' . $imported . ' data).');
         } catch (\Exception $e) {
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'overtime'])->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
+        }
+    }
+
+    public function importRisk(Request $request, $id)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Periode payroll ini sudah dikunci dan tidak dapat diubah lagi.');
+        }
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ], [
+            'file.required' => 'Silakan pilih file Excel terlebih dahulu.',
+            'file.mimes' => 'Format file harus .xlsx, .xls, atau .csv.',
+        ]);
+
+        try {
+            $array = Excel::toArray(new PkwtRiskImport($id), $request->file('file'));
+            if (empty($array) || empty($array[0])) {
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'File terbaca kosong.');
+            }
+
+            $import = new PkwtRiskImport($id);
+            Excel::import($import, $request->file('file'));
+
+            $imported = $import->importedCount;
+            $skipped = $import->skippedCount;
+            $skippedList = array_unique($import->skippedEmployees);
+
+            if ($imported === 0 && $skipped > 0) {
+                $msg = 'Peringatan: Tidak ada data tunjangan risiko PKWT yang diimpor. Semua baris (' . $skipped . ' data) dilewati karena nomor ID karyawan tidak terdaftar, bukan PKWT, atau tanggal di luar periode: (' . implode(', ', $skippedList) . ').';
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', $msg);
+            } elseif ($skipped > 0) {
+                $msg = 'Berhasil mengimpor ' . $imported . ' data tunjangan risiko PKWT. Sebanyak ' . $skipped . ' baris data dilewati karena nomor ID karyawan tidak terdaftar, bukan PKWT, atau tanggal di luar periode: (' . implode(', ', $skippedList) . ').';
+                return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('warning', $msg);
+            }
+
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('success', 'Data tunjangan risiko PKWT berhasil diimport (' . $imported . ' data).');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'risk'])->with('error', 'Terjadi kesalahan saat import: ' . $e->getMessage());
         }
     }
 

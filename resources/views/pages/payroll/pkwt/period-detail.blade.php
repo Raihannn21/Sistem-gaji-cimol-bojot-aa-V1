@@ -35,6 +35,7 @@
         selectedRiskAmount: 0,
         selectedRiskNote: '',
         showImportOvertimeModal: false,
+        showImportRiskModal: false,
         selectedSlip: {},
         processing: false,
         emailSending: false,
@@ -167,6 +168,7 @@
             <x-payroll.pkwt.payslip-modal :period="$period" />
             <x-payroll.pkwt.attendance-import-modal :period="$period" />
             <x-payroll.pkwt.overtime-import-modal :period="$period" />
+            <x-payroll.pkwt.risk-import-modal :period="$period" />
             <x-payroll.pkwt.attendance-edit-modal :period="$period" />
             <x-payroll.pkwt.import-modal />
         </div>

@@ -31,6 +31,7 @@
         selectedRiskAmount: 0,
         selectedRiskNote: '',
         showImportOvertimeModal: false,
+        showImportRiskModal: false,
         formatCurrency(el) {
             let val = el.value.replace(/\D/g, '');
             if (val === '') {
@@ -175,6 +176,9 @@
         
         <!-- Modal: Import Lembur -->
         <x-payroll.phl.overtime-import-modal :period="$period" />
+        
+        <!-- Modal: Import Risiko -->
+        <x-payroll.phl.risk-import-modal :period="$period" />
         
         <!-- Modal: Edit Absensi -->
         <x-payroll.phl.attendance-edit-modal :period="$period" />

@@ -74,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/periods/{id}/risk', [PhlPayrollController::class, 'storeRisk'])->name('payroll.phl.periods.store-risk');
         Route::put('/periods/{id}/risk/{riskId}', [PhlPayrollController::class, 'updateRisk'])->name('payroll.phl.periods.update-risk');
         Route::delete('/periods/{id}/risk/{riskId}', [PhlPayrollController::class, 'destroyRisk'])->name('payroll.phl.periods.destroy-risk');
+        Route::post('/periods/{id}/import-risk', [PhlPayrollController::class, 'importRisk'])->name('payroll.phl.periods.import-risk');
     });
 
     // Payroll PKWT
@@ -102,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/periods/{id}/risk', [PkwtPayrollController::class, 'storeRisk'])->name('payroll.pkwt.periods.store-risk');
         Route::put('/periods/{id}/risk/{riskId}', [PkwtPayrollController::class, 'updateRisk'])->name('payroll.pkwt.periods.update-risk');
         Route::delete('/periods/{id}/risk/{riskId}', [PkwtPayrollController::class, 'destroyRisk'])->name('payroll.pkwt.periods.destroy-risk');
+        Route::post('/periods/{id}/import-risk', [PkwtPayrollController::class, 'importRisk'])->name('payroll.pkwt.periods.import-risk');
         
         // Other Allowances (Lain-lain) PKWT
         Route::post('/periods/{id}/other-allowance', [PkwtPayrollController::class, 'storeOtherAllowance'])->name('payroll.pkwt.periods.store-other-allowance');
