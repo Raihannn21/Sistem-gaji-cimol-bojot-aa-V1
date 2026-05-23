@@ -5,7 +5,7 @@
         activeTab: '{{ request()->query('tab', 'overview') }}',
         searchQuery: '',
         showEditAttendanceModal: false,
-        selectedAttendance: { id: null, employee_name: '', date: '', scan_in: '', scan_out: '' },
+        selectedAttendance: { id: null, employee_name: '', date: '', scan_in: '', scan_out: '', late_time: '', early_time: '' },
         // Global Modal States
         showOvertimeModal: false,
         showRiskModal: false,

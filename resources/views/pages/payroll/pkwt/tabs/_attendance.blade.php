@@ -46,6 +46,8 @@
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Tanggal</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Scan Masuk</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Scan Pulang</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Terlambat</th>
+                        <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Pulang Cepat</th>
                         <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Durasi</th>
                         @if($period->status !== 'Locked')
                             <th class="px-6 py-4 text-xs font-bold uppercase text-gray-500 tracking-wider text-center">Aksi</th>
@@ -87,6 +89,16 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-center">
+                                <span class="text-sm font-semibold {{ $attendance->late_time && $attendance->late_time !== '-' ? 'text-red-500 font-bold' : 'text-gray-400 dark:text-gray-500' }}">
+                                    {{ $attendance->late_time ?: '-' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="text-sm font-semibold {{ $attendance->early_time && $attendance->early_time !== '-' ? 'text-yellow-600 dark:text-yellow-450 font-bold' : 'text-gray-400 dark:text-gray-500' }}">
+                                    {{ $attendance->early_time ?: '-' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
                                 <span
                                     class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold {{ $attendance->duration >= 8 ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400' : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400' }}">
                                     {{ $attendance->duration }} Jam
@@ -101,7 +113,9 @@
                                                         employee_name: '{{ addslashes($attendance->employee->name ?? 'Unknown') }}',
                                                         date: '{{ \Carbon\Carbon::parse($attendance->date)->format('d M Y') }}',
                                                         scan_in: '{{ $attendance->scan_in ? \Carbon\Carbon::parse($attendance->scan_in)->format('H:i') : '' }}',
-                                                        scan_out: '{{ $attendance->scan_out ? \Carbon\Carbon::parse($attendance->scan_out)->format('H:i') : '' }}'
+                                                        scan_out: '{{ $attendance->scan_out ? \Carbon\Carbon::parse($attendance->scan_out)->format('H:i') : '' }}',
+                                                        late_time: '{{ $attendance->late_time ?? '' }}',
+                                                        early_time: '{{ $attendance->early_time ?? '' }}'
                                                     }; showEditAttendanceModal = true;"
                                             class="p-1.5 text-gray-400 hover:text-brand-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                                             title="Edit Kehadiran">

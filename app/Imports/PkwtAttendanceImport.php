@@ -47,6 +47,11 @@ class PkwtAttendanceImport implements ToModel, WithHeadingRow
 
             $scanIn = $this->transformTime($row['scan_masuk'] ?? null);
             $scanOut = $this->transformTime($row['scan_pulang'] ?? null);
+            
+            // Baca data Terlambat & Pulang Cepat dari Excel
+            $lateTime = $this->formatTimeString($row['terlambat'] ?? $row['late'] ?? $row['late_time'] ?? null);
+            $earlyTime = $this->formatTimeString($row['pulang_cepat'] ?? $row['plg_cepat'] ?? $row['early_time'] ?? $row['early_out'] ?? null);
+
             $duration = 0;
             if ($scanIn && $scanOut) {
                 $start = Carbon::parse($scanIn);
@@ -70,6 +75,8 @@ class PkwtAttendanceImport implements ToModel, WithHeadingRow
                 $existing->update([
                     'scan_in' => $scanIn,
                     'scan_out' => $scanOut,
+                    'late_time' => $lateTime,
+                    'early_time' => $earlyTime,
                     'duration' => $duration,
                 ]);
                 $this->importedCount++;
@@ -83,6 +90,8 @@ class PkwtAttendanceImport implements ToModel, WithHeadingRow
                 'date' => $date,
                 'scan_in' => $scanIn,
                 'scan_out' => $scanOut,
+                'late_time' => $lateTime,
+                'early_time' => $earlyTime,
                 'duration' => $duration,
             ]);
 
@@ -125,6 +134,34 @@ class PkwtAttendanceImport implements ToModel, WithHeadingRow
             return Carbon::parse($value)->format('H:i:s');
         } catch (\Exception $e) {
             return null;
+        }
+    }
+
+    private function formatTimeString($value)
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+
+        try {
+            if (is_numeric($value)) {
+                return Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value))->format('H:i');
+            }
+            $clean = trim($value);
+            if ($clean === '-' || strtolower($clean) === 'null') {
+                return '-';
+            }
+            if (preg_match('/^\d{1,2}:\d{2}$/', $clean)) {
+                $parts = explode(':', $clean);
+                return sprintf('%02d:%02d', $parts[0], $parts[1]);
+            }
+            if (preg_match('/^\d{1,2}:\d{2}:\d{2}$/', $clean)) {
+                $parts = explode(':', $clean);
+                return sprintf('%02d:%02d', $parts[0], $parts[1]);
+            }
+            return Carbon::parse($clean)->format('H:i');
+        } catch (\Exception $e) {
+            return trim($value);
         }
     }
 }

@@ -12,6 +12,8 @@ class PkwtAttendance extends Model
         'date',
         'scan_in',
         'scan_out',
+        'late_time',
+        'early_time',
         'duration',
         'note',
     ];

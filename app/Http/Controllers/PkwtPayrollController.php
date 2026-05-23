@@ -209,6 +209,8 @@ class PkwtPayrollController extends Controller
         $request->validate([
             'scan_in' => 'nullable|string',
             'scan_out' => 'nullable|string',
+            'late_time' => 'nullable|string',
+            'early_time' => 'nullable|string',
         ]);
 
         try {
@@ -234,6 +236,8 @@ class PkwtPayrollController extends Controller
             $attendance->update([
                 'scan_in' => $scanIn,
                 'scan_out' => $scanOut,
+                'late_time' => $request->late_time,
+                'early_time' => $request->early_time,
                 'duration' => $duration,
             ]);
 
