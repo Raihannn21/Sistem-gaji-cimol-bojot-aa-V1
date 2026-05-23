@@ -43,4 +43,16 @@ class PkwtPayrollPeriod extends Model
     {
         return $this->hasMany(PkwtOtherAllowance::class, 'pkwt_payroll_period_id');
     }
+
+    public function periodTeams()
+    {
+        return $this->hasMany(PkwtPayrollPeriodTeam::class, 'pkwt_payroll_period_id');
+    }
+
+    public function selectedTeams()
+    {
+        return $this->belongsToMany(Team::class, 'pkwt_payroll_period_teams', 'pkwt_payroll_period_id', 'team_id')
+            ->withPivot('off_dates', 'work_days')
+            ->withTimestamps();
+    }
 }

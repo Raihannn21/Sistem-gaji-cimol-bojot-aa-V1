@@ -277,7 +277,7 @@
             <tr>
                 <td>
                     <span class="item-desc">Gaji Pokok Prorata</span>
-                    <div class="item-sub">{{ $days_worked }} Hari Kerja / {{ $total_days }} Hari Kalender x Rp {{ number_format($tarif_harian, 0, ',', '.') }}</div>
+                    <div class="item-sub">{{ $days_worked }} Hari Kerja / {{ $total_days }} Hari Kerja Efektif Tim x Rp {{ number_format($tarif_harian, 0, ',', '.') }}</div>
                 </td>
                 <td class="item-amount">Rp {{ number_format($pokok, 0, ',', '.') }}</td>
             </tr>

@@ -82,6 +82,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/periods', [PkwtPayrollController::class, 'index'])->name('payroll.pkwt.periods');
         Route::post('/periods', [PkwtPayrollController::class, 'store'])->name('payroll.pkwt.periods.store');
         Route::get('/periods/{id}', [PkwtPayrollController::class, 'show'])->name('payroll.pkwt.periods.show');
+        Route::get('/periods/{id}/setup', [PkwtPayrollController::class, 'setup'])->name('payroll.pkwt.periods.setup');
+        Route::post('/periods/{id}/setup', [PkwtPayrollController::class, 'saveSetup'])->name('payroll.pkwt.periods.save-setup');
         Route::get('/periods/{id}/export/pdf', [PkwtPayrollController::class, 'exportPdf'])->name('payroll.pkwt.periods.export.pdf');
         Route::get('/periods/{id}/slips/{employeeId}/pdf', [PkwtPayrollController::class, 'exportIndividualPdf'])->name('payroll.pkwt.periods.slip.pdf');
         Route::post('/periods/{id}/slips/{employeeId}/send', [PkwtPayrollController::class, 'sendIndividualSlip'])->name('payroll.pkwt.periods.slip.send');

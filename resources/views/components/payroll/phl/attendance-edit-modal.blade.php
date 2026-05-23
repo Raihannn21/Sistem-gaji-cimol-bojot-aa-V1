@@ -57,6 +57,23 @@
                     </div>
                 </div>
 
+                <!-- 2-Column Responsive Input Grid untuk Terlambat & Pulang Cepat -->
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Terlambat (Jam:Menit)
+                        </label>
+                        <input type="text" name="late_time" x-model="selectedAttendance.late_time" placeholder="Contoh: 00:26 atau -" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150">
+                    </div>
+
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Pulang Cepat (Jam:Menit)
+                        </label>
+                        <input type="text" name="early_time" x-model="selectedAttendance.early_time" placeholder="Contoh: 02:58 atau -" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150">
+                    </div>
+                </div>
+
                 <!-- Indigo Warning Guidance Card -->
                 <div class="flex items-start gap-3 rounded-2xl bg-indigo-50/50 p-4 dark:bg-indigo-500/5 border border-indigo-100/50 dark:border-indigo-500/10">
                     <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

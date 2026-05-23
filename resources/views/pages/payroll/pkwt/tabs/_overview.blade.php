@@ -14,7 +14,10 @@
 
     $totalBasicAmount = $employees->sum(function ($employee) use ($period, $totalPeriodDays) {
         $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-        $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+        $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+        $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+        $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+        $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
         return $daysWorked * $harian;
     });
 
@@ -136,12 +139,14 @@
                     @forelse($employees as $employee)
                         @php
                             $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-                            $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
+                            
+                            $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                            $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
-                            // Rumus Prorata Baru:
-                            // Gaji Harian = Gaji Bulanan / Total Hari Kalender Periode
-                            $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
-                            // Gaji Pokok Didapat = Hari Hadir * Gaji Harian
+                            $daysAbsent = max(0, $workDays - $daysWorked);
+
+                            $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                            $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
                             $pokok = $daysWorked * $harian;
 
                             $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');

@@ -24,15 +24,20 @@ class PkwtPayrollExport implements FromView, WithTitle, WithColumnWidths
             'attendances.employee',
             'overtimes.employee',
             'riskAllowances.employee',
-            'otherAllowances.employee'
+            'otherAllowances.employee',
+            'periodTeams'
         ])->findOrFail($this->period->id);
 
+        $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
         $employees = Employee::where('employment_type', 'PKWT')
-            ->where(function ($q) use ($period) {
-                $q->where('status', 'Aktif')
-                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    });
+            ->where(function ($q) use ($period, $selectedTeamIds) {
+                $q->where(function($subQ) use ($selectedTeamIds) {
+                    $subQ->where('status', 'Aktif')
+                        ->whereIn('team_id', $selectedTeamIds);
+                })
+                ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                });
             })
             ->distinct()
             ->get();
@@ -44,8 +49,14 @@ class PkwtPayrollExport implements FromView, WithTitle, WithColumnWidths
         $rows = [];
         foreach ($employees as $employee) {
             $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-            $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
-            $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+
+            $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+            $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+
+            $daysAbsent = max(0, $workDays - $daysWorked);
+
+            $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+            $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
             $pokok = $daysWorked * $harian;
 
             $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');

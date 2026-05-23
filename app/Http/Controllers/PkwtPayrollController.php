@@ -8,6 +8,8 @@ use App\Models\PkwtAttendance;
 use App\Models\PkwtOvertime;
 use App\Models\PkwtRiskAllowance;
 use App\Models\PkwtOtherAllowance;
+use App\Models\Team;
+use App\Models\PkwtPayrollPeriodTeam;
 use App\Http\Requests\PkwtPayroll\StorePkwtOvertimeRequest;
 use App\Http\Requests\PkwtPayroll\StorePkwtRiskRequest;
 use App\Http\Requests\PkwtPayroll\StorePkwtOtherAllowanceRequest;
@@ -25,7 +27,7 @@ class PkwtPayrollController extends Controller
 {
     public function index()
     {
-        $periods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances'])
+        $periods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
             ->orderBy('start_date', 'desc')
             ->get();
 
@@ -53,7 +55,11 @@ class PkwtPayrollController extends Controller
                     continue;
 
                 $daysWorked = $empAttendances->count();
-                $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                
+                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+                $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
                 $pokok = $daysWorked * $harian;
 
                 $lembur = $period->overtimes->where('employee_id', $empId)->sum('amount');
@@ -109,8 +115,77 @@ class PkwtPayrollController extends Controller
             'created_by' => auth()->id(),
         ]);
 
+        return redirect()->route('payroll.pkwt.periods.setup', $period->id)
+            ->with('success', 'Periode gaji PKWT baru berhasil dibuka. Silakan tentukan tim dan hari libur.');
+    }
+
+    public function setup($id)
+    {
+        $period = PkwtPayrollPeriod::with('periodTeams')->findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', $id)
+                ->with('error', 'Periode ini sudah dikunci dan tidak dapat diatur lagi.');
+        }
+
+        $teams = Team::withCount(['employees' => function($query) {
+            $query->where('employment_type', 'PKWT')->where('status', 'Aktif');
+        }])->orderBy('name', 'asc')->get();
+        
+        // Generate list of all dates from start_date to end_date
+        $dates = [];
+        $current = Carbon::parse($period->start_date);
+        $end = Carbon::parse($period->end_date);
+        while ($current->lte($end)) {
+            $dates[] = $current->format('Y-m-d');
+            $current->addDay();
+        }
+
+        return view('pages.payroll.pkwt.setup', [
+            'title' => 'Setup Tim & Hari Libur - PKWT',
+            'period' => $period,
+            'teams' => $teams,
+            'dates' => $dates,
+        ]);
+    }
+
+    public function saveSetup(Request $request, $id)
+    {
+        $period = PkwtPayrollPeriod::findOrFail($id);
+        if ($period->status === 'Locked') {
+            return redirect()->route('payroll.pkwt.periods.show', $id)
+                ->with('error', 'Periode ini sudah dikunci.');
+        }
+
+        $request->validate([
+            'teams' => 'required|array',
+            'teams.*' => 'exists:teams,id',
+            'off_dates' => 'nullable|array',
+        ]);
+
+        \DB::transaction(function () use ($period, $request) {
+            // Delete old setup
+            $period->periodTeams()->delete();
+
+            $totalPeriodDays = Carbon::parse($period->start_date)->diffInDays(Carbon::parse($period->end_date)) + 1;
+
+            foreach ($request->teams as $teamId) {
+                $teamOffDates = $request->input("off_dates.{$teamId}", []);
+                // Filter empty strings/nulls
+                $teamOffDates = array_values(array_filter($teamOffDates));
+                
+                $workDays = $totalPeriodDays - count($teamOffDates);
+
+                PkwtPayrollPeriodTeam::create([
+                    'pkwt_payroll_period_id' => $period->id,
+                    'team_id' => $teamId,
+                    'off_dates' => $teamOffDates,
+                    'work_days' => max(0, $workDays),
+                ]);
+            }
+        });
+
         return redirect()->route('payroll.pkwt.periods.show', $period->id)
-            ->with('success', 'Periode gaji PKWT baru berhasil dibuka.');
+            ->with('success', 'Pengaturan tim dan hari libur berhasil disimpan.');
     }
 
     public function show($id)
@@ -119,7 +194,8 @@ class PkwtPayrollController extends Controller
             'attendances.employee',
             'overtimes.employee',
             'riskAllowances.employee',
-            'otherAllowances.employee'
+            'otherAllowances.employee',
+            'periodTeams.team'
         ])->findOrFail($id);
 
         $period->setRelation('attendances', $period->attendances->sortBy([
@@ -137,8 +213,11 @@ class PkwtPayrollController extends Controller
 
             $employees = Employee::whereIn('id', $employeeIds)->get();
         } else {
+            $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
+
             $employees = Employee::where('employment_type', 'PKWT')
                 ->where('status', 'Aktif')
+                ->whereIn('team_id', $selectedTeamIds)
                 ->get();
         }
 
@@ -589,15 +668,20 @@ class PkwtPayrollController extends Controller
             'attendances.employee',
             'overtimes.employee',
             'riskAllowances.employee',
-            'otherAllowances.employee'
+            'otherAllowances.employee',
+            'periodTeams'
         ])->findOrFail($id);
 
+        $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
         $employees = Employee::where('employment_type', 'PKWT')
-            ->where(function ($q) use ($period) {
-                $q->where('status', 'Aktif')
-                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    });
+            ->where(function ($q) use ($period, $selectedTeamIds) {
+                $q->where(function($subQ) use ($selectedTeamIds) {
+                    $subQ->where('status', 'Aktif')
+                        ->whereIn('team_id', $selectedTeamIds);
+                })
+                ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                });
             })
             ->distinct()
             ->get();
@@ -609,9 +693,14 @@ class PkwtPayrollController extends Controller
         $rows = [];
         foreach ($employees as $employee) {
             $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-            $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
 
-            $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+            $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+            $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+
+            $daysAbsent = max(0, $workDays - $daysWorked);
+
+            $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+            $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
             $pokok = $daysWorked * $harian;
 
             $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
@@ -652,7 +741,8 @@ class PkwtPayrollController extends Controller
             'attendances',
             'overtimes',
             'riskAllowances',
-            'otherAllowances'
+            'otherAllowances',
+            'periodTeams'
         ])->findOrFail($id);
 
         $employee = Employee::where('employment_type', 'PKWT')->findOrFail($employeeId);
@@ -662,9 +752,14 @@ class PkwtPayrollController extends Controller
         $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
 
         $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-        $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
+        
+        $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+        $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
-        $tarif_harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+        $daysAbsent = max(0, $workDays - $daysWorked);
+
+        $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+        $tarif_harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
         $pokok = $daysWorked * $tarif_harian;
 
         $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
@@ -683,7 +778,7 @@ class PkwtPayrollController extends Controller
             'employee' => $employee,
             'days_worked' => $daysWorked,
             'days_absent' => $daysAbsent,
-            'total_days' => $totalPeriodDays,
+            'total_days' => $workDays,
             'salary_monthly' => $employee->salary_monthly,
             'tarif_harian' => $tarif_harian,
             'pokok' => $pokok,
@@ -702,7 +797,7 @@ class PkwtPayrollController extends Controller
     }
     public function sendIndividualSlip($id, $employeeId)
     {
-        $period = PkwtPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances', 'otherAllowances'])->findOrFail($id);
+        $period = PkwtPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])->findOrFail($id);
         $employee = Employee::where('employment_type', 'PKWT')->findOrFail($employeeId);
 
         if (empty($employee->email)) {
@@ -714,9 +809,14 @@ class PkwtPayrollController extends Controller
         $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
 
         $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-        $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
 
-        $tarif_harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+        $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+        $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+
+        $daysAbsent = max(0, $workDays - $daysWorked);
+
+        $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+        $tarif_harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
         $pokok = $daysWorked * $tarif_harian;
 
         $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
@@ -735,7 +835,7 @@ class PkwtPayrollController extends Controller
             'employee' => $employee,
             'days_worked' => $daysWorked,
             'days_absent' => $daysAbsent,
-            'total_days' => $totalPeriodDays,
+            'total_days' => $workDays,
             'salary_monthly' => $employee->salary_monthly,
             'tarif_harian' => $tarif_harian,
             'pokok' => $pokok,
@@ -762,14 +862,18 @@ class PkwtPayrollController extends Controller
 
     public function sendAllSlips($id)
     {
-        $period = PkwtPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances', 'otherAllowances'])->findOrFail($id);
+        $period = PkwtPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])->findOrFail($id);
 
+        $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
         $employees = Employee::where('employment_type', 'PKWT')
-            ->where(function ($q) use ($period) {
-                $q->where('status', 'Aktif')
-                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    });
+            ->where(function ($q) use ($period, $selectedTeamIds) {
+                $q->where(function($subQ) use ($selectedTeamIds) {
+                    $subQ->where('status', 'Aktif')
+                        ->whereIn('team_id', $selectedTeamIds);
+                })
+                ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                });
             })
             ->distinct()
             ->get();
@@ -788,9 +892,14 @@ class PkwtPayrollController extends Controller
             }
 
             $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-            $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
 
-            $tarif_harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+            $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+            $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+
+            $daysAbsent = max(0, $workDays - $daysWorked);
+
+            $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+            $tarif_harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
             $pokok = $daysWorked * $tarif_harian;
 
             $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
@@ -810,7 +919,7 @@ class PkwtPayrollController extends Controller
                     'employee' => $employee,
                     'days_worked' => $daysWorked,
                     'days_absent' => $daysAbsent,
-                    'total_days' => $totalPeriodDays,
+                    'total_days' => $workDays,
                     'salary_monthly' => $employee->salary_monthly,
                     'tarif_harian' => $tarif_harian,
                     'pokok' => $pokok,
