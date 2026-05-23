@@ -76,9 +76,14 @@
                         @forelse($employees as $employee)
                             @php
                                 $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-                                $daysAbsent = max(0, $totalPeriodDays - $daysWorked);
                                 
-                                $harian = $totalPeriodDays > 0 ? ($employee->salary_monthly / $totalPeriodDays) : 0;
+                                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                                $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+
+                                $daysAbsent = max(0, $workDays - $daysWorked);
+                                
+                                $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+                                $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
                                 $pokok = $daysWorked * $harian;
                                 
                                 $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
@@ -97,6 +102,7 @@
                                 <td class="px-6 py-4 text-right font-bold text-brand-600 tabular-nums whitespace-nowrap">Rp {{ number_format($total, 0, ',', '.') }}</td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-0.5 text-[10px] font-bold text-green-700 dark:bg-green-500/10 dark:text-green-500 uppercase tracking-wider">Published</span>
+                                    <span class="text-[10px] text-gray-400 font-semibold block mt-0.5">{{ $daysWorked }} / {{ $workDays }} HK</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
@@ -107,8 +113,9 @@
                                                     nrp: '{{ $employee->no_id }}', 
                                                     days_worked: {{ $daysWorked }},
                                                     days_absent: {{ $daysAbsent }},
-                                                    total_days: {{ $totalPeriodDays }},
+                                                    total_days: {{ $workDays }},
                                                     salary_monthly: {{ $employee->salary_monthly }},
+                                                    gaji_full: {{ (int) $totalMonthly }},
                                                     tarif_harian: {{ (int) $harian }},
                                                     pokok: {{ (int) $pokok }}, 
                                                     lembur: {{ (int) $lembur }}, 
@@ -117,7 +124,8 @@
                                                     bpjs_health: {{ (int) ($employee->bpjs_health ?? 0) }},
                                                     bpjs_tk: {{ (int) ($employee->bpjs_tk ?? 0) }},
                                                     pph21: {{ (int) ($employee->pph21 ?? 0) }},
-                                                    potongan: {{ (int) $potongan }},
+                                                    potongan_absen: {{ (int) ($daysAbsent * $harian) }},
+                                                    potongan: {{ (int) ($potongan + $daysAbsent * $harian) }},
                                                     total: '{{ number_format($total, 0, ',', '.') }}',
                                                     type: 'pkwt',
                                                     period_title: '{{ $period->title }}'

@@ -64,13 +64,13 @@
                         <div class="space-y-2 px-1">
                             <div class="flex justify-between items-start gap-4">
                                 <div class="min-w-0">
-                                    <span class="font-bold text-gray-800 dark:text-gray-200">Gaji Pokok Prorata</span>
+                                    <span class="font-bold text-gray-800 dark:text-gray-200">Gaji Pokok & Tunjangan Bulanan</span>
                                     <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5"
-                                        x-text="selectedSlip.days_worked + ' Hari Kerja / ' + selectedSlip.total_days + ' Hari Kalender x Rp ' + Number(selectedSlip.tarif_harian).toLocaleString('id-ID')">
+                                        x-text="'Gaji Bulanan Penuh: Rp ' + Number(selectedSlip.gaji_full).toLocaleString('id-ID') + ' (' + selectedSlip.total_days + ' Hari Kerja Efektif Tim)'">
                                     </p>
                                 </div>
                                 <span class="font-bold text-gray-900 dark:text-white tabular-nums shrink-0"
-                                    x-text="'Rp ' + Number(selectedSlip.pokok).toLocaleString('id-ID')"></span>
+                                    x-text="'Rp ' + Number(selectedSlip.gaji_full).toLocaleString('id-ID')"></span>
                             </div>
                             <div class="flex justify-between items-start gap-4" x-show="selectedSlip.lembur > 0">
                                 <div class="min-w-0">
@@ -106,6 +106,16 @@
                             II. Potongan Gaji
                         </div>
                         <div class="space-y-2 px-1">
+                            <div class="flex justify-between items-center gap-4" x-show="selectedSlip.potongan_absen > 0">
+                                <div class="min-w-0">
+                                    <span class="font-bold text-gray-800 dark:text-gray-200 text-red-600 dark:text-red-400">Potongan Tidak Hadir</span>
+                                    <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5"
+                                        x-text="selectedSlip.days_absent + ' Hari Absen x Rp ' + Number(selectedSlip.tarif_harian).toLocaleString('id-ID')">
+                                    </p>
+                                </div>
+                                <span class="font-bold text-red-600 dark:text-red-400 tabular-nums shrink-0"
+                                    x-text="'-Rp ' + Number(selectedSlip.potongan_absen).toLocaleString('id-ID')"></span>
+                            </div>
                             <div class="flex justify-between items-center gap-4" x-show="selectedSlip.bpjs_health > 0">
                                 <div class="min-w-0">
                                     <span class="font-bold text-gray-800 dark:text-gray-200">BPJS Kesehatan</span>
@@ -130,7 +140,7 @@
                                 <span class="font-bold text-red-600 dark:text-red-400 tabular-nums shrink-0"
                                     x-text="'-Rp ' + Number(selectedSlip.pph21).toLocaleString('id-ID')"></span>
                             </div>
-                            <div class="flex justify-between items-center gap-4" x-show="selectedSlip.potongan <= 0">
+                            <div class="flex justify-between items-center gap-4" x-show="selectedSlip.potongan <= 0 && selectedSlip.potongan_absen <= 0">
                                 <div class="min-w-0">
                                     <span class="font-bold text-gray-800 dark:text-gray-200">Potongan Terdaftar</span>
                                     <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5">Tidak ada pemotongan terdaftar</p>

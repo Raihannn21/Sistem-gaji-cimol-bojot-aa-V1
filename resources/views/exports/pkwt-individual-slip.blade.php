@@ -276,10 +276,10 @@
             </tr>
             <tr>
                 <td>
-                    <span class="item-desc">Gaji Pokok Prorata</span>
-                    <div class="item-sub">{{ $days_worked }} Hari Kerja / {{ $total_days }} Hari Kerja Efektif Tim x Rp {{ number_format($tarif_harian, 0, ',', '.') }}</div>
+                    <span class="item-desc">Gaji Pokok & Tunjangan Bulanan</span>
+                    <div class="item-sub">Gaji Bulanan Penuh ({{ $total_days }} Hari Kerja Efektif Tim)</div>
                 </td>
-                <td class="item-amount">Rp {{ number_format($pokok, 0, ',', '.') }}</td>
+                <td class="item-amount">Rp {{ number_format($salary_monthly + $employee->attendance_allowance, 0, ',', '.') }}</td>
             </tr>
             @if($lembur > 0)
             <tr>
@@ -313,6 +313,15 @@
             <tr>
                 <td colspan="2" class="category-row">II. Potongan Gaji</td>
             </tr>
+            @if($days_absent > 0)
+            <tr>
+                <td>
+                    <span class="item-desc" style="color: #dc2626;">Potongan Tidak Hadir</span>
+                    <div class="item-sub">{{ $days_absent }} Hari Absen x Rp {{ number_format($tarif_harian, 0, ',', '.') }}</div>
+                </td>
+                <td class="item-amount potongan-amount">-Rp {{ number_format($days_absent * $tarif_harian, 0, ',', '.') }}</td>
+            </tr>
+            @endif
             @if($bpjs_health > 0)
             <tr>
                 <td>
@@ -340,7 +349,7 @@
                 <td class="item-amount potongan-amount">-Rp {{ number_format($pph21, 0, ',', '.') }}</td>
             </tr>
             @endif
-            @if($potongan <= 0)
+            @if($potongan <= 0 && $days_absent <= 0)
             <tr>
                 <td>
                     <span class="item-desc">Potongan Terdaftar</span>
