@@ -78,9 +78,9 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Unduh template lembur PKWT yang sesuai standar.</p>
                                 </div>
                             </div>
-                            <x-ui.button variant="outline" type="button" href="/templates/overtime_import_template_pkwt.xlsx" download className="flex items-center gap-2 text-xs font-semibold hover:bg-gray-100 dark:hover:bg-white/5">
+                            <a href="/templates/overtime_import_template_pkwt.xlsx" download class="inline-flex items-center justify-center font-medium gap-2 rounded-xl transition bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03] dark:hover:text-gray-300 px-4 py-2.5 text-xs font-semibold">
                                 Unduh Template
-                            </x-ui.button>
+                            </a>
                         </div>
 
                         <!-- File Input -->
