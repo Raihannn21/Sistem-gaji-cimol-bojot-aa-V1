@@ -1,6 +1,51 @@
 @extends('layouts.app')
 
 @section('content')
+    @php
+        $startDate = \Carbon\Carbon::parse($period->start_date);
+        $endDate = \Carbon\Carbon::parse($period->end_date);
+        
+        $months = [];
+        $current = $startDate->copy()->startOfMonth();
+        while ($current->lte($endDate)) {
+            $monthKey = $current->format('Y-m');
+            $monthName = $current->isoFormat('MMMM YYYY');
+            $daysInMonth = $current->daysInMonth;
+            
+            // Monday is 0, Sunday is 6
+            $firstDayIndex = ($current->dayOfWeek - 1 + 7) % 7;
+            
+            $monthDays = [];
+            for ($i = 0; $i < $firstDayIndex; $i++) {
+                $monthDays[] = [
+                    'is_padding' => true,
+                    'date_str' => '',
+                    'day_num' => '',
+                ];
+            }
+            
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $dateObj = \Carbon\Carbon::create($current->year, $current->month, $day);
+                $dateStr = $dateObj->format('Y-m-d');
+                $isActive = $dateObj->gte($startDate) && $dateObj->lte($endDate);
+                
+                $monthDays[] = [
+                    'is_padding' => false,
+                    'date_str' => $dateStr,
+                    'day_num' => $day,
+                    'is_active' => $isActive,
+                ];
+            }
+            
+            $months[$monthKey] = [
+                'name' => $monthName,
+                'days' => $monthDays,
+            ];
+            
+            $current->addMonth();
+        }
+    @endphp
+
     <div class="mx-auto max-w-screen-2xl" x-data="setupManager()">
         <div class="space-y-6">
             <!-- Header -->
@@ -107,62 +152,74 @@
                                             
                                             <!-- Ringkasan Hari -->
                                             <div class="flex gap-2">
-                                                <div class="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 px-3 py-1.5 rounded-xl text-center">
-                                                    <p class="text-[9px] font-bold uppercase tracking-wider text-gray-400">Total Periode</p>
-                                                    <p class="text-sm font-bold text-gray-800 dark:text-white">{{ count($dates) }} Hari</p>
+                                                <div class="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 rounded-xl text-center flex flex-col justify-center" style="padding: 6px 12px; min-width: 80px;">
+                                                    <p class="text-gray-400" style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.2;">Total Periode</p>
+                                                    <p class="text-gray-800 dark:text-white" style="font-size: 13px; font-weight: 800; margin-top: 2px; line-height: 1.2;">{{ count($dates) }} Hari</p>
                                                 </div>
-                                                <div class="bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100/50 dark:border-emerald-500/10 px-3 py-1.5 rounded-xl text-center">
-                                                    <p class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-500">Hari Kerja</p>
-                                                    <p class="text-sm font-bold text-emerald-600 dark:text-emerald-500" x-text="calculateWorkDays({{ $team->id }}) + ' Hari'"></p>
+                                                <div class="bg-emerald-50/50 dark:bg-emerald-500/5 border border-emerald-100/50 dark:border-emerald-500/10 rounded-xl text-center flex flex-col justify-center" style="padding: 6px 12px; min-width: 80px;">
+                                                    <p class="text-emerald-600 dark:text-emerald-500" style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.2;">Hari Kerja</p>
+                                                    <p class="text-emerald-600 dark:text-emerald-500" style="font-size: 13px; font-weight: 800; margin-top: 2px; line-height: 1.2;" x-text="calculateWorkDays({{ $team->id }}) + ' Hari'"></p>
                                                 </div>
-                                                <div class="bg-red-50/50 dark:bg-red-500/5 border border-red-100/50 dark:border-red-500/10 px-3 py-1.5 rounded-xl text-center">
-                                                    <p class="text-[9px] font-bold uppercase tracking-wider text-red-500">Hari Libur</p>
-                                                    <p class="text-sm font-bold text-red-500" x-text="teamsState[{{ $team->id }}].offDates.length + ' Hari'"></p>
+                                                <div class="bg-red-50/50 dark:bg-red-500/5 border border-red-100/50 dark:border-red-500/10 rounded-xl text-center flex flex-col justify-center" style="padding: 6px 12px; min-width: 80px;">
+                                                    <p class="text-red-500" style="font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.2;">Hari Libur</p>
+                                                    <p class="text-red-500" style="font-size: 13px; font-weight: 800; margin-top: 2px; line-height: 1.2;" x-text="teamsState[{{ $team->id }}].offDates.length + ' Hari'"></p>
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        <!-- Grid Kalender -->
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
-                                            @foreach($dates as $dateStr)
-                                                @php
-                                                    $dateObj = \Carbon\Carbon::parse($dateStr);
-                                                    $dayName = $dateObj->isoFormat('dddd');
-                                                    $dayShort = substr($dayName, 0, 3);
-                                                    $dayNum = $dateObj->format('d');
-                                                    $monthName = $dateObj->isoFormat('MMM');
-                                                @endphp
-                                                <button type="button" 
-                                                        @click="toggleOffDate({{ $team->id }}, '{{ $dateStr }}')"
-                                                        class="flex flex-col items-center justify-between p-3 rounded-xl border transition-all text-left group"
-                                                        :class="isOffDate({{ $team->id }}, '{{ $dateStr }}') 
-                                                            ? 'bg-red-50 border-red-200 text-red-800 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400' 
-                                                            : 'bg-emerald-50/30 border-emerald-100 text-emerald-800 hover:bg-emerald-50/60 dark:bg-emerald-500/5 dark:border-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10'">
+                                        </div>                                        <!-- Monthly Calendar Grid -->
+                                        <div class="grid gap-4" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                                            @foreach($months as $monthKey => $month)
+                                                <div class="bg-gray-50/50 dark:bg-white/[0.01] border border-gray-150 dark:border-gray-800/80 rounded-2xl p-4">
+                                                    <h5 class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-3 text-center uppercase tracking-wider">{{ $month['name'] }}</h5>
                                                     
-                                                    <div class="w-full flex justify-between items-center mb-2">
-                                                        <span class="text-[10px] font-bold uppercase tracking-wider opacity-85" 
-                                                              :class="isOffDate({{ $team->id }}, '{{ $dateStr }}') ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'">
-                                                            {{ $dayShort }}
-                                                        </span>
-                                                        
-                                                        <span class="rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider"
-                                                              :class="isOffDate({{ $team->id }}, '{{ $dateStr }}') ? 'bg-red-200/55 dark:bg-red-500/20 text-red-700 dark:text-red-300' : 'bg-emerald-100/70 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'">
-                                                            <span x-show="isOffDate({{ $team->id }}, '{{ $dateStr }}')">Libur</span>
-                                                            <span x-show="!isOffDate({{ $team->id }}, '{{ $dateStr }}')">Kerja</span>
-                                                        </span>
+                                                    <!-- Weekday Headers -->
+                                                    <div class="grid dark:text-gray-500 uppercase mb-2" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 10px; font-weight: 700; color: #9ca3af;">
+                                                        <div>Sen</div>
+                                                        <div>Sel</div>
+                                                        <div>Rab</div>
+                                                        <div>Kam</div>
+                                                        <div>Jum</div>
+                                                        <div>Sab</div>
+                                                        <div>Min</div>
                                                     </div>
-                                                    <div class="w-full">
-                                                        <p class="text-lg font-black tracking-tight leading-none">{{ $dayNum }}</p>
-                                                        <p class="text-[9px] font-medium opacity-70 mt-1">{{ $monthName }} {{ $dateObj->format('Y') }}</p>
+                                                    
+                                                    <!-- Days Grid -->
+                                                    <div class="grid justify-items-center" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
+                                                        @foreach($month['days'] as $day)
+                                                            @if($day['is_padding'])
+                                                                <div style="width: 36px; height: 36px;"></div>
+                                                            @else
+                                                                @if($day['is_active'])
+                                                                    <button type="button"
+                                                                            @click="toggleOffDate({{ $team->id }}, '{{ $day['date_str'] }}')"
+                                                                            class="rounded-xl flex flex-col items-center justify-center transition-all border"
+                                                                            style="width: 36px; height: 36px; cursor: pointer; font-size: 11px; font-weight: 800; line-height: 1;"
+                                                                            :class="isOffDate({{ $team->id }}, '{{ $day['date_str'] }}')
+                                                                                ? 'bg-red-50 border-red-200 text-red-800 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400' 
+                                                                                : 'bg-emerald-50/30 border-emerald-100 text-emerald-800 hover:bg-emerald-50/60 dark:bg-emerald-500/5 dark:border-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10'">
+                                                                        <span>{{ $day['day_num'] }}</span>
+                                                                        <span class="uppercase tracking-wide leading-none mt-0.5"
+                                                                              style="font-size: 7px; font-weight: 700;"
+                                                                              :class="isOffDate({{ $team->id }}, '{{ $day['date_str'] }}') ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'">
+                                                                            <span x-show="isOffDate({{ $team->id }}, '{{ $day['date_str'] }}')">Lbr</span>
+                                                                            <span x-show="!isOffDate({{ $team->id }}, '{{ $day['date_str'] }}')">Krj</span>
+                                                                        </span>
+                                                                    </button>
+                                                                @else
+                                                                    <div class="rounded-xl flex flex-col items-center justify-center border border-dashed text-gray-300 dark:text-gray-700 bg-gray-50/30 dark:bg-white/[0.01]"
+                                                                         style="width: 36px; height: 36px; cursor: not-allowed; font-size: 11px; font-weight: 600; line-height: 1; border-color: rgba(229, 231, 235, 0.5);">
+                                                                        <span>{{ $day['day_num'] }}</span>
+                                                                        <span class="opacity-0" style="font-size: 7px; margin-top: 1px;">-</span>
+                                                                    </div>
+                                                                @endif
+                                                            @endif
+                                                        @endforeach
                                                     </div>
-                                                </button>
+                                                </div>
                                             @endforeach
                                         </div>
-
-                                        <!-- Hidden Inputs untuk form submit tanggal libur -->
-                                        <template x-for="date in teamsState[{{ $team->id }}].offDates" :key="date">
-                                            <input type="hidden" :name="'off_dates[' + {{ $team->id }} + '][]'" :value="date">
-                                        </template>
+                                        
+                                        <!-- Hidden Input untuk form submit tanggal libur -->
+                                        <input type="hidden" :name="'off_dates[' + {{ $team->id }} + ']'" :value="JSON.stringify(teamsState[{{ $team->id }}].offDates)">
                                     </div>
                                 @endforeach
                             </div>
@@ -196,7 +253,7 @@
                 @php
                     $periodTeam = $period->periodTeams->where('team_id', $team->id)->first();
                     $isSelected = $periodTeam ? true : false;
-                    $offDatesArr = $periodTeam && $periodTeam->off_dates ? $periodTeam->off_dates : [];
+                    $offDatesArr = $periodTeam && is_array($periodTeam->off_dates) ? $periodTeam->off_dates : [];
                 @endphp
                 initialTeamsState[{{ $team->id }}] = {
                     selected: {{ $isSelected ? 'true' : 'false' }},
@@ -219,13 +276,11 @@
                 toggleOffDate(teamId, dateStr) {
                     if (!this.teamsState[teamId]) return;
                     
-                    const index = this.teamsState[teamId].offDates.indexOf(dateStr);
-                    if (index > -1) {
-                        // Jika sudah ada, hapus (jadikan hari masuk)
-                        this.teamsState[teamId].offDates.splice(index, 1);
+                    const current = this.teamsState[teamId].offDates || [];
+                    if (current.includes(dateStr)) {
+                        this.teamsState[teamId].offDates = current.filter(d => d !== dateStr);
                     } else {
-                        // // Jika belum ada, tambahkan (jadikan hari libur)
-                        this.teamsState[teamId].offDates.push(dateStr);
+                        this.teamsState[teamId].offDates = [...current, dateStr];
                     }
                 },
 

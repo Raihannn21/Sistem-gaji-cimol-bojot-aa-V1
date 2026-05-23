@@ -170,6 +170,9 @@ class PkwtPayrollController extends Controller
 
             foreach ($request->teams as $teamId) {
                 $teamOffDates = $request->input("off_dates.{$teamId}", []);
+                if (is_string($teamOffDates)) {
+                    $teamOffDates = json_decode($teamOffDates, true) ?: [];
+                }
                 // Filter empty strings/nulls
                 $teamOffDates = array_values(array_filter($teamOffDates));
                 
