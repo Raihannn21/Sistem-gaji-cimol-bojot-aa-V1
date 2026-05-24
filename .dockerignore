@@ -1,0 +1,16 @@
+/vendor
+/node_modules
+/.git
+/.env
+/.env.local
+/.env.production
+/.env.development
+/.env.staging
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/tests
+/tests_bootstrap
+/phpunit.xml
+/docker-compose.yml
