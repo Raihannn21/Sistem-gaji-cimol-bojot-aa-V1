@@ -94,12 +94,12 @@
         <div class="grid grid-cols-12 gap-4 md:gap-6">
             
             <div class="col-span-12">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                     <x-dashboard.payroll.salary-cost-card :total="$totalSalaryCost" :pkwt="$totalPkwtSalary" :phl="$totalPhlSalary" />
                     <x-dashboard.payroll.overtime-cost-card :total="$totalOvertimeCost" :pkwt="$pkwtOvertimeCost" :phl="$phlOvertimeCost" />
                     <x-dashboard.payroll.manpower-card :total="$totalManpower" :pkwt="$pkwtCount" :phl="$phlCount" />
                     <x-dashboard.payroll.work-effort-card :total="$totalWorkEffort" :reg="$totalRegHours" :ovt="$totalOvtHours" />
-                    <div class="col-span-2">
+                    <div class="col-span-1 sm:col-span-2 lg:col-span-4">
                         <x-dashboard.payroll.lateness-card 
                             :overallRate="$overallLateRate" 
                             :overallDiff="$overallLateRateDiff" 
