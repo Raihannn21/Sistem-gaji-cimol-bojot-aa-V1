@@ -52,6 +52,12 @@
                             x-text="selectedSlip.nrp"></span>
                     </div>
                     <div class="flex gap-1.5 items-center">
+                        <span class="text-gray-500 font-medium w-20 shrink-0">Tim</span>
+                        <span class="text-gray-500">:</span>
+                        <span class="font-semibold text-gray-800 dark:text-gray-200"
+                            x-text="selectedSlip.detail?.team_name || '-'"></span>
+                    </div>
+                    <div class="flex gap-1.5 items-center">
                         <span class="text-gray-500 font-medium w-20 shrink-0">Klasifikasi</span>
                         <span class="text-gray-500">:</span>
                         <span class="font-semibold text-gray-800 dark:text-gray-200"

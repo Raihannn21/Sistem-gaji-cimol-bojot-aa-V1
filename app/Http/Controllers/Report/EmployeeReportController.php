@@ -27,6 +27,7 @@ class EmployeeReportController extends Controller
 
         if ($employee->employment_type === 'PHL') {
             $periods = PhlPayrollPeriod::with([
+                'attendances.team',
                 'attendances' => function ($q) use ($id) {
                     $q->where('employee_id', $id);
                 },
@@ -50,6 +51,12 @@ class EmployeeReportController extends Controller
                 $risiko = $period->riskAllowances->sum('amount');
                 $totalBersih = $pokok + $lembur + $risiko;
 
+                $employeeAttendance = $period->attendances->first();
+                $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                    ? $employeeAttendance->team
+                    : $employee->team;
+                $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
+
                 if ($daysWorked > 0 || $lembur > 0 || $risiko > 0) {
                     $history[] = [
                         'period_id' => $period->id,
@@ -65,13 +72,15 @@ class EmployeeReportController extends Controller
                         'bpjs_tk' => 0,
                         'pajak' => 0,
                         'total' => number_format($totalBersih, 0, ',', '.'),
-                        'raw_total' => $totalBersih
+                        'raw_total' => $totalBersih,
+                        'team_name' => $team_name
                     ];
                 }
             }
         } else {
             // PKWT
             $periods = PkwtPayrollPeriod::with([
+                'attendances.team',
                 'attendances' => function ($q) use ($id) {
                     $q->where('employee_id', $id);
                 },
@@ -96,7 +105,14 @@ class EmployeeReportController extends Controller
                 $daysWorked = $period->attendances->count();
                 $totalPeriodDays = Carbon::parse($period->start_date)->diffInDays(Carbon::parse($period->end_date)) + 1;
                 
-                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                $employeeAttendance = $period->attendances->first();
+                $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                    ? $employeeAttendance->team
+                    : $employee->team;
+                $resolvedTeamId = $resolvedTeam ? $resolvedTeam->id : $employee->team_id;
+                $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
+
+                $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
                 $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
                 $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
                 $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
@@ -135,7 +151,8 @@ class EmployeeReportController extends Controller
                         'bpjs_tk' => $bpjsTk,
                         'pajak' => $pph21,
                         'total' => number_format($totalBersih, 0, ',', '.'),
-                        'raw_total' => $totalBersih
+                        'raw_total' => $totalBersih,
+                        'team_name' => $team_name
                     ];
                 }
             }
