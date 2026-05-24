@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 # Install system dependencies and PHP extensions required by Laravel & PostgreSQL
 RUN apt-get update && apt-get install -y \
@@ -14,36 +14,29 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_pgsql pgsql zip bcmath
 
-# Enable Apache mod_rewrite for Laravel routing
-RUN a2enmod rewrite
+# Set up non-root user 1000 (Hugging Face default)
+RUN useradd -m -u 1000 user
+USER user
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
 
-# Update Apache VirtualHost configuration to point to Laravel's public directory
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+WORKDIR /app
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Copy application code into container
-COPY . /var/www/html
+# Copy application files (with ownership set to user 1000)
+COPY --chown=user:user . /app
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Install dependencies (production configuration)
 RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
-
-# Set permissions for storage and bootstrap cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Expose port 7860
 EXPOSE 7860
 
-# Configure Apache port mapping for Hugging Face Spaces port 7860
-RUN sed -i 's/Listen 80/Listen 7860/g' /etc/apache2/ports.conf
-RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:7860>/g' /etc/apache2/sites-available/000-default.conf
-
-# Run migrations, seeders, optimizations, and start Apache web server
-CMD php artisan package:discover && php artisan migrate --force && php artisan db:seed --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground
+# Run migrations, seeders, optimizations, and start Laravel built-in server
+CMD php artisan package:discover && \
+    php artisan migrate --force && \
+    php artisan db:seed --force && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
+    php artisan serve --host=0.0.0.0 --port=7860
