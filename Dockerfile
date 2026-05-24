@@ -2,9 +2,10 @@
 FROM node:18 AS assets-builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
+
 
 # Stage 2: PHP runtime
 FROM php:8.2-cli
