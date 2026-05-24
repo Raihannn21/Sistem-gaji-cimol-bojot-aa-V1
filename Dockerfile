@@ -1,3 +1,12 @@
+# Stage 1: Build frontend assets
+FROM node:18-alpine AS assets-builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: PHP runtime
 FROM php:8.2-cli
 
 # Install system dependencies and PHP extensions required by Laravel & PostgreSQL
@@ -25,6 +34,9 @@ WORKDIR /app
 
 # Copy application files (with ownership set to user 1000)
 COPY --chown=user:user . /app
+
+# Copy compiled assets from Stage 1 builder
+COPY --from=assets-builder --chown=user:user /app/public/build /app/public/build
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
