@@ -247,6 +247,11 @@
                         <td class="info-colon">:</td>
                         <td class="info-value">{{ $employee->name }}</td>
                     </tr>
+                    <tr>
+                        <td class="info-label">Tim</td>
+                        <td class="info-colon">:</td>
+                        <td class="info-value">{{ $team_name ?? '-' }}</td>
+                    </tr>
                 </table>
             </td>
             <td style="width: 50%;">

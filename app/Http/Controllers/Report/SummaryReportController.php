@@ -79,7 +79,7 @@ class SummaryReportController extends Controller
             $globalPhlPokok += $phlPokok;
             $globalPhlLemburTunjangan += ($phlLembur + $phlRisiko);
 
-            $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
+            $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'attendances.team', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
                 ->where(function ($q) use ($startDate, $endDate) {
                     $q->whereBetween('start_date', [$startDate, $endDate])
                         ->orWhereBetween('end_date', [$startDate, $endDate])
@@ -108,7 +108,12 @@ class SummaryReportController extends Controller
                 foreach ($employees as $employee) {
                     $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
                     
-                    $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                    $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+                    $resolvedTeamId = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                        ? $employeeAttendance->team_id
+                        : $employee->team_id;
+
+                    $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
                     $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
                     $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
                     $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;

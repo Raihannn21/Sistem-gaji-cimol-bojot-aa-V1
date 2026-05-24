@@ -47,6 +47,12 @@
                             x-text="selectedSlip.name"></span>
                     </div>
                     <div class="flex gap-1.5 items-center">
+                        <span class="text-gray-500 font-medium w-20 shrink-0">Tim</span>
+                        <span class="text-gray-500">:</span>
+                        <span class="font-semibold text-gray-850 dark:text-gray-300"
+                            x-text="selectedSlip.team_name || '-'"></span>
+                    </div>
+                    <div class="flex gap-1.5 items-center">
                         <span class="text-gray-500 font-medium w-20 shrink-0">Klasifikasi</span>
                         <span class="text-gray-500">:</span>
                         <span class="font-semibold text-gray-850 dark:text-gray-300">Karyawan Kontrak (PKWT)</span>

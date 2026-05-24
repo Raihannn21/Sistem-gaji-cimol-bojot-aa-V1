@@ -16,6 +16,7 @@ class PkwtAttendance extends Model
         'early_time',
         'duration',
         'note',
+        'team_id',
     ];
 
     protected $casts = [
@@ -30,5 +31,10 @@ class PkwtAttendance extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 }

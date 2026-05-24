@@ -27,7 +27,7 @@ class PkwtPayrollController extends Controller
 {
     public function index()
     {
-        $periods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
+        $periods = PkwtPayrollPeriod::with(['attendances.employee', 'attendances.team', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
             ->orderBy('start_date', 'desc')
             ->get();
 
@@ -57,7 +57,12 @@ class PkwtPayrollController extends Controller
 
                 $daysWorked = $empAttendances->count();
                 
-                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                $employeeAttendance = $empAttendances->first();
+                $resolvedTeamId = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                    ? $employeeAttendance->team_id
+                    : $employee->team_id;
+                
+                $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
                 $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
                 $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
                 $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
@@ -201,6 +206,7 @@ class PkwtPayrollController extends Controller
     {
         $period = PkwtPayrollPeriod::with([
             'attendances.employee',
+            'attendances.team',
             'overtimes.employee',
             'riskAllowances.employee',
             'otherAllowances.employee',
@@ -643,9 +649,19 @@ class PkwtPayrollController extends Controller
             if ($period->status === 'Locked') {
                 return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'slips'])->with('error', 'Periode payroll ini sudah dikunci.');
             }
-            $period->update([
-                'status' => 'Locked'
-            ]);
+            
+            \DB::transaction(function () use ($period) {
+                // Freeze team for all attendances in this period
+                \DB::statement('
+                    UPDATE pkwt_attendances 
+                    SET team_id = (SELECT team_id FROM employees WHERE employees.id = pkwt_attendances.employee_id)
+                    WHERE pkwt_payroll_period_id = ?
+                ', [$period->id]);
+
+                $period->update([
+                    'status' => 'Locked'
+                ]);
+            });
 
             return redirect()->route('payroll.pkwt.periods.show', [$id, 'tab' => 'slips'])
                 ->with('success', 'Payroll PKWT berhasil digenerate dan slip gaji telah diterbitkan!');
@@ -675,6 +691,7 @@ class PkwtPayrollController extends Controller
     {
         $period = PkwtPayrollPeriod::with([
             'attendances.employee',
+            'attendances.team',
             'overtimes.employee',
             'riskAllowances.employee',
             'otherAllowances.employee',
@@ -703,7 +720,12 @@ class PkwtPayrollController extends Controller
         foreach ($employees as $employee) {
             $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
 
-            $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+            $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+            $resolvedTeamId = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                ? $employeeAttendance->team_id
+                : $employee->team_id;
+
+            $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
             $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
             $daysAbsent = max(0, $workDays - $daysWorked);
@@ -747,7 +769,7 @@ class PkwtPayrollController extends Controller
     public function exportIndividualPdf($id, $employeeId)
     {
         $period = PkwtPayrollPeriod::with([
-            'attendances',
+            'attendances.team',
             'overtimes',
             'riskAllowances',
             'otherAllowances',
@@ -762,7 +784,14 @@ class PkwtPayrollController extends Controller
 
         $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
         
-        $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+        $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+        $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+            ? $employeeAttendance->team
+            : $employee->team;
+        $resolvedTeamId = $resolvedTeam ? $resolvedTeam->id : $employee->team_id;
+        $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
+
+        $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
         $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
         $daysAbsent = max(0, $workDays - $daysWorked);
@@ -799,6 +828,7 @@ class PkwtPayrollController extends Controller
             'pph21' => $pph21,
             'potongan' => $potongan,
             'total' => $total,
+            'team_name' => $team_name,
         ])->setPaper('a5', 'portrait');
 
         $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
@@ -806,7 +836,7 @@ class PkwtPayrollController extends Controller
     }
     public function sendIndividualSlip($id, $employeeId)
     {
-        $period = PkwtPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])->findOrFail($id);
+        $period = PkwtPayrollPeriod::with(['attendances.team', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])->findOrFail($id);
         $employee = Employee::where('employment_type', 'PKWT')->findOrFail($employeeId);
 
         if (empty($employee->email)) {
@@ -819,7 +849,14 @@ class PkwtPayrollController extends Controller
 
         $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
 
-        $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+        $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+        $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+            ? $employeeAttendance->team
+            : $employee->team;
+        $resolvedTeamId = $resolvedTeam ? $resolvedTeam->id : $employee->team_id;
+        $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
+
+        $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
         $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
         $daysAbsent = max(0, $workDays - $daysWorked);
@@ -856,6 +893,7 @@ class PkwtPayrollController extends Controller
             'pph21' => $pph21,
             'potongan' => $potongan,
             'total' => $total,
+            'team_name' => $team_name,
         ])->setPaper('a5', 'portrait');
 
         $pdfData = $pdf->output();
@@ -871,7 +909,7 @@ class PkwtPayrollController extends Controller
 
     public function sendAllSlips($id)
     {
-        $period = PkwtPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])->findOrFail($id);
+        $period = PkwtPayrollPeriod::with(['attendances.team', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])->findOrFail($id);
 
         $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
         $employees = Employee::where('employment_type', 'PKWT')
@@ -902,7 +940,14 @@ class PkwtPayrollController extends Controller
 
             $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
 
-            $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+            $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+            $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                ? $employeeAttendance->team
+                : $employee->team;
+            $resolvedTeamId = $resolvedTeam ? $resolvedTeam->id : $employee->team_id;
+            $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
+
+            $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
             $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
             $daysAbsent = max(0, $workDays - $daysWorked);
@@ -940,6 +985,7 @@ class PkwtPayrollController extends Controller
                     'pph21' => $pph21,
                     'potongan' => $potongan,
                     'total' => $total,
+                    'team_name' => $team_name,
                 ])->setPaper('a5', 'portrait');
 
                 $pdfData = $pdf->output();

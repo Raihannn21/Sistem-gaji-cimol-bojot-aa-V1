@@ -93,6 +93,7 @@ class PkwtAttendanceImport implements ToModel, WithHeadingRow
                 'late_time' => $lateTime,
                 'early_time' => $earlyTime,
                 'duration' => $duration,
+                'team_id' => $employee->team_id,
             ]);
 
         } catch (\Exception $e) {

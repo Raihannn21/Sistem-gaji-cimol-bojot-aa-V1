@@ -26,7 +26,7 @@ class PhlPayrollController extends Controller
 {
     public function index()
     {
-        $periods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
+        $periods = PhlPayrollPeriod::with(['attendances.employee', 'attendances.team', 'overtimes', 'riskAllowances'])
             ->orderBy('start_date', 'desc')
             ->get();
 
@@ -96,7 +96,7 @@ class PhlPayrollController extends Controller
 
     public function show($id)
     {
-        $period = PhlPayrollPeriod::with(['attendances.employee', 'overtimes.employee', 'riskAllowances.employee'])->findOrFail($id);
+        $period = PhlPayrollPeriod::with(['attendances.employee', 'attendances.team', 'overtimes.employee', 'riskAllowances.employee'])->findOrFail($id);
 
         $period->setRelation('attendances', $period->attendances->sortBy([
             ['employee.name', 'asc'],
@@ -424,9 +424,19 @@ class PhlPayrollController extends Controller
             if ($period->status === 'Locked') {
                 return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'slips'])->with('error', 'Periode payroll ini sudah dikunci.');
             }
-            $period->update([
-                'status' => 'Locked'
-            ]);
+            
+            \DB::transaction(function () use ($period) {
+                // Freeze team for all attendances in this period
+                \DB::statement('
+                    UPDATE phl_attendances 
+                    SET team_id = (SELECT team_id FROM employees WHERE employees.id = phl_attendances.employee_id)
+                    WHERE phl_payroll_period_id = ?
+                ', [$period->id]);
+
+                $period->update([
+                    'status' => 'Locked'
+                ]);
+            });
 
             return redirect()->route('payroll.phl.periods.show', [$id, 'tab' => 'slips'])
                 ->with('success', 'Payroll berhasil digenerate dan slip gaji telah diterbitkan!');
@@ -510,7 +520,7 @@ class PhlPayrollController extends Controller
 
     public function exportIndividualPdf($id, $employeeId)
     {
-        $period = PhlPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances'])->findOrFail($id);
+        $period = PhlPayrollPeriod::with(['attendances.team', 'overtimes', 'riskAllowances'])->findOrFail($id);
         $employee = Employee::where('employment_type', 'PHL')->findOrFail($employeeId);
 
         $daysWorked = $period->attendances->where('employee_id', $employee->id)->where('duration', '>', 0)->count();
@@ -525,6 +535,12 @@ class PhlPayrollController extends Controller
 
         $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
 
+        $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+        $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+            ? $employeeAttendance->team
+            : $employee->team;
+        $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
+
         $pdf = Pdf::loadView('exports.phl-individual-slip', [
             'period' => $period,
             'employee' => $employee,
@@ -536,6 +552,7 @@ class PhlPayrollController extends Controller
             'risk_days' => $totalRiskDays,
             'risk_amount' => $totalRiskAmount,
             'take_home_pay' => $takeHomePay,
+            'team_name' => $team_name,
         ])->setPaper('a5', 'portrait');
 
         $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
@@ -608,7 +625,7 @@ class PhlPayrollController extends Controller
     }
     public function sendIndividualSlip($id, $employeeId)
     {
-        $period = PhlPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances'])->findOrFail($id);
+        $period = PhlPayrollPeriod::with(['attendances.team', 'overtimes', 'riskAllowances'])->findOrFail($id);
         $employee = Employee::where('employment_type', 'PHL')->findOrFail($employeeId);
 
         if (empty($employee->email)) {
@@ -627,6 +644,12 @@ class PhlPayrollController extends Controller
 
         $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
 
+        $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+        $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+            ? $employeeAttendance->team
+            : $employee->team;
+        $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
+
         $pdf = Pdf::loadView('exports.phl-individual-slip', [
             'period' => $period,
             'employee' => $employee,
@@ -638,6 +661,7 @@ class PhlPayrollController extends Controller
             'risk_days' => $totalRiskDays,
             'risk_amount' => $totalRiskAmount,
             'take_home_pay' => $takeHomePay,
+            'team_name' => $team_name,
         ])->setPaper('a5', 'portrait');
 
         $pdfData = $pdf->output();
@@ -653,7 +677,7 @@ class PhlPayrollController extends Controller
 
     public function sendAllSlips($id)
     {
-        $period = PhlPayrollPeriod::with(['attendances', 'overtimes', 'riskAllowances'])->findOrFail($id);
+        $period = PhlPayrollPeriod::with(['attendances.team', 'overtimes', 'riskAllowances'])->findOrFail($id);
         
         $employees = Employee::where('employment_type', 'PHL')
             ->where(function ($q) use ($period) {
@@ -686,6 +710,12 @@ class PhlPayrollController extends Controller
 
             $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
 
+            $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+            $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                ? $employeeAttendance->team
+                : $employee->team;
+            $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
+
             if ($daysWorked > 0 || $totalOvertimeHours > 0 || $totalRiskAmount > 0) {
                 $pdf = Pdf::loadView('exports.phl-individual-slip', [
                     'period' => $period,
@@ -698,6 +728,7 @@ class PhlPayrollController extends Controller
                     'risk_days' => $totalRiskDays,
                     'risk_amount' => $totalRiskAmount,
                     'take_home_pay' => $takeHomePay,
+                    'team_name' => $team_name,
                 ])->setPaper('a5', 'portrait');
 
                 $pdfData = $pdf->output();

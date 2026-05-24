@@ -77,7 +77,14 @@
                             @php
                                 $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
                                 
-                                $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+                                $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+                                $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                                    ? $employeeAttendance->team
+                                    : $employee->team;
+                                $teamName = $resolvedTeam ? $resolvedTeam->name : '-';
+                                $resolvedTeamId = $resolvedTeam ? $resolvedTeam->id : $employee->team_id;
+
+                                $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
                                 $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
                                 $daysAbsent = max(0, $workDays - $daysWorked);
@@ -128,7 +135,8 @@
                                                     potongan: {{ (int) ($potongan + $daysAbsent * $harian) }},
                                                     total: '{{ number_format($total, 0, ',', '.') }}',
                                                     type: 'pkwt',
-                                                    period_title: '{{ $period->title }}'
+                                                    period_title: '{{ $period->title }}',
+                                                    team_name: '{{ addslashes($teamName) }}'
                                                 }" 
                                                 class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-brand-500 transition-colors"
                                                 title="Lihat Slip Gaji">

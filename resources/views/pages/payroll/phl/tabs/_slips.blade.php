@@ -73,6 +73,12 @@
                                 $employeeAttendances = $period->attendances->where('employee_id', $employee->id);
                                 $daysWorked = $employeeAttendances->where('duration', '>', 0)->count();
                                 
+                                $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+                                $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+                                    ? $employeeAttendance->team
+                                    : $employee->team;
+                                $teamName = $resolvedTeam ? $resolvedTeam->name : '-';
+
                                 $pokok = $daysWorked * $employee->salary_daily;
                                 $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
                                 $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
@@ -102,7 +108,8 @@
                                                     risiko: {{ $risiko }}, 
                                                     total: {{ $total }},
                                                     type: 'phl',
-                                                    period_title: '{{ $period->title }}'
+                                                    period_title: '{{ $period->title }}',
+                                                    team_name: '{{ addslashes($teamName) }}'
                                                  }" 
                                                 class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-brand-500 transition-colors"
                                                 title="Lihat Slip Gaji">
