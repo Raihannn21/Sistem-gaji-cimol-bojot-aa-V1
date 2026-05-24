@@ -18,6 +18,22 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    private function getLateMinutes($lateTime)
+    {
+        if (!$lateTime || $lateTime === '-' || $lateTime === '00:00') {
+            return 0;
+        }
+        try {
+            $parts = explode(':', $lateTime);
+            if (count($parts) >= 2) {
+                return intval($parts[0]) * 60 + intval($parts[1]);
+            }
+            return intval($lateTime);
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
     public function index(Request $request)
     {
         $latestPeriod = PkwtPayrollPeriod::orderBy('start_date', 'desc')->first();
@@ -39,6 +55,153 @@ class DashboardController extends Controller
             ->whereMonth('start_date', $monthNum)
             ->with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
             ->get();
+
+        $phlPeriods = PhlPayrollPeriod::whereYear('start_date', $yearNum)
+            ->whereMonth('start_date', $monthNum)
+            ->with(['attendances.employee', 'overtimes', 'riskAllowances'])
+            ->get();
+
+        // Calculate current month lateness metrics for PKWT (Monthly)
+        $pkwtLateCount = 0;
+        $pkwtLateMinutes = 0;
+        $pkwtTotalAttendances = 0;
+
+        foreach ($pkwtPeriods as $period) {
+            foreach ($period->attendances as $att) {
+                $pkwtTotalAttendances++;
+                $lateTime = $att->late_time;
+                if ($lateTime && $lateTime !== '-' && $lateTime !== '00:00') {
+                    $pkwtLateCount++;
+                    $pkwtLateMinutes += $this->getLateMinutes($lateTime);
+                }
+            }
+        }
+
+        $pkwtLateHours = round($pkwtLateMinutes / 60, 1);
+        $pkwtLateRate = $pkwtTotalAttendances > 0 ? round(($pkwtLateCount / $pkwtTotalAttendances) * 100, 1) : 0;
+
+        // Calculate current month lateness metrics for PHL (Daily)
+        $phlLateCount = 0;
+        $phlLateMinutes = 0;
+        $phlTotalAttendances = 0;
+
+        foreach ($phlPeriods as $period) {
+            foreach ($period->attendances as $att) {
+                $phlTotalAttendances++;
+                $lateTime = $att->late_time;
+                if ($lateTime && $lateTime !== '-' && $lateTime !== '00:00') {
+                    $phlLateCount++;
+                    $phlLateMinutes += $this->getLateMinutes($lateTime);
+                }
+            }
+        }
+
+        $phlLateHours = round($phlLateMinutes / 60, 1);
+        $phlLateRate = $phlTotalAttendances > 0 ? round(($phlLateCount / $phlTotalAttendances) * 100, 1) : 0;
+
+        // Calculate previous month lateness metrics for PKWT (for comparison)
+        $prevMonth = intval($selectedMonth) - 1;
+        $prevYear = intval($selectedYear);
+        if ($prevMonth === 0) {
+            $prevMonth = 12;
+            $prevYear--;
+        }
+
+        $prevPkwtPeriods = PkwtPayrollPeriod::whereYear('start_date', $prevYear)
+            ->whereMonth('start_date', sprintf("%02d", $prevMonth))
+            ->with(['attendances'])
+            ->get();
+
+        $prevPkwtLateCount = 0;
+        $prevPkwtTotalAttendances = 0;
+        foreach ($prevPkwtPeriods as $period) {
+            foreach ($period->attendances as $att) {
+                $prevPkwtTotalAttendances++;
+                $lateTime = $att->late_time;
+                if ($lateTime && $lateTime !== '-' && $lateTime !== '00:00') {
+                    $prevPkwtLateCount++;
+                }
+            }
+        }
+        $prevPkwtLateRate = $prevPkwtTotalAttendances > 0 ? round(($prevPkwtLateCount / $prevPkwtTotalAttendances) * 100, 1) : 0;
+        $pkwtLateRateDiff = round($pkwtLateRate - $prevPkwtLateRate, 1);
+
+        // Calculate previous month lateness metrics for PHL (for comparison)
+        $prevPhlPeriods = PhlPayrollPeriod::whereYear('start_date', $prevYear)
+            ->whereMonth('start_date', sprintf("%02d", $prevMonth))
+            ->with(['attendances'])
+            ->get();
+
+        $prevPhlLateCount = 0;
+        $prevPhlTotalAttendances = 0;
+        foreach ($prevPhlPeriods as $period) {
+            foreach ($period->attendances as $att) {
+                $prevPhlTotalAttendances++;
+                $lateTime = $att->late_time;
+                if ($lateTime && $lateTime !== '-' && $lateTime !== '00:00') {
+                    $prevPhlLateCount++;
+                }
+            }
+        }
+        $prevPhlLateRate = $prevPhlTotalAttendances > 0 ? round(($prevPhlLateCount / $prevPhlTotalAttendances) * 100, 1) : 0;
+        $phlLateRateDiff = round($phlLateRate - $prevPhlLateRate, 1);
+
+        // Calculate overall combined lateness metrics
+        $totalAttendances = $pkwtTotalAttendances + $phlTotalAttendances;
+        $totalLateCount = $pkwtLateCount + $phlLateCount;
+        $overallLateRate = $totalAttendances > 0 ? round(($totalLateCount / $totalAttendances) * 100, 1) : 0;
+
+        $prevTotalAttendances = $prevPkwtTotalAttendances + $prevPhlTotalAttendances;
+        $prevTotalLateCount = $prevPkwtLateCount + $prevPhlLateCount;
+        $prevOverallLateRate = $prevTotalAttendances > 0 ? round(($prevTotalLateCount / $prevTotalAttendances) * 100, 1) : 0;
+        $overallLateRateDiff = round($overallLateRate - $prevOverallLateRate, 1);
+
+        // Daily lateness trend for the active period (PHL - Harian)
+        $dailyDates = [];
+        $dailyLateCounts = [];
+        $dailyLateHours = [];
+
+        if ($phlPeriods->count() > 0) {
+            $minStart = null;
+            $maxEnd = null;
+            foreach ($phlPeriods as $period) {
+                $pStart = Carbon::parse($period->start_date);
+                $pEnd = Carbon::parse($period->end_date);
+                if (!$minStart || $pStart->lt($minStart)) $minStart = $pStart;
+                if (!$maxEnd || $pEnd->gt($maxEnd)) $maxEnd = $pEnd;
+            }
+
+            if ($minStart && $maxEnd) {
+                $current = $minStart->copy();
+                while ($current->lte($maxEnd)) {
+                    $dateStr = $current->format('Y-m-d');
+                    $dailyDates[] = $current->format('d M');
+
+                    $lateCount = 0;
+                    $lateMin = 0;
+                    foreach ($phlPeriods as $period) {
+                        $dateAttendances = $period->attendances->filter(function($att) use ($dateStr) {
+                            $attDate = $att->date;
+                            if ($attDate instanceof \Carbon\Carbon) {
+                                return $attDate->format('Y-m-d') === $dateStr;
+                            }
+                            return substr((string) $attDate, 0, 10) === $dateStr;
+                        });
+                        foreach ($dateAttendances as $att) {
+                            $lateTime = $att->late_time;
+                            if ($lateTime && $lateTime !== '-' && $lateTime !== '00:00') {
+                                $lateCount++;
+                                $lateMin += $this->getLateMinutes($lateTime);
+                            }
+                        }
+                    }
+
+                    $dailyLateCounts[] = $lateCount;
+                    $dailyLateHours[] = round($lateMin / 60, 1);
+                    $current->addDay();
+                }
+            }
+        }
 
         $totalPkwtSalary = 0;
         foreach ($pkwtPeriods as $period) {
@@ -74,9 +237,7 @@ class DashboardController extends Controller
         }
 
         // PHL total salary expenditure in selected period
-        $phlPeriods = PhlPayrollPeriod::whereYear('start_date', $yearNum)
-            ->whereMonth('start_date', $monthNum)
-            ->with(['attendances.employee', 'overtimes', 'riskAllowances'])->get();
+        // Already loaded above as $phlPeriods
 
         $totalPhlSalary = 0;
         foreach ($phlPeriods as $period) {
@@ -153,6 +314,7 @@ class DashboardController extends Controller
         $recruitmentPkwt = [];
         $recruitmentPhl = [];
         $turnoverData = [];
+        $monthlyLatenessTrend = [];
 
         for ($m = 1; $m <= 12; $m++) {
             $date = Carbon::createFromDate($selectedYear, $m, 1);
@@ -220,6 +382,20 @@ class DashboardController extends Controller
                 }
             }
 
+            // Calculate monthly lateness rate for trend chart (PKWT - Bulanan)
+            $mLateCount = 0;
+            $mTotalAttendances = 0;
+            foreach ($mPkwtPeriods as $period) {
+                foreach ($period->attendances as $att) {
+                    $mTotalAttendances++;
+                    $lateTime = $att->late_time;
+                    if ($lateTime && $lateTime !== '-' && $lateTime !== '00:00') {
+                        $mLateCount++;
+                    }
+                }
+            }
+            $monthlyPkwtLatenessTrend[] = $mTotalAttendances > 0 ? round(($mLateCount / $mTotalAttendances) * 100, 1) : 0;
+
             // PHL
             $mPhlPeriodTotal = 0;
             $mPhlPeriods = PhlPayrollPeriod::whereYear('start_date', $yearNum)
@@ -283,7 +459,23 @@ class DashboardController extends Controller
             'payrollRealData' => $payrollRealData,
             'payrollEstData' => $payrollEstData,
             'recruitmentPkwt' => $recruitmentPkwt,
-            'recruitmentPhl' => $recruitmentPhl
+            'recruitmentPhl' => $recruitmentPhl,
+
+            // Lateness props
+            'overallLateRate' => $overallLateRate,
+            'overallLateRateDiff' => $overallLateRateDiff,
+            'pkwtLateRate' => $pkwtLateRate,
+            'pkwtLateHours' => $pkwtLateHours,
+            'pkwtLateCount' => $pkwtLateCount,
+            'pkwtLateRateDiff' => $pkwtLateRateDiff,
+            'phlLateRate' => $phlLateRate,
+            'phlLateHours' => $phlLateHours,
+            'phlLateCount' => $phlLateCount,
+            'phlLateRateDiff' => $phlLateRateDiff,
+            'monthlyPkwtLatenessTrend' => $monthlyPkwtLatenessTrend,
+            'dailyDates' => $dailyDates,
+            'dailyLateCounts' => $dailyLateCounts,
+            'dailyLateHours' => $dailyLateHours
         ]);
     }
 }

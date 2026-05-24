@@ -49,7 +49,7 @@
                         </div>
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Rata-rata PKWT/Bulan</p>
-                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">{{ $pkwtEmployeeCount }} Karyawan</h4>
+                            <h4 class="text-lg font-bold text-gray-800 dark:text-white">{{ $averagePkwtEmployees }} Karyawan</h4>
                         </div>
                     </div>
                 </div>

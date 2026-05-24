@@ -95,9 +95,20 @@
             
             <!-- Row 1: Top Level Metrics (Full Width Grid) -->
             <div class="col-span-12">
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-6">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 md:gap-6">
                     <x-dashboard.payroll.salary-cost-card :total="$totalSalaryCost" :pkwt="$totalPkwtSalary" :phl="$totalPhlSalary" />
                     <x-dashboard.payroll.overtime-cost-card :total="$totalOvertimeCost" :pkwt="$pkwtOvertimeCost" :phl="$phlOvertimeCost" />
+                    <x-dashboard.payroll.lateness-card 
+                        :overallRate="$overallLateRate" 
+                        :overallDiff="$overallLateRateDiff" 
+                        :pkwtRate="$pkwtLateRate" 
+                        :pkwtHours="$pkwtLateHours" 
+                        :pkwtCount="$pkwtLateCount" 
+                        :pkwtDiff="$pkwtLateRateDiff" 
+                        :phlRate="$phlLateRate" 
+                        :phlHours="$phlLateHours" 
+                        :phlCount="$phlLateCount" 
+                        :phlDiff="$phlLateRateDiff" />
                     <x-dashboard.payroll.manpower-card :total="$totalManpower" :pkwt="$pkwtCount" :phl="$phlCount" />
                     <x-dashboard.payroll.work-effort-card :total="$totalWorkEffort" :reg="$totalRegHours" :ovt="$totalOvtHours" />
                 </div>
@@ -115,6 +126,11 @@
 
             <div class="col-span-12 xl:col-span-5 min-w-0">
                 <x-dashboard.payroll.turnover-chart :rate="$turnoverRate" :total="$totalResigned" :pkwt="$pkwtResigned" :phl="$phlResigned" :sparkline="$turnoverSparklineData" />
+            </div>
+
+            <!-- Row 3: Lateness Analytics Chart -->
+            <div class="col-span-12 min-w-0">
+                <x-dashboard.payroll.lateness-chart :months="$months" :monthlyTrend="$monthlyPkwtLatenessTrend" :dailyDates="$dailyDates" :dailyCounts="$dailyLateCounts" :dailyHours="$dailyLateHours" />
             </div>
         </div>
     </div>
