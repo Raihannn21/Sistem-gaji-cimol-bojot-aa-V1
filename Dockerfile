@@ -38,12 +38,12 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80
-EXPOSE 80
+# Expose port 7860
+EXPOSE 7860
 
-# Configure Apache port mapping for Render's dynamic PORT binding
-RUN sed -i 's/Listen 80/Listen ${PORT}/g' /etc/apache2/ports.conf
-RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/g' /etc/apache2/sites-available/000-default.conf
+# Configure Apache port mapping for Hugging Face Spaces port 7860
+RUN sed -i 's/Listen 80/Listen 7860/g' /etc/apache2/ports.conf
+RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:7860>/g' /etc/apache2/sites-available/000-default.conf
 
 # Run optimizations and start Apache web server
 CMD php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground

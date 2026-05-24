@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::create([
-            'name' => 'Raihan',
+            'name' => 'Super Admin',
             'email' => 'admin@cimolbojot.com',
             'password' => bcrypt('password'),
             'phone' => '+62 899-8877-6655',
