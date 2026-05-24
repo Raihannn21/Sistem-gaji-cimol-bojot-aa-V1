@@ -93,24 +93,25 @@
         <!-- Main Dashboard Grid (Following eCommerce Layout) -->
         <div class="grid grid-cols-12 gap-4 md:gap-6">
             
-            <!-- Row 1: Top Level Metrics (Full Width Grid) -->
             <div class="col-span-12">
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 md:gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                     <x-dashboard.payroll.salary-cost-card :total="$totalSalaryCost" :pkwt="$totalPkwtSalary" :phl="$totalPhlSalary" />
                     <x-dashboard.payroll.overtime-cost-card :total="$totalOvertimeCost" :pkwt="$pkwtOvertimeCost" :phl="$phlOvertimeCost" />
-                    <x-dashboard.payroll.lateness-card 
-                        :overallRate="$overallLateRate" 
-                        :overallDiff="$overallLateRateDiff" 
-                        :pkwtRate="$pkwtLateRate" 
-                        :pkwtHours="$pkwtLateHours" 
-                        :pkwtCount="$pkwtLateCount" 
-                        :pkwtDiff="$pkwtLateRateDiff" 
-                        :phlRate="$phlLateRate" 
-                        :phlHours="$phlLateHours" 
-                        :phlCount="$phlLateCount" 
-                        :phlDiff="$phlLateRateDiff" />
                     <x-dashboard.payroll.manpower-card :total="$totalManpower" :pkwt="$pkwtCount" :phl="$phlCount" />
                     <x-dashboard.payroll.work-effort-card :total="$totalWorkEffort" :reg="$totalRegHours" :ovt="$totalOvtHours" />
+                    <div class="col-span-2">
+                        <x-dashboard.payroll.lateness-card 
+                            :overallRate="$overallLateRate" 
+                            :overallDiff="$overallLateRateDiff" 
+                            :pkwtRate="$pkwtLateRate" 
+                            :pkwtHours="$pkwtLateHours" 
+                            :pkwtCount="$pkwtLateCount" 
+                            :pkwtDiff="$pkwtLateRateDiff" 
+                            :phlRate="$phlLateRate" 
+                            :phlHours="$phlLateHours" 
+                            :phlCount="$phlLateCount" 
+                            :phlDiff="$phlLateRateDiff" />
+                    </div>
                 </div>
             </div>
 
