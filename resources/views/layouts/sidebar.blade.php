@@ -8,8 +8,7 @@
 @endphp
 
 <aside id="sidebar"
-    class="fixed flex flex-col mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out border-r border-gray-200"
-    style="z-index: 999999;"
+    class="fixed flex flex-col mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out border-r border-gray-200 -translate-x-full xl:translate-x-0"
     x-data="{
         openSubmenus: {},
         init() {
@@ -252,3 +251,14 @@
 <div x-show="$store.sidebar.isMobileOpen" @click="$store.sidebar.setMobileOpen(false)"
     class="fixed h-screen w-full bg-gray-900/50"
     style="z-index: 999998;"></div>
+
+<style>
+#sidebar {
+    z-index: 999999;
+}
+@media (min-width: 1280px) {
+    #sidebar {
+        z-index: 40;
+    }
+}
+</style>
