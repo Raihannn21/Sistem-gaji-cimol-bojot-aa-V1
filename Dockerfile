@@ -7,12 +7,13 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libzip-dev \
     libpq-dev \
+    libxml2-dev \
     zip \
     unzip \
     git \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_pgsql pgsql zip bcmath
+    && docker-php-ext-install gd pdo pdo_pgsql pgsql zip bcmath xml
 
 # Set up non-root user 1000 (Hugging Face default)
 RUN useradd -m -u 1000 user
@@ -27,7 +28,7 @@ COPY --chown=user:user . /app
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts --ignore-platform-reqs
 
 # Expose port 7860
 EXPOSE 7860
