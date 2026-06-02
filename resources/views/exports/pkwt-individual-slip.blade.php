@@ -226,7 +226,7 @@
             </td>
             <td class="title-td">
                 <h1 class="slip-title">SLIP GAJI</h1>
-                <p class="slip-period">{{ strtoupper($period->title) }}</p>
+                <p class="slip-period">BULAN {{ strtoupper($period->start_date->locale('id')->translatedFormat('F')) }}</p>
             </td>
         </tr>
     </table>
