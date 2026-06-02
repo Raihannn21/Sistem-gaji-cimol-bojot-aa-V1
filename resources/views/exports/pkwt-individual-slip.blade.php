@@ -304,29 +304,9 @@
                         <td class="item-val">Rp. {{ number_format($employee->attendance_allowance ?? 0, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
-                        <td class="sub-item-name">Insentif Keselamatan</td>
-                        <td class="item-dots">:</td>
-                        <td class="item-val">Rp. 0</td>
-                    </tr>
-                    <tr>
                         <td class="sub-item-name">Risiko</td>
                         <td class="item-dots">:</td>
                         <td class="item-val">Rp. {{ number_format($risiko, 0, ',', '.') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="sub-item-name">Penempatan</td>
-                        <td class="item-dots">:</td>
-                        <td class="item-val">Rp. 0</td>
-                    </tr>
-                    <tr>
-                        <td class="sub-item-name">Golden Shakehand</td>
-                        <td class="item-dots">:</td>
-                        <td class="item-val">Rp. 0</td>
-                    </tr>
-                    <tr>
-                        <td class="item-name">Tunjangan PPh</td>
-                        <td class="item-dots">:</td>
-                        <td class="item-val">Rp. 0</td>
                     </tr>
                     <tr>
                         <td class="item-name">Bonus/THR/Penghasilan Tidak Teratur</td>
@@ -346,7 +326,7 @@
                 <div class="section-title">POTONGAN</div>
                 <table class="item-table">
                     <tr>
-                        <td class="item-name">BPJamsostek</td>
+                        <td class="item-name">BPJS TK</td>
                         <td class="item-dots">:</td>
                         <td class="item-val">Rp. {{ number_format($bpjs_tk, 0, ',', '.') }}</td>
                     </tr>
@@ -359,16 +339,6 @@
                         <td class="item-name">Kehadiran (Absensi/Prorate)</td>
                         <td class="item-dots">:</td>
                         <td class="item-val">Rp. {{ number_format($days_absent * $tarif_harian, 0, ',', '.') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="item-name">Denda</td>
-                        <td class="item-dots">:</td>
-                        <td class="item-val">Rp. 0</td>
-                    </tr>
-                    <tr>
-                        <td class="item-name">Piutang Karyawan</td>
-                        <td class="item-dots">:</td>
-                        <td class="item-val">Rp. 0</td>
                     </tr>
                     <tr>
                         <td class="item-name">Objek Pajak PPh 21</td>
