@@ -24,7 +24,7 @@
             margin-bottom: 2px;
         }
         .logo-td {
-            width: 80px;
+            width: 48px;
             vertical-align: top;
         }
         .logo-img {
