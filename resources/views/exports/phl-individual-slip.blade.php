@@ -245,11 +245,6 @@
                         <td class="meta-val">{{ $employee->name }}</td>
                     </tr>
                     <tr>
-                        <td class="meta-label">Jabatan</td>
-                        <td class="meta-colon">:</td>
-                        <td class="meta-val">Pekerja Harian Lepas (PHL)</td>
-                    </tr>
-                    <tr>
                         <td class="meta-label">Departemen</td>
                         <td class="meta-colon">:</td>
                         <td class="meta-val">{{ $team_name ?? '-' }}</td>
@@ -292,11 +287,6 @@
                         <td class="item-name">Tunjangan</td>
                         <td class="item-dots"></td>
                         <td class="item-val"></td>
-                    </tr>
-                    <tr>
-                        <td class="sub-item-name">Jabatan</td>
-                        <td class="item-dots">:</td>
-                        <td class="item-val">Rp. 0</td>
                     </tr>
                     <tr>
                         <td class="sub-item-name">Kehadiran</td>
