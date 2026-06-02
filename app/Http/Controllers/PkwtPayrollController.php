@@ -829,7 +829,7 @@ class PkwtPayrollController extends Controller
             'potongan' => $potongan,
             'total' => $total,
             'team_name' => $team_name,
-        ])->setPaper('a5', 'portrait');
+        ])->setPaper('a5', 'landscape');
 
         $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
         return $pdf->stream($fileName);
@@ -894,7 +894,7 @@ class PkwtPayrollController extends Controller
             'potongan' => $potongan,
             'total' => $total,
             'team_name' => $team_name,
-        ])->setPaper('a5', 'portrait');
+        ])->setPaper('a5', 'landscape');
 
         $pdfData = $pdf->output();
         $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
@@ -986,7 +986,7 @@ class PkwtPayrollController extends Controller
                     'potongan' => $potongan,
                     'total' => $total,
                     'team_name' => $team_name,
-                ])->setPaper('a5', 'portrait');
+                ])->setPaper('a5', 'landscape');
 
                 $pdfData = $pdf->output();
                 $fileName = 'SLIP_GAJI_' . str_replace(' ', '_', strtoupper($employee->name)) . '_' . str_replace(' ', '_', strtoupper($period->title)) . '.pdf';
