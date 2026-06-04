@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows
 {
     protected $defaultJabatan;
+    protected $processedNoIds = [];
 
     public function __construct($defaultJabatan = null)
     {
@@ -51,9 +52,18 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
 
         $attendanceAllowance = $this->cleanNumber($data['attendance_allowance'] ?? $data['tunjangan_kehadiran'] ?? null);
 
-        return new Employee([
-            'name' => $data['nama'] ?? $data['name'] ?? $data['nama_lengkap'] ?? $data['employee_name'],
-            'no_id' => $data['no_id'] ?? $data['id_no'] ?? $data['nomor_id'] ?? $data['id_karyawan'],
+        $noId = $data['no_id'] ?? $data['id_no'] ?? $data['nomor_id'] ?? $data['id_karyawan'] ?? null;
+        if (!$noId) {
+            return null;
+        }
+
+        if (in_array($noId, $this->processedNoIds)) {
+            return null;
+        }
+        $this->processedNoIds[] = $noId;
+
+        $employeeData = [
+            'name' => $data['nama'] ?? $data['name'] ?? $data['nama_lengkap'] ?? $data['employee_name'] ?? 'Tanpa Nama',
             'nik' => $data['nik'] ?? $data['nomor_induk_kependudukan'] ?? null,
             'email' => $data['email'] ?? $data['surel'] ?? null,
             'phone' => $data['phone'] ?? $data['telepon'] ?? $data['hp'] ?? $data['no_hp'] ?? null,
@@ -70,7 +80,16 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
             'pph21' => ($type === 'PKWT') ? $pph21 : null,
             'bank_name' => $data['bank_name'] ?? $data['nama_bank'] ?? $data['bank'] ?? null,
             'bank_account' => $data['bank_account'] ?? $data['nomor_rekening'] ?? $data['no_rek'] ?? null,
-        ]);
+        ];
+
+        $employee = Employee::where('no_id', $noId)->first();
+        if ($employee) {
+            $employee->fill($employeeData);
+            return $employee;
+        }
+
+        $employeeData['no_id'] = $noId;
+        return new Employee($employeeData);
     }
 
     public function rules(): array
