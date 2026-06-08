@@ -12,6 +12,7 @@
         showEditRiskModal: false,
         showSlipModal: false,
         showConfirmModal: false,
+        showUnlockModal: false,
         showAttendanceImportModal: false,
         showEditAttendanceModal: false,
         selectedAttendance: { id: null, employee_name: '', date: '', scan_in: '', scan_out: '', late_time: '', early_time: '' },
@@ -120,7 +121,14 @@
                         Export BCA
                     </x-ui.button>
 
-                    @if($period->status !== 'Locked')
+                    @if($period->status === 'Locked')
+                    <x-ui.button variant="outline" @click="showUnlockModal = true" className="flex items-center gap-2 text-red-650 border-red-200 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:border-red-900/30 dark:hover:bg-red-500/10">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                        </svg>
+                        Buka Kunci Payroll
+                    </x-ui.button>
+                    @else
                     <x-ui.button variant="primary" @click="showConfirmModal = true" x-show="activeTab === 'overview'">
                         Generate Payroll
                     </x-ui.button>
@@ -170,6 +178,79 @@
             <x-payroll.phl.risk-allowance-edit-modal :period="$period" />
             <x-payroll.phl.generate-confirm-modal :period="$period" :employees="$employees" />
             <x-payroll.phl.payslip-modal />
+
+            <!-- Modal: Konfirmasi Buka Kunci Gaji -->
+            <template x-teleport="body">
+                <div x-show="showUnlockModal" 
+                     class="fixed inset-0 flex items-center justify-center p-4" 
+                     style="z-index: 99999999; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;"
+                     x-cloak>
+                    
+                    <!-- Backdrop -->
+                    <div x-show="showUnlockModal" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         class="fixed inset-0"
+                         style="position: fixed; inset: 0; background: rgba(156, 163, 175, 0.5); backdrop-filter: blur(4px);"
+                         @click="showUnlockModal = false"></div>
+
+                    <!-- Modal Content Box -->
+                    <div x-show="showUnlockModal"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                         class="relative bg-white p-6 shadow-2xl dark:bg-gray-900 sm:p-8 overflow-hidden"
+                         style="width: 500px; max-width: 100%; border-radius: 32px; border: 1px solid rgba(0,0,0,0.05);"
+                         @click.away="showUnlockModal = false">
+                        
+                        <!-- Close Button -->
+                        <button @click="showUnlockModal = false"
+                            style="position: absolute; right: 20px; top: 20px; width: 40px; height: 40px; background: #f3f4f6; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #9ca3af; transition: all 0.3s;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M6.04289 16.5413C5.65237 16.9318 5.65237 17.565 6.04289 17.9555C6.43342 18.346 7.06658 18.346 7.45711 17.9555L11.9987 13.4139L16.5408 17.956C16.9313 18.3466 17.5645 18.3466 17.955 17.956C18.3455 17.5655 18.3455 16.9323 17.955 16.5418L13.4129 11.9997L17.955 7.4576C18.3455 7.06707 18.3455 6.43391 17.955 6.04338C17.5645 5.65286 16.9313 5.65286 16.5408 6.04338L11.9987 10.5855L7.45711 6.0439C7.06658 5.65338 6.43342 5.65338 6.04289 6.0439C5.65237 6.43442 5.65237 7.06759 6.04289 7.45811L10.5845 11.9997L6.04289 16.5413Z"
+                                    fill="currentColor" />
+                            </svg>
+                        </button>
+
+                        <!-- Icon & Header -->
+                        <div style="display: flex; flex-direction: column;">
+                            <div style="width: 56px; height: 56px; background: #fef2f2; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                                <svg style="width: 28px; height: 28px; color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <h3 style="margin: 0; font-size: 20px; font-weight: 700; color: #1f2937;">Konfirmasi Buka Kunci Gaji</h3>
+                            <p style="margin: 8px 0 0 0; font-size: 14px; color: #6b7280; line-height: 1.5;">Apakah Anda yakin ingin membuka kunci periode payroll ini? Hal ini memungkinkan data absensi, lembur, dan tunjangan diubah kembali.</p>
+                        </div>
+
+                        <!-- Footer Buttons -->
+                        <div style="display: flex; gap: 12px; margin-top: 32px;">
+                            <button type="button" @click="showUnlockModal = false" 
+                                    style="flex: 1; padding: 12px; background: white; border: 1px solid #e5e7eb; border-radius: 16px; color: #374151; font-weight: 600; cursor: pointer; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                Batalkan
+                            </button>
+                            
+                            <form action="{{ route('payroll.phl.periods.unlock', $period->id) }}" method="POST" style="flex: 1; margin: 0;">
+                                @csrf
+                                <button type="submit" 
+                                        style="width: 100%; padding: 12px; background: #dc2626; border: none; border-radius: 16px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s;"
+                                        onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+                                    Ya, Buka Kunci
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </template>
         </div>
         <!-- Modal: Import Absensi -->
         <x-payroll.phl.attendance-import-modal :period="$period" />

@@ -62,6 +62,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/periods/{id}/attendance/{attendanceId}', [PhlPayrollController::class, 'updateAttendance'])->name('payroll.phl.periods.update-attendance');
         Route::delete('/periods/{id}/attendance/{attendanceId}', [PhlPayrollController::class, 'destroyAttendance'])->name('payroll.phl.periods.destroy-attendance');
         Route::post('/periods/{id}/generate', [PhlPayrollController::class, 'generate'])->name('payroll.phl.periods.generate');
+        Route::post('/periods/{id}/unlock', [PhlPayrollController::class, 'unlock'])->name('payroll.phl.periods.unlock');
         Route::delete('/periods/{id}', [PhlPayrollController::class, 'destroy'])->name('payroll.phl.periods.destroy');
         
         // Lembur (Overtime) PHL
@@ -91,6 +92,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/periods/{id}/export/excel', [PkwtPayrollController::class, 'exportExcel'])->name('payroll.pkwt.periods.export.excel');
         Route::get('/periods/{id}/export/bca', [PkwtPayrollController::class, 'exportBca'])->name('payroll.pkwt.periods.export.bca');
         Route::post('/periods/{id}/generate', [PkwtPayrollController::class, 'generate'])->name('payroll.pkwt.periods.generate');
+        Route::post('/periods/{id}/unlock', [PkwtPayrollController::class, 'unlock'])->name('payroll.pkwt.periods.unlock');
         Route::post('/periods/{id}/import-attendance', [PkwtPayrollController::class, 'importAttendance'])->name('payroll.pkwt.periods.import-attendance');
         Route::put('/periods/{id}/attendance/{attendanceId}', [PkwtPayrollController::class, 'updateAttendance'])->name('payroll.pkwt.periods.update-attendance');
         Route::delete('/periods/{id}/attendance/{attendanceId}', [PkwtPayrollController::class, 'destroyAttendance'])->name('payroll.pkwt.periods.destroy-attendance');

@@ -671,6 +671,27 @@ class PkwtPayrollController extends Controller
         }
     }
 
+    public function unlock($id)
+    {
+        try {
+            $period = PkwtPayrollPeriod::findOrFail($id);
+            if ($period->status !== 'Locked') {
+                return redirect()->route('payroll.pkwt.periods.show', $id)
+                    ->with('error', 'Periode payroll ini tidak dalam status terkunci.');
+            }
+
+            $period->update([
+                'status' => 'Open'
+            ]);
+
+            return redirect()->route('payroll.pkwt.periods.show', $id)
+                ->with('success', 'Periode payroll PKWT berhasil dibuka kunci. Anda sekarang dapat melakukan perubahan data.');
+        } catch (\Exception $e) {
+            return redirect()->route('payroll.pkwt.periods.show', $id)
+                ->with('error', 'Terjadi kesalahan saat membuka kunci payroll PKWT: ' . $e->getMessage());
+        }
+    }
+
     public function exportExcel($id)
     {
         $period = PkwtPayrollPeriod::findOrFail($id);

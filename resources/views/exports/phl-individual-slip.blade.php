@@ -226,7 +226,12 @@
             </td>
             <td class="title-td">
                 <h1 class="slip-title">SLIP GAJI</h1>
-                <p class="slip-period">BULAN {{ strtoupper($period->start_date->locale('id')->translatedFormat('F')) }}</p>
+                <p class="slip-period">
+                    BULAN {{ strtoupper($period->start_date->locale('id')->translatedFormat('F')) }}<br>
+                    <span style="font-size: 6.5px; font-weight: normal; text-transform: none; display: block; margin-top: 2px;">
+                        ({{ $period->start_date->locale('id')->translatedFormat('d M Y') }} - {{ $period->end_date->locale('id')->translatedFormat('d M Y') }})
+                    </span>
+                </p>
             </td>
         </tr>
     </table>
@@ -381,9 +386,6 @@
     <table class="signature-table">
         <tr>
             <td style="text-align: left; padding-left: 20px;">
-                <div>Penerima Upah,</div>
-                <div class="signature-space"></div>
-                <div class="signature-name">{{ $employee->name }}</div>
             </td>
             <td style="text-align: right; padding-right: 20px;">
                 <div>Bandung, {{ \Carbon\Carbon::now('Asia/Jakarta')->format('d M Y') }}</div>
