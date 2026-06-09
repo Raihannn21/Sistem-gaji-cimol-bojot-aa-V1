@@ -64,7 +64,7 @@ class BcaPayrollExport extends DefaultValueBinder implements FromView, WithTitle
 
             $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
 
-            if ($daysWorked > 0 || $totalOvertimeHours > 0 || $totalRiskAmount > 0) {
+            if ($takeHomePay > 0) {
                 $rows[] = [
                     'transfer_type' => $employee->bank_name ?: 'BCA',
                     'credited_account' => $employee->bank_account ?: '',

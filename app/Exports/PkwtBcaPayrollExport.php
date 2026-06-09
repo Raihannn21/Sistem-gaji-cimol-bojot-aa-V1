@@ -96,7 +96,7 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
             $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
             $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
 
-            if ($daysWorked > 0 || $lembur > 0 || $risiko > 0 || $tunjanganLain > 0) {
+            if ($total > 0) {
                 $rows[] = [
                     'transfer_type' => $employee->bank_name ?: 'BCA',
                     'credited_account' => $employee->bank_account ?: '',

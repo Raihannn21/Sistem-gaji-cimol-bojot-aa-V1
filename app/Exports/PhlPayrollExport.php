@@ -50,19 +50,17 @@ class PhlPayrollExport implements FromView, WithTitle, WithColumnWidths
 
             $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
 
-            if ($daysWorked > 0 || $totalOvertimeHours > 0 || $totalRiskAmount > 0) {
-                $rows[] = [
-                    'employee' => $employee,
-                    'days_worked' => $daysWorked,
-                    'salary_daily' => $salaryDaily,
-                    'gaji_pokok' => $gajiPokok,
-                    'overtime_hours' => $totalOvertimeHours,
-                    'overtime_amount' => $totalOvertimeAmount,
-                    'risk_days' => $totalRiskDays,
-                    'risk_amount' => $totalRiskAmount,
-                    'take_home_pay' => $takeHomePay,
-                ];
-            }
+            $rows[] = [
+                'employee' => $employee,
+                'days_worked' => $daysWorked,
+                'salary_daily' => $salaryDaily,
+                'gaji_pokok' => $gajiPokok,
+                'overtime_hours' => $totalOvertimeHours,
+                'overtime_amount' => $totalOvertimeAmount,
+                'risk_days' => $totalRiskDays,
+                'risk_amount' => $totalRiskAmount,
+                'take_home_pay' => $takeHomePay,
+            ];
         }
 
         return view('exports.phl-payroll-excel', [

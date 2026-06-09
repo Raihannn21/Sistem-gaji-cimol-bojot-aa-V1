@@ -89,9 +89,30 @@ class PkwtPayrollController extends Controller
             }
 
             $period->total_expenditure = $periodTotal;
-            $period->total_employees = ($employeesInPeriodCount === 0 && $period->status === 'Open')
-                ? $pkwtEmployeeCount
-                : $employeesInPeriodCount;
+            $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
+            $periodEmployeesCount = Employee::where('employment_type', 'PKWT')
+                ->where(function ($q) use ($period, $selectedTeamIds) {
+                    $q->where(function($subQ) use ($selectedTeamIds) {
+                        $subQ->where('status', 'Aktif')
+                            ->whereIn('team_id', $selectedTeamIds);
+                    })
+                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    });
+                })
+                ->distinct()
+                ->count();
+
+            $period->total_employees = $periodEmployeesCount ?: $pkwtEmployeeCount;
 
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
                 $ytdPaid += $periodTotal;
@@ -220,40 +241,29 @@ class PkwtPayrollController extends Controller
             ['date', 'asc']
         ]));
 
-        if ($period->status === 'Locked') {
-            $employeeIds = collect()
-                ->merge($period->attendances->pluck('employee_id'))
-                ->merge($period->overtimes->pluck('employee_id'))
-                ->merge($period->riskAllowances->pluck('employee_id'))
-                ->merge($period->otherAllowances->pluck('employee_id'))
-                ->unique();
+        $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
 
-            $employees = Employee::whereIn('id', $employeeIds)->get();
-        } else {
-            $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
-
-            $employees = Employee::where('employment_type', 'PKWT')
-                ->where(function ($q) use ($period, $selectedTeamIds) {
-                    $q->where(function($subQ) use ($selectedTeamIds) {
-                        $subQ->where('status', 'Aktif')
-                            ->whereIn('team_id', $selectedTeamIds);
-                    })
-                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    });
+        $employees = Employee::where('employment_type', 'PKWT')
+            ->where(function ($q) use ($period, $selectedTeamIds) {
+                $q->where(function($subQ) use ($selectedTeamIds) {
+                    $subQ->where('status', 'Aktif')
+                        ->whereIn('team_id', $selectedTeamIds);
                 })
-                ->distinct()
-                ->get();
-        }
+                ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                });
+            })
+            ->distinct()
+            ->get();
 
         return view('pages.payroll.pkwt.period-detail', [
             'title' => 'Detail Periode Gaji PKWT',
@@ -800,20 +810,18 @@ class PkwtPayrollController extends Controller
             $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
             $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
 
-            if ($daysWorked > 0 || $lembur > 0 || $risiko > 0 || $tunjanganLain > 0) {
-                $rows[] = [
-                    'employee' => $employee,
-                    'days_worked' => $daysWorked,
-                    'days_absent' => $daysAbsent,
-                    'tarif_harian' => $harian,
-                    'gaji_pokok_didapat' => $pokok,
-                    'lembur' => $lembur,
-                    'risiko' => $risiko,
-                    'lain_lain' => $tunjanganLain,
-                    'potongan' => $potongan,
-                    'total_bersih' => $total,
-                ];
-            }
+            $rows[] = [
+                'employee' => $employee,
+                'days_worked' => $daysWorked,
+                'days_absent' => $daysAbsent,
+                'tarif_harian' => $harian,
+                'gaji_pokok_didapat' => $pokok,
+                'lembur' => $lembur,
+                'risiko' => $risiko,
+                'lain_lain' => $tunjanganLain,
+                'potongan' => $potongan,
+                'total_bersih' => $total,
+            ];
         }
 
         $pdf = Pdf::loadView('exports.pkwt-payroll', [
@@ -1070,7 +1078,7 @@ class PkwtPayrollController extends Controller
 
             $total = max(0, $pokok + $lembur + $risiko + $lain_lain - $potongan);
 
-            if ($daysWorked > 0 || $lembur > 0 || $risiko > 0 || $lain_lain > 0) {
+            if ($total >= 0) {
                 $pdf = Pdf::loadView('exports.pkwt-individual-slip', [
                     'period' => $period,
                     'employee' => $employee,

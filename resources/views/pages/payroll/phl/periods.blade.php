@@ -91,11 +91,7 @@
                                         </span>
                                     </td>
                                     <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-400">
-                                        @php
-                                            $attendanceCount = $period->attendances()->distinct('employee_id')->count();
-                                            $displayCount = ($attendanceCount === 0 && $period->status === 'Open') ? $phlEmployeeCount : $attendanceCount;
-                                        @endphp
-                                        {{ $displayCount }} Karyawan
+                                        {{ $period->total_employees }} Karyawan
                                     </td>
                                     <td class="px-5 py-4 text-sm font-semibold text-gray-800 dark:text-white">
                                         Rp {{ number_format($period->total_expenditure, 0, ',', '.') }}

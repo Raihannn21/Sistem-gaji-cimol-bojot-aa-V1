@@ -47,6 +47,24 @@ class PhlPayrollController extends Controller
 
             $period->total_expenditure = $periodTotal;
 
+            $periodEmployeesCount = Employee::where('employment_type', 'PHL')
+                ->where(function ($q) use ($period) {
+                    $q->where('status', 'Aktif')
+                        ->orWhereHas('phlAttendances', function ($sub) use ($period) {
+                            $sub->where('phl_payroll_period_id', $period->id);
+                        })
+                        ->orWhereHas('phlOvertimes', function ($sub) use ($period) {
+                            $sub->where('phl_payroll_period_id', $period->id);
+                        })
+                        ->orWhereHas('phlRiskAllowances', function ($sub) use ($period) {
+                            $sub->where('phl_payroll_period_id', $period->id);
+                        });
+                })
+                ->distinct()
+                ->count();
+
+            $period->total_employees = $periodEmployeesCount ?: $phlEmployeeCount;
+
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
                 $ytdPaid += $periodTotal;
             }
@@ -95,19 +113,21 @@ class PhlPayrollController extends Controller
             ['date', 'asc']
         ]));
 
-        if ($period->status === 'Locked') {
-            $employeeIds = collect()
-                ->merge($period->attendances->pluck('employee_id'))
-                ->merge($period->overtimes->pluck('employee_id'))
-                ->merge($period->riskAllowances->pluck('employee_id'))
-                ->unique();
-
-            $employees = Employee::whereIn('id', $employeeIds)->get();
-        } else {
-            $employees = Employee::where('employment_type', 'PHL')
-                ->where('status', 'Aktif')
-                ->get();
-        }
+        $employees = Employee::where('employment_type', 'PHL')
+            ->where(function ($q) use ($period) {
+                $q->where('status', 'Aktif')
+                    ->orWhereHas('phlAttendances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlOvertimes', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlRiskAllowances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    });
+            })
+            ->distinct()
+            ->get();
 
         return view('pages.payroll.phl.period-detail', [
             'title' => 'Detail Periode Gaji PHL',
@@ -499,19 +519,17 @@ class PhlPayrollController extends Controller
 
             $takeHomePay = $gajiPokok + $totalOvertimeAmount + $totalRiskAmount;
 
-            if ($daysWorked > 0 || $totalOvertimeHours > 0 || $totalRiskAmount > 0) {
-                $rows[] = [
-                    'employee' => $employee,
-                    'days_worked' => $daysWorked,
-                    'salary_daily' => $salaryDaily,
-                    'gaji_pokok' => $gajiPokok,
-                    'overtime_hours' => $totalOvertimeHours,
-                    'overtime_amount' => $totalOvertimeAmount,
-                    'risk_days' => $totalRiskDays,
-                    'risk_amount' => $totalRiskAmount,
-                    'take_home_pay' => $takeHomePay,
-                ];
-            }
+            $rows[] = [
+                'employee' => $employee,
+                'days_worked' => $daysWorked,
+                'salary_daily' => $salaryDaily,
+                'gaji_pokok' => $gajiPokok,
+                'overtime_hours' => $totalOvertimeHours,
+                'overtime_amount' => $totalOvertimeAmount,
+                'risk_days' => $totalRiskDays,
+                'risk_amount' => $totalRiskAmount,
+                'take_home_pay' => $takeHomePay,
+            ];
         }
 
         $pdf = Pdf::loadView('exports.phl-payroll', [
@@ -736,7 +754,7 @@ class PhlPayrollController extends Controller
                 : $employee->team;
             $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
 
-            if ($daysWorked > 0 || $totalOvertimeHours > 0 || $totalRiskAmount > 0) {
+            if ($takeHomePay >= 0) {
                 $pdf = Pdf::loadView('exports.phl-individual-slip', [
                     'period' => $period,
                     'employee' => $employee,

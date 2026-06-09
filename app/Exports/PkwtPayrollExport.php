@@ -84,20 +84,18 @@ class PkwtPayrollExport implements FromView, WithTitle, WithColumnWidths
             $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
             $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
 
-            if ($daysWorked > 0 || $lembur > 0 || $risiko > 0 || $tunjanganLain > 0) {
-                $rows[] = [
-                    'employee' => $employee,
-                    'days_worked' => $daysWorked,
-                    'days_absent' => $daysAbsent,
-                    'tarif_harian' => $harian,
-                    'gaji_pokok_didapat' => $pokok,
-                    'lembur' => $lembur,
-                    'risiko' => $risiko,
-                    'lain_lain' => $tunjanganLain,
-                    'potongan' => $potongan,
-                    'total_bersih' => $total,
-                ];
-            }
+            $rows[] = [
+                'employee' => $employee,
+                'days_worked' => $daysWorked,
+                'days_absent' => $daysAbsent,
+                'tarif_harian' => $harian,
+                'gaji_pokok_didapat' => $pokok,
+                'lembur' => $lembur,
+                'risiko' => $risiko,
+                'lain_lain' => $tunjanganLain,
+                'potongan' => $potongan,
+                'total_bersih' => $total,
+            ];
         }
 
         return view('exports.pkwt-payroll-excel', [
