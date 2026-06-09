@@ -225,8 +225,25 @@ class PkwtPayrollController extends Controller
             $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
 
             $employees = Employee::where('employment_type', 'PKWT')
-                ->where('status', 'Aktif')
-                ->whereIn('team_id', $selectedTeamIds)
+                ->where(function ($q) use ($period, $selectedTeamIds) {
+                    $q->where(function($subQ) use ($selectedTeamIds) {
+                        $subQ->where('status', 'Aktif')
+                            ->whereIn('team_id', $selectedTeamIds);
+                    })
+                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
+                        $sub->where('pkwt_payroll_period_id', $period->id);
+                    });
+                })
+                ->distinct()
                 ->get();
         }
 
@@ -722,6 +739,15 @@ class PkwtPayrollController extends Controller
                 })
                 ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
                     $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
                 });
             })
             ->distinct()
@@ -938,6 +964,15 @@ class PkwtPayrollController extends Controller
                         ->whereIn('team_id', $selectedTeamIds);
                 })
                 ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
                     $sub->where('pkwt_payroll_period_id', $period->id);
                 });
             })

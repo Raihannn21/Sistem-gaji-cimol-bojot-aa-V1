@@ -51,6 +51,15 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
                 })
                 ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
                     $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
                 });
             })
             ->distinct()
