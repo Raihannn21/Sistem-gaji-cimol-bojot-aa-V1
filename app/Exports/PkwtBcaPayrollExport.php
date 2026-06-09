@@ -71,9 +71,18 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
 
         $rows = [];
         foreach ($employees as $employee) {
-            $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-
             $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+            $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+
+            $daysWorked = $period->attendances->where('employee_id', $employee->id)
+                ->filter(function ($att) use ($offDates) {
+                    if ($att->duration <= 0) {
+                        return false;
+                    }
+                    $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                    return !in_array($dateStr, $offDates);
+                })
+                ->count();
             $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
             $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);

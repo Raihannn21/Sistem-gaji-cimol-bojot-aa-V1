@@ -75,8 +75,6 @@
                         @endphp
                         @forelse($employees as $employee)
                             @php
-                                $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-                                
                                 $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
                                 $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
                                     ? $employeeAttendance->team
@@ -85,6 +83,18 @@
                                 $resolvedTeamId = $resolvedTeam ? $resolvedTeam->id : $employee->team_id;
 
                                 $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
+                                $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+
+                                $daysWorked = $period->attendances->where('employee_id', $employee->id)
+                                    ->filter(function ($att) use ($offDates) {
+                                        if ($att->duration <= 0) {
+                                            return false;
+                                        }
+                                        $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                                        return !in_array($dateStr, $offDates);
+                                    })
+                                    ->count();
+                                
                                 $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
                                 $daysAbsent = max(0, $workDays - $daysWorked);

@@ -54,14 +54,22 @@ class PkwtPayrollController extends Controller
                 if (!$employee)
                     continue;
 
-                $daysWorked = $empAttendances->count();
-                
                 $employeeAttendance = $empAttendances->first();
                 $resolvedTeamId = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
                     ? $employeeAttendance->team_id
                     : $employee->team_id;
                 
                 $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
+                $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+
+                $daysWorked = $empAttendances->filter(function ($att) use ($offDates) {
+                    if ($att->duration <= 0) {
+                        return false;
+                    }
+                    $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                    return !in_array($dateStr, $offDates);
+                })->count();
+
                 $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
                 $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
                 $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
@@ -759,14 +767,24 @@ class PkwtPayrollController extends Controller
 
         $rows = [];
         foreach ($employees as $employee) {
-            $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-
             $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
             $resolvedTeamId = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
                 ? $employeeAttendance->team_id
                 : $employee->team_id;
 
             $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
+            $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+
+            $daysWorked = $period->attendances->where('employee_id', $employee->id)
+                ->filter(function ($att) use ($offDates) {
+                    if ($att->duration <= 0) {
+                        return false;
+                    }
+                    $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                    return !in_array($dateStr, $offDates);
+                })
+                ->count();
+
             $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
             $daysAbsent = max(0, $workDays - $daysWorked);
@@ -822,8 +840,6 @@ class PkwtPayrollController extends Controller
         $startDate = Carbon::parse($period->start_date);
         $endDate = Carbon::parse($period->end_date);
         $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
-
-        $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
         
         $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
         $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
@@ -833,6 +849,18 @@ class PkwtPayrollController extends Controller
         $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
 
         $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
+        $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)
+            ->filter(function ($att) use ($offDates) {
+                if ($att->duration <= 0) {
+                    return false;
+                }
+                $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                return !in_array($dateStr, $offDates);
+            })
+            ->count();
+
         $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
         $daysAbsent = max(0, $workDays - $daysWorked);
@@ -890,8 +918,6 @@ class PkwtPayrollController extends Controller
         $endDate = Carbon::parse($period->end_date);
         $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
 
-        $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-
         $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
         $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
             ? $employeeAttendance->team
@@ -900,6 +926,18 @@ class PkwtPayrollController extends Controller
         $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
 
         $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
+        $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)
+            ->filter(function ($att) use ($offDates) {
+                if ($att->duration <= 0) {
+                    return false;
+                }
+                $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                return !in_array($dateStr, $offDates);
+            })
+            ->count();
+
         $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
         $daysAbsent = max(0, $workDays - $daysWorked);
@@ -992,8 +1030,6 @@ class PkwtPayrollController extends Controller
                 continue;
             }
 
-            $daysWorked = $period->attendances->where('employee_id', $employee->id)->count();
-
             $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
             $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
                 ? $employeeAttendance->team
@@ -1002,6 +1038,18 @@ class PkwtPayrollController extends Controller
             $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
 
             $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
+            $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+
+            $daysWorked = $period->attendances->where('employee_id', $employee->id)
+                ->filter(function ($att) use ($offDates) {
+                    if ($att->duration <= 0) {
+                        return false;
+                    }
+                    $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                    return !in_array($dateStr, $offDates);
+                })
+                ->count();
+
             $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
 
             $daysAbsent = max(0, $workDays - $daysWorked);
