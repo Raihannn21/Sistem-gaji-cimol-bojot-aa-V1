@@ -816,6 +816,7 @@ class PkwtPayrollController extends Controller
         $pokok = $daysWorked * $tarif_harian;
 
         $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+        $totalOvertimeHours = $period->overtimes->where('employee_id', $employee->id)->sum('hours');
         $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
         $lain_lain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
 
@@ -836,6 +837,7 @@ class PkwtPayrollController extends Controller
             'tarif_harian' => $tarif_harian,
             'pokok' => $pokok,
             'lembur' => $lembur,
+            'overtime_hours' => $totalOvertimeHours,
             'risiko' => $risiko,
             'lain_lain' => $lain_lain,
             'bpjs_health' => $bpjs_health,
@@ -881,6 +883,7 @@ class PkwtPayrollController extends Controller
         $pokok = $daysWorked * $tarif_harian;
 
         $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+        $totalOvertimeHours = $period->overtimes->where('employee_id', $employee->id)->sum('hours');
         $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
         $lain_lain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
 
@@ -901,6 +904,7 @@ class PkwtPayrollController extends Controller
             'tarif_harian' => $tarif_harian,
             'pokok' => $pokok,
             'lembur' => $lembur,
+            'overtime_hours' => $totalOvertimeHours,
             'risiko' => $risiko,
             'lain_lain' => $lain_lain,
             'bpjs_health' => $bpjs_health,
@@ -972,6 +976,7 @@ class PkwtPayrollController extends Controller
             $pokok = $daysWorked * $tarif_harian;
 
             $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+            $totalOvertimeHours = $period->overtimes->where('employee_id', $employee->id)->sum('hours');
             $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
             $lain_lain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
 
@@ -993,6 +998,7 @@ class PkwtPayrollController extends Controller
                     'tarif_harian' => $tarif_harian,
                     'pokok' => $pokok,
                     'lembur' => $lembur,
+                    'overtime_hours' => $totalOvertimeHours,
                     'risiko' => $risiko,
                     'lain_lain' => $lain_lain,
                     'bpjs_health' => $bpjs_health,

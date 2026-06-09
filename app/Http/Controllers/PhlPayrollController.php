@@ -554,10 +554,13 @@ class PhlPayrollController extends Controller
             : $employee->team;
         $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
 
+        $totalDays = $period->start_date->diffInDays($period->end_date) + 1;
+
         $pdf = Pdf::loadView('exports.phl-individual-slip', [
             'period' => $period,
             'employee' => $employee,
             'days_worked' => $daysWorked,
+            'total_days' => $totalDays,
             'salary_daily' => $salaryDaily,
             'gaji_pokok' => $gajiPokok,
             'overtime_hours' => $totalOvertimeHours,
@@ -663,10 +666,13 @@ class PhlPayrollController extends Controller
             : $employee->team;
         $team_name = $resolvedTeam ? $resolvedTeam->name : '-';
 
+        $totalDays = $period->start_date->diffInDays($period->end_date) + 1;
+
         $pdf = Pdf::loadView('exports.phl-individual-slip', [
             'period' => $period,
             'employee' => $employee,
             'days_worked' => $daysWorked,
+            'total_days' => $totalDays,
             'salary_daily' => $salaryDaily,
             'gaji_pokok' => $gajiPokok,
             'overtime_hours' => $totalOvertimeHours,
@@ -691,6 +697,7 @@ class PhlPayrollController extends Controller
     public function sendAllSlips($id)
     {
         $period = PhlPayrollPeriod::with(['attendances.team', 'overtimes', 'riskAllowances'])->findOrFail($id);
+        $totalDays = $period->start_date->diffInDays($period->end_date) + 1;
         
         $employees = Employee::where('employment_type', 'PHL')
             ->where(function ($q) use ($period) {
@@ -734,6 +741,7 @@ class PhlPayrollController extends Controller
                     'period' => $period,
                     'employee' => $employee,
                     'days_worked' => $daysWorked,
+                    'total_days' => $totalDays,
                     'salary_daily' => $salaryDaily,
                     'gaji_pokok' => $gajiPokok,
                     'overtime_hours' => $totalOvertimeHours,

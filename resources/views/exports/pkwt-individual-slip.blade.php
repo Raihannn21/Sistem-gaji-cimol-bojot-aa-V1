@@ -254,6 +254,11 @@
                         <td class="meta-colon">:</td>
                         <td class="meta-val">{{ $team_name ?? '-' }}</td>
                     </tr>
+                    <tr>
+                        <td class="meta-label">Jabatan</td>
+                        <td class="meta-colon">:</td>
+                        <td class="meta-val">{{ $employee->employment_type }}</td>
+                    </tr>
                 </table>
             </td>
             <td style="width: 50%; padding-left: 12px;">
@@ -261,12 +266,17 @@
                     <tr>
                         <td class="meta-label">Target Hari Kerja</td>
                         <td class="meta-colon">:</td>
-                        <td class="meta-val">{{ $total_days }} HK</td>
+                        <td class="meta-val">{{ $total_days }}</td>
                     </tr>
                     <tr>
                         <td class="meta-label">Hari Kerja</td>
                         <td class="meta-colon">:</td>
-                        <td class="meta-val">{{ $days_worked }} HK</td>
+                        <td class="meta-val">{{ $days_worked }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-label">Jam Lembur</td>
+                        <td class="meta-colon">:</td>
+                        <td class="meta-val">{{ $overtime_hours ?? 0 }} Jam</td>
                     </tr>
                 </table>
             </td>
