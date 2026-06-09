@@ -37,7 +37,6 @@ class PkwtPayrollController extends Controller
 
         $currentYear = date('Y');
         $ytdPaid = 0;
-        $totalEmployeesSum = 0;
 
         foreach ($periods as $period) {
             $startDate = Carbon::parse($period->start_date);
@@ -86,20 +85,15 @@ class PkwtPayrollController extends Controller
                 ? $pkwtEmployeeCount
                 : $employeesInPeriodCount;
 
-            $totalEmployeesSum += $period->total_employees;
-
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
                 $ytdPaid += $periodTotal;
             }
         }
 
-        $averagePkwtEmployees = $periods->count() > 0 ? round($totalEmployeesSum / $periods->count(), 1) : $pkwtEmployeeCount;
-
         return view('pages.payroll.pkwt.periods', [
             'title' => 'Periode Gaji PKWT',
             'periods' => $periods,
             'pkwtEmployeeCount' => $pkwtEmployeeCount,
-            'averagePkwtEmployees' => $averagePkwtEmployees,
             'ytdPaid' => $ytdPaid
         ]);
     }

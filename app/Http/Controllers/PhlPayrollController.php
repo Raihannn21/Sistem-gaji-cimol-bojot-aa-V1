@@ -36,7 +36,6 @@ class PhlPayrollController extends Controller
 
         $currentYear = date('Y');
         $ytdPaid = 0;
-        $totalEmployeesSum = 0;
 
         foreach ($periods as $period) {
             $totalPokok = $period->attendances->sum(function ($attendance) {
@@ -48,22 +47,15 @@ class PhlPayrollController extends Controller
 
             $period->total_expenditure = $periodTotal;
 
-            $attendanceCount = $period->attendances->pluck('employee_id')->unique()->count();
-            $displayCount = ($attendanceCount === 0 && $period->status === 'Open') ? $phlEmployeeCount : $attendanceCount;
-            $totalEmployeesSum += $displayCount;
-
             if ($period->status === 'Locked' && $period->start_date->format('Y') == $currentYear) {
                 $ytdPaid += $periodTotal;
             }
         }
 
-        $averagePhlEmployees = $periods->count() > 0 ? round($totalEmployeesSum / $periods->count(), 1) : $phlEmployeeCount;
-
         return view('pages.payroll.phl.periods', [
             'title' => 'Periode Gaji PHL',
             'periods' => $periods,
             'phlEmployeeCount' => $phlEmployeeCount,
-            'averagePhlEmployees' => $averagePhlEmployees,
             'ytdPaid' => $ytdPaid
         ]);
     }
