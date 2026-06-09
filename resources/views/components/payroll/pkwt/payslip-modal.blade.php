@@ -132,7 +132,7 @@
                             </div>
                             <div class="flex justify-between items-center gap-4" x-show="selectedSlip.bpjs_tk > 0">
                                 <div class="min-w-0">
-                                    <span class="font-bold text-gray-800 dark:text-gray-200">BPJS TK</span>
+                                    <span class="font-bold text-gray-800 dark:text-gray-200">BPJS Jamsostek (JHT)</span>
                                     <p class="text-[9px] text-gray-500 dark:text-gray-400 mt-0.5">Iuran Jaminan Sosial</p>
                                 </div>
                                 <span class="font-bold text-red-600 dark:text-red-400 tabular-nums shrink-0"

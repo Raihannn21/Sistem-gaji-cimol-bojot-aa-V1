@@ -111,7 +111,7 @@
                             <p class="text-sm font-semibold text-gray-800 dark:text-white/90" x-text="'Rp ' + formatPrice(selectedEmployee.bpjs_health)"></p>
                         </div>
                         <div>
-                            <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">BPJS TK</p>
+                            <p class="mb-1 text-xs text-gray-500 dark:text-gray-400">BPJS Jamsostek (JHT)</p>
                             <p class="text-sm font-semibold text-gray-800 dark:text-white/90" x-text="'Rp ' + formatPrice(selectedEmployee.bpjs_tk)"></p>
                         </div>
                         <div>

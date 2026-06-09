@@ -123,7 +123,7 @@
                         <h5 class="mb-4 text-base font-bold text-blue-600 dark:text-blue-400">Data Khusus PKWT</h5>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
                             <x-form.input name="bpjs_health" label="Bpjs Kesehatan" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
-                            <x-form.input name="bpjs_tk" label="Bpjs TK" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
+                            <x-form.input name="bpjs_tk" label="BPJS Jamsostek (JHT)" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                             <x-form.input name="pph21" label="PPH 21" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                             <x-form.input name="risk_allowance" label="Tunjangan Risiko" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />
                             <x-form.input name="attendance_allowance" label="Tunjangan Kehadiran" prefix="Rp" placeholder="0" @input="formatCurrency($event.target)" />

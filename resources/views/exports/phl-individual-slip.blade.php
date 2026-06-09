@@ -299,22 +299,42 @@
                         <td class="item-val">Rp. {{ number_format($gaji_pokok, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
-                        <td class="item-name">Tunjangan</td>
-                        <td class="item-dots"></td>
-                        <td class="item-val"></td>
-                    </tr>
-                    <tr>
-                        <td class="sub-item-name">Kehadiran</td>
+                        <td class="item-name">Tunjangan Jabatan</td>
                         <td class="item-dots">:</td>
                         <td class="item-val">Rp. 0</td>
                     </tr>
                     <tr>
-                        <td class="sub-item-name">Risiko</td>
+                        <td class="item-name">Tunjangan Kehadiran</td>
+                        <td class="item-dots">:</td>
+                        <td class="item-val">Rp. 0</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Insentif Keselamatan</td>
+                        <td class="item-dots">:</td>
+                        <td class="item-val">Rp. 0</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Tunjangan Risiko</td>
                         <td class="item-dots">:</td>
                         <td class="item-val">Rp. {{ number_format($risk_amount, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
-                        <td class="item-name">Bonus/THR/Penghasilan Tidak Teratur</td>
+                        <td class="item-name">Tunjangan Penempatan</td>
+                        <td class="item-dots">:</td>
+                        <td class="item-val">Rp. 0</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Golden Shake Hand</td>
+                        <td class="item-dots">:</td>
+                        <td class="item-val">Rp. 0</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Tunjangan PPh</td>
+                        <td class="item-dots">:</td>
+                        <td class="item-val">Rp. 0</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Bonus / THR</td>
                         <td class="item-dots">:</td>
                         <td class="item-val">Rp. 0</td>
                     </tr>
@@ -331,7 +351,7 @@
                 <div class="section-title">POTONGAN</div>
                 <table class="item-table">
                     <tr>
-                        <td class="item-name">BPJS TK</td>
+                        <td class="item-name">BPJS Jamsostek (JHT)</td>
                         <td class="item-dots">:</td>
                         <td class="item-val">Rp. 0</td>
                     </tr>
@@ -341,7 +361,17 @@
                         <td class="item-val">Rp. 0</td>
                     </tr>
                     <tr>
-                        <td class="item-name">Kehadiran (Absensi/Prorate)</td>
+                        <td class="item-name">Potongan Kehadiran</td>
+                        <td class="item-dots">:</td>
+                        <td class="item-val">Rp. 0</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Denda</td>
+                        <td class="item-dots">:</td>
+                        <td class="item-val">Rp. 0</td>
+                    </tr>
+                    <tr>
+                        <td class="item-name">Piutang Karyawan</td>
                         <td class="item-dots">:</td>
                         <td class="item-val">Rp. 0</td>
                     </tr>
