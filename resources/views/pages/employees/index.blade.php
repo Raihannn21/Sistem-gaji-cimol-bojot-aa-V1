@@ -59,7 +59,7 @@
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </span>
                         <input type="text" x-model="search" placeholder="Cari karyawan..."
-                            class="h-11 w-full rounded-xl border border-gray-200 bg-white pl-12 pr-4 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] shadow-sm transition-all">
+                            class="h-11 w-full rounded-xl border border-gray-200 bg-white pl-12 pr-4 text-sm text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 shadow-sm transition-all">
                     </div>
                 </div>
 

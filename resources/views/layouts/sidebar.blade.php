@@ -57,7 +57,7 @@
             if (current.startsWith(cleanPath + '/')) {
                 if (cleanPath === 'employees') {
                     const segments = current.split('/');
-                    if (segments[1] === 'status') {
+                    if (segments[1] === 'status' || segments[1] === 'teams') {
                         return false;
                     }
                 }
