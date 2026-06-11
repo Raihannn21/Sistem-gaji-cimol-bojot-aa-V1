@@ -29,7 +29,7 @@ class SmtpSettingsController extends Controller
         ];
 
         return view('pages.settings.smtp', [
-            'title' => 'Konfigurasi SMTP',
+            'title' => 'Konfigurasi Brevo',
             'config' => (object) $config
         ]);
     }
