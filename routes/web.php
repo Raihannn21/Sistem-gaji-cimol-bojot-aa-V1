@@ -9,7 +9,7 @@ use App\Http\Controllers\Report\SummaryReportController;
 use App\Http\Controllers\EmployeeStatusController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\Payroll\Phl as PhlPayroll;
-use App\Http\Controllers\PkwtPayrollController;
+use App\Http\Controllers\Payroll\Pkwt as PkwtPayroll;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
@@ -80,40 +80,40 @@ Route::middleware(['auth'])->group(function () {
 
     // Payroll PKWT
     Route::prefix('payroll/pkwt')->group(function () {
-        Route::get('/periods', [PkwtPayrollController::class, 'index'])->name('payroll.pkwt.periods');
-        Route::post('/periods', [PkwtPayrollController::class, 'store'])->name('payroll.pkwt.periods.store');
-        Route::get('/periods/{id}', [PkwtPayrollController::class, 'show'])->name('payroll.pkwt.periods.show');
-        Route::get('/periods/{id}/setup', [PkwtPayrollController::class, 'setup'])->name('payroll.pkwt.periods.setup');
-        Route::post('/periods/{id}/setup', [PkwtPayrollController::class, 'saveSetup'])->name('payroll.pkwt.periods.save-setup');
-        Route::get('/periods/{id}/export/pdf', [PkwtPayrollController::class, 'exportPdf'])->name('payroll.pkwt.periods.export.pdf');
-        Route::get('/periods/{id}/slips/{employeeId}/pdf', [PkwtPayrollController::class, 'exportIndividualPdf'])->name('payroll.pkwt.periods.slip.pdf');
-        Route::post('/periods/{id}/slips/{employeeId}/send', [PkwtPayrollController::class, 'sendIndividualSlip'])->name('payroll.pkwt.periods.slip.send');
-        Route::post('/periods/{id}/slips/send-all', [PkwtPayrollController::class, 'sendAllSlips'])->name('payroll.pkwt.periods.slip.send-all');
-        Route::get('/periods/{id}/export/excel', [PkwtPayrollController::class, 'exportExcel'])->name('payroll.pkwt.periods.export.excel');
-        Route::get('/periods/{id}/export/bca', [PkwtPayrollController::class, 'exportBca'])->name('payroll.pkwt.periods.export.bca');
-        Route::post('/periods/{id}/generate', [PkwtPayrollController::class, 'generate'])->name('payroll.pkwt.periods.generate');
-        Route::post('/periods/{id}/unlock', [PkwtPayrollController::class, 'unlock'])->name('payroll.pkwt.periods.unlock');
-        Route::post('/periods/{id}/import-attendance', [PkwtPayrollController::class, 'importAttendance'])->name('payroll.pkwt.periods.import-attendance');
-        Route::put('/periods/{id}/attendance/{attendanceId}', [PkwtPayrollController::class, 'updateAttendance'])->name('payroll.pkwt.periods.update-attendance');
-        Route::delete('/periods/{id}/attendance/{attendanceId}', [PkwtPayrollController::class, 'destroyAttendance'])->name('payroll.pkwt.periods.destroy-attendance');
+        Route::get('/periods', [PkwtPayroll\PeriodController::class, 'index'])->name('payroll.pkwt.periods');
+        Route::post('/periods', [PkwtPayroll\PeriodController::class, 'store'])->name('payroll.pkwt.periods.store');
+        Route::get('/periods/{id}', [PkwtPayroll\PeriodController::class, 'show'])->name('payroll.pkwt.periods.show');
+        Route::get('/periods/{id}/setup', [PkwtPayroll\PeriodController::class, 'setup'])->name('payroll.pkwt.periods.setup');
+        Route::post('/periods/{id}/setup', [PkwtPayroll\PeriodController::class, 'saveSetup'])->name('payroll.pkwt.periods.save-setup');
+        Route::get('/periods/{id}/export/pdf', [PkwtPayroll\ExportController::class, 'exportPdf'])->name('payroll.pkwt.periods.export.pdf');
+        Route::get('/periods/{id}/slips/{employeeId}/pdf', [PkwtPayroll\ExportController::class, 'exportIndividualPdf'])->name('payroll.pkwt.periods.slip.pdf');
+        Route::post('/periods/{id}/slips/{employeeId}/send', [PkwtPayroll\ExportController::class, 'sendIndividualSlip'])->name('payroll.pkwt.periods.slip.send');
+        Route::post('/periods/{id}/slips/send-all', [PkwtPayroll\ExportController::class, 'sendAllSlips'])->name('payroll.pkwt.periods.slip.send-all');
+        Route::get('/periods/{id}/export/excel', [PkwtPayroll\ExportController::class, 'exportExcel'])->name('payroll.pkwt.periods.export.excel');
+        Route::get('/periods/{id}/export/bca', [PkwtPayroll\ExportController::class, 'exportBca'])->name('payroll.pkwt.periods.export.bca');
+        Route::post('/periods/{id}/generate', [PkwtPayroll\PeriodController::class, 'generate'])->name('payroll.pkwt.periods.generate');
+        Route::post('/periods/{id}/unlock', [PkwtPayroll\PeriodController::class, 'unlock'])->name('payroll.pkwt.periods.unlock');
+        Route::post('/periods/{id}/import-attendance', [PkwtPayroll\AttendanceController::class, 'importAttendance'])->name('payroll.pkwt.periods.import-attendance');
+        Route::put('/periods/{id}/attendance/{attendanceId}', [PkwtPayroll\AttendanceController::class, 'updateAttendance'])->name('payroll.pkwt.periods.update-attendance');
+        Route::delete('/periods/{id}/attendance/{attendanceId}', [PkwtPayroll\AttendanceController::class, 'destroyAttendance'])->name('payroll.pkwt.periods.destroy-attendance');
         
         // Overtime (Lembur) PKWT
-        Route::post('/periods/{id}/overtime', [PkwtPayrollController::class, 'storeOvertime'])->name('payroll.pkwt.periods.store-overtime');
-        Route::put('/periods/{id}/overtime/{overtimeId}', [PkwtPayrollController::class, 'updateOvertime'])->name('payroll.pkwt.periods.update-overtime');
-        Route::delete('/periods/{id}/overtime/{overtimeId}', [PkwtPayrollController::class, 'destroyOvertime'])->name('payroll.pkwt.periods.destroy-overtime');
-        Route::post('/periods/{id}/import-overtime', [PkwtPayrollController::class, 'importOvertime'])->name('payroll.pkwt.periods.import-overtime');
+        Route::post('/periods/{id}/overtime', [PkwtPayroll\OvertimeController::class, 'storeOvertime'])->name('payroll.pkwt.periods.store-overtime');
+        Route::put('/periods/{id}/overtime/{overtimeId}', [PkwtPayroll\OvertimeController::class, 'updateOvertime'])->name('payroll.pkwt.periods.update-overtime');
+        Route::delete('/periods/{id}/overtime/{overtimeId}', [PkwtPayroll\OvertimeController::class, 'destroyOvertime'])->name('payroll.pkwt.periods.destroy-overtime');
+        Route::post('/periods/{id}/import-overtime', [PkwtPayroll\OvertimeController::class, 'importOvertime'])->name('payroll.pkwt.periods.import-overtime');
         
         // Risk Allowance (Risiko) PKWT
-        Route::post('/periods/{id}/risk', [PkwtPayrollController::class, 'storeRisk'])->name('payroll.pkwt.periods.store-risk');
-        Route::put('/periods/{id}/risk/{riskId}', [PkwtPayrollController::class, 'updateRisk'])->name('payroll.pkwt.periods.update-risk');
-        Route::delete('/periods/{id}/risk/{riskId}', [PkwtPayrollController::class, 'destroyRisk'])->name('payroll.pkwt.periods.destroy-risk');
-        Route::post('/periods/{id}/import-risk', [PkwtPayrollController::class, 'importRisk'])->name('payroll.pkwt.periods.import-risk');
+        Route::post('/periods/{id}/risk', [PkwtPayroll\AllowanceController::class, 'storeRisk'])->name('payroll.pkwt.periods.store-risk');
+        Route::put('/periods/{id}/risk/{riskId}', [PkwtPayroll\AllowanceController::class, 'updateRisk'])->name('payroll.pkwt.periods.update-risk');
+        Route::delete('/periods/{id}/risk/{riskId}', [PkwtPayroll\AllowanceController::class, 'destroyRisk'])->name('payroll.pkwt.periods.destroy-risk');
+        Route::post('/periods/{id}/import-risk', [PkwtPayroll\AllowanceController::class, 'importRisk'])->name('payroll.pkwt.periods.import-risk');
         
         // Other Allowances (Lain-lain) PKWT
-        Route::post('/periods/{id}/other-allowance', [PkwtPayrollController::class, 'storeOtherAllowance'])->name('payroll.pkwt.periods.store-other-allowance');
-        Route::delete('/periods/{id}/other-allowance/{allowanceId}', [PkwtPayrollController::class, 'destroyOtherAllowance'])->name('payroll.pkwt.periods.destroy-other-allowance');
+        Route::post('/periods/{id}/other-allowance', [PkwtPayroll\AllowanceController::class, 'storeOtherAllowance'])->name('payroll.pkwt.periods.store-other-allowance');
+        Route::delete('/periods/{id}/other-allowance/{allowanceId}', [PkwtPayroll\AllowanceController::class, 'destroyOtherAllowance'])->name('payroll.pkwt.periods.destroy-other-allowance');
         
-        Route::delete('/periods/{id}', [PkwtPayrollController::class, 'destroy'])->name('payroll.pkwt.periods.destroy');
+        Route::delete('/periods/{id}', [PkwtPayroll\PeriodController::class, 'destroy'])->name('payroll.pkwt.periods.destroy');
     });
 
     // Laporan

@@ -45,9 +45,10 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
         $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
         $employees = Employee::where('employment_type', 'PKWT')
             ->where(function ($q) use ($period, $selectedTeamIds) {
-                $q->where(function($subQ) use ($selectedTeamIds) {
+                $q->where(function($subQ) use ($selectedTeamIds, $period) {
                     $subQ->where('status', 'Aktif')
-                        ->whereIn('team_id', $selectedTeamIds);
+                        ->whereIn('team_id', $selectedTeamIds)
+                        ->where('created_at', '<=', $period->end_date . ' 23:59:59');
                 })
                 ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
                     $sub->where('pkwt_payroll_period_id', $period->id);
