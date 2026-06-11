@@ -30,7 +30,7 @@ class PhlPayrollExport implements FromView, WithTitle, WithColumnWidths
             ->where(function ($q) use ($period) {
                 $q->where(function ($subQ) use ($period) {
                     $subQ->where('status', 'Aktif')
-                        ->where('created_at', '<=', $period->end_date . ' 23:59:59');
+                        ->where('created_at', '<=', \Carbon\Carbon::parse($period->end_date)->endOfDay());
                 })
                 ->orWhereHas('phlAttendances', function ($sub) use ($period) {
                     $sub->where('phl_payroll_period_id', $period->id);

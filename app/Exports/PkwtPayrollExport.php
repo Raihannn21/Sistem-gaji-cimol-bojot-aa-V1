@@ -34,7 +34,7 @@ class PkwtPayrollExport implements FromView, WithTitle, WithColumnWidths
                 $q->where(function($subQ) use ($selectedTeamIds, $period) {
                     $subQ->where('status', 'Aktif')
                         ->whereIn('team_id', $selectedTeamIds)
-                        ->where('created_at', '<=', $period->end_date . ' 23:59:59');
+                        ->where('created_at', '<=', \Carbon\Carbon::parse($period->end_date)->endOfDay());
                 })
                 ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
                     $sub->where('pkwt_payroll_period_id', $period->id);
