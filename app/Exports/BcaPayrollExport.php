@@ -42,10 +42,13 @@ class BcaPayrollExport extends DefaultValueBinder implements FromView, WithTitle
 
         $employees = Employee::where('employment_type', 'PHL')
             ->where(function ($q) use ($period) {
-                $q->where('status', 'Aktif')
-                    ->orWhereHas('phlAttendances', function ($sub) use ($period) {
-                        $sub->where('phl_payroll_period_id', $period->id);
-                    });
+                $q->where(function ($subQ) use ($period) {
+                    $subQ->where('status', 'Aktif')
+                        ->where('created_at', '<=', $period->end_date . ' 23:59:59');
+                })
+                ->orWhereHas('phlAttendances', function ($sub) use ($period) {
+                    $sub->where('phl_payroll_period_id', $period->id);
+                });
             })
             ->distinct()
             ->get();

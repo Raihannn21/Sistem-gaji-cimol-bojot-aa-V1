@@ -8,7 +8,7 @@ use App\Http\Controllers\Report\EmployeeReportController;
 use App\Http\Controllers\Report\SummaryReportController;
 use App\Http\Controllers\EmployeeStatusController;
 use App\Http\Controllers\TeamController;
-use App\Http\Controllers\PhlPayrollController;
+use App\Http\Controllers\Payroll\Phl as PhlPayroll;
 use App\Http\Controllers\PkwtPayrollController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -49,33 +49,33 @@ Route::middleware(['auth'])->group(function () {
 
     // Payroll PHL
     Route::prefix('payroll/phl')->group(function () {
-        Route::get('/periods', [PhlPayrollController::class, 'index'])->name('payroll.phl.periods');
-        Route::post('/periods', [PhlPayrollController::class, 'store'])->name('payroll.phl.periods.store');
-        Route::get('/periods/{id}', [PhlPayrollController::class, 'show'])->name('payroll.phl.periods.show');
-        Route::get('/periods/{id}/export/pdf', [PhlPayrollController::class, 'exportPdf'])->name('payroll.phl.periods.export.pdf');
-        Route::get('/periods/{id}/slips/{employeeId}/pdf', [PhlPayrollController::class, 'exportIndividualPdf'])->name('payroll.phl.periods.slip.pdf');
-        Route::post('/periods/{id}/slips/{employeeId}/send', [PhlPayrollController::class, 'sendIndividualSlip'])->name('payroll.phl.periods.slip.send');
-        Route::post('/periods/{id}/slips/send-all', [PhlPayrollController::class, 'sendAllSlips'])->name('payroll.phl.periods.slip.send-all');
-        Route::get('/periods/{id}/export/excel', [PhlPayrollController::class, 'exportExcel'])->name('payroll.phl.periods.export.excel');
-        Route::get('/periods/{id}/export/bca', [PhlPayrollController::class, 'exportBca'])->name('payroll.phl.periods.export.bca');
-        Route::post('/periods/{id}/import-attendance', [PhlPayrollController::class, 'importAttendance'])->name('payroll.phl.periods.import-attendance');
-        Route::put('/periods/{id}/attendance/{attendanceId}', [PhlPayrollController::class, 'updateAttendance'])->name('payroll.phl.periods.update-attendance');
-        Route::delete('/periods/{id}/attendance/{attendanceId}', [PhlPayrollController::class, 'destroyAttendance'])->name('payroll.phl.periods.destroy-attendance');
-        Route::post('/periods/{id}/generate', [PhlPayrollController::class, 'generate'])->name('payroll.phl.periods.generate');
-        Route::post('/periods/{id}/unlock', [PhlPayrollController::class, 'unlock'])->name('payroll.phl.periods.unlock');
-        Route::delete('/periods/{id}', [PhlPayrollController::class, 'destroy'])->name('payroll.phl.periods.destroy');
+        Route::get('/periods', [PhlPayroll\PeriodController::class, 'index'])->name('payroll.phl.periods');
+        Route::post('/periods', [PhlPayroll\PeriodController::class, 'store'])->name('payroll.phl.periods.store');
+        Route::get('/periods/{id}', [PhlPayroll\PeriodController::class, 'show'])->name('payroll.phl.periods.show');
+        Route::get('/periods/{id}/export/pdf', [PhlPayroll\ExportController::class, 'exportPdf'])->name('payroll.phl.periods.export.pdf');
+        Route::get('/periods/{id}/slips/{employeeId}/pdf', [PhlPayroll\ExportController::class, 'exportIndividualPdf'])->name('payroll.phl.periods.slip.pdf');
+        Route::post('/periods/{id}/slips/{employeeId}/send', [PhlPayroll\ExportController::class, 'sendIndividualSlip'])->name('payroll.phl.periods.slip.send');
+        Route::post('/periods/{id}/slips/send-all', [PhlPayroll\ExportController::class, 'sendAllSlips'])->name('payroll.phl.periods.slip.send-all');
+        Route::get('/periods/{id}/export/excel', [PhlPayroll\ExportController::class, 'exportExcel'])->name('payroll.phl.periods.export.excel');
+        Route::get('/periods/{id}/export/bca', [PhlPayroll\ExportController::class, 'exportBca'])->name('payroll.phl.periods.export.bca');
+        Route::post('/periods/{id}/import-attendance', [PhlPayroll\AttendanceController::class, 'importAttendance'])->name('payroll.phl.periods.import-attendance');
+        Route::put('/periods/{id}/attendance/{attendanceId}', [PhlPayroll\AttendanceController::class, 'updateAttendance'])->name('payroll.phl.periods.update-attendance');
+        Route::delete('/periods/{id}/attendance/{attendanceId}', [PhlPayroll\AttendanceController::class, 'destroyAttendance'])->name('payroll.phl.periods.destroy-attendance');
+        Route::post('/periods/{id}/generate', [PhlPayroll\PeriodController::class, 'generate'])->name('payroll.phl.periods.generate');
+        Route::post('/periods/{id}/unlock', [PhlPayroll\PeriodController::class, 'unlock'])->name('payroll.phl.periods.unlock');
+        Route::delete('/periods/{id}', [PhlPayroll\PeriodController::class, 'destroy'])->name('payroll.phl.periods.destroy');
         
         // Lembur (Overtime) PHL
-        Route::post('/periods/{id}/overtime', [PhlPayrollController::class, 'storeOvertime'])->name('payroll.phl.periods.store-overtime');
-        Route::put('/periods/{id}/overtime/{overtimeId}', [PhlPayrollController::class, 'updateOvertime'])->name('payroll.phl.periods.update-overtime');
-        Route::delete('/periods/{id}/overtime/{overtimeId}', [PhlPayrollController::class, 'destroyOvertime'])->name('payroll.phl.periods.destroy-overtime');
-        Route::post('/periods/{id}/import-overtime', [PhlPayrollController::class, 'importOvertime'])->name('payroll.phl.periods.import-overtime');
+        Route::post('/periods/{id}/overtime', [PhlPayroll\OvertimeController::class, 'storeOvertime'])->name('payroll.phl.periods.store-overtime');
+        Route::put('/periods/{id}/overtime/{overtimeId}', [PhlPayroll\OvertimeController::class, 'updateOvertime'])->name('payroll.phl.periods.update-overtime');
+        Route::delete('/periods/{id}/overtime/{overtimeId}', [PhlPayroll\OvertimeController::class, 'destroyOvertime'])->name('payroll.phl.periods.destroy-overtime');
+        Route::post('/periods/{id}/import-overtime', [PhlPayroll\OvertimeController::class, 'importOvertime'])->name('payroll.phl.periods.import-overtime');
 
         // Tunjangan Risiko (Risk Allowance) PHL
-        Route::post('/periods/{id}/risk', [PhlPayrollController::class, 'storeRisk'])->name('payroll.phl.periods.store-risk');
-        Route::put('/periods/{id}/risk/{riskId}', [PhlPayrollController::class, 'updateRisk'])->name('payroll.phl.periods.update-risk');
-        Route::delete('/periods/{id}/risk/{riskId}', [PhlPayrollController::class, 'destroyRisk'])->name('payroll.phl.periods.destroy-risk');
-        Route::post('/periods/{id}/import-risk', [PhlPayrollController::class, 'importRisk'])->name('payroll.phl.periods.import-risk');
+        Route::post('/periods/{id}/risk', [PhlPayroll\AllowanceController::class, 'storeRisk'])->name('payroll.phl.periods.store-risk');
+        Route::put('/periods/{id}/risk/{riskId}', [PhlPayroll\AllowanceController::class, 'updateRisk'])->name('payroll.phl.periods.update-risk');
+        Route::delete('/periods/{id}/risk/{riskId}', [PhlPayroll\AllowanceController::class, 'destroyRisk'])->name('payroll.phl.periods.destroy-risk');
+        Route::post('/periods/{id}/import-risk', [PhlPayroll\AllowanceController::class, 'importRisk'])->name('payroll.phl.periods.import-risk');
     });
 
     // Payroll PKWT
