@@ -113,10 +113,7 @@ class PeriodController extends Controller
 
         $employees = Employee::where('employment_type', 'PHL')
             ->where(function ($q) use ($period) {
-                $q->where(function ($subQ) use ($period) {
-                    $subQ->where('status', 'Aktif')
-                        ->where('created_at', '<=', \Carbon\Carbon::parse($period->end_date)->endOfDay());
-                })
+                $q->where('status', 'Aktif')
                 ->orWhereHas('phlAttendances', function ($sub) use ($period) {
                     $sub->where('phl_payroll_period_id', $period->id);
                 })
