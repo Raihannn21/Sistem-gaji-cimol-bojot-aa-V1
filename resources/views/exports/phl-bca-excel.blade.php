@@ -29,7 +29,7 @@
                 <!-- Force credited account to be treated as string in Excel to avoid scientific notation/truncation -->
                 <td style="text-align: center; border: 1px solid #e2e8f0; background-color: #f0fdf4;">{{ $row['credited_account'] }}</td>
                 <td style="text-align: left; border: 1px solid #e2e8f0; background-color: #f0fdf4; font-weight: bold;">{{ $row['receiver_name'] }}</td>
-                <td style="text-align: center; border: 1px solid #e2e8f0; background-color: #f0fdf4; font-weight: bold;">{{ number_format($row['amount'], 0, ',', '.') }}</td>
+                <td style="text-align: center; border: 1px solid #e2e8f0; background-color: #f0fdf4; font-weight: bold;">{{ $row['amount'] }}</td>
                 <td style="text-align: center; border: 1px solid #e2e8f0;"></td>
                 <td style="text-align: center; border: 1px solid #e2e8f0; background-color: #f0fdf4;">{{ $row['remark'] }}</td>
                 <td style="text-align: center; border: 1px solid #e2e8f0;"></td>

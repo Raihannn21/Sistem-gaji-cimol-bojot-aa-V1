@@ -12,8 +12,9 @@ use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
-class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithTitle, WithColumnWidths, WithCustomValueBinder
+class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithTitle, WithColumnWidths, WithCustomValueBinder, WithColumnFormatting
 {
     protected $period;
 
@@ -111,6 +112,13 @@ class PkwtBcaPayrollExport extends DefaultValueBinder implements FromView, WithT
             'period' => $period,
             'rows' => $rows
         ]);
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'G' => '#,##0',
+        ];
     }
 
     public function title(): string

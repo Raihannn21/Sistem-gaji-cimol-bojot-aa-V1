@@ -159,13 +159,7 @@
                 </div>
                 <div class="flex items-center gap-1.5">
                     <span>Per halaman:</span>
-                    <select x-model.number="attendancePerPage" @change="attendancePage = 1" class="h-8 rounded-lg border border-gray-200 bg-white px-2 py-0.5 text-xs font-semibold outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-white/90 transition-colors">
-                        <option value="5" class="dark:bg-gray-900">5</option>
-                        <option value="10" class="dark:bg-gray-900">10</option>
-                        <option value="15" class="dark:bg-gray-900">15</option>
-                        <option value="25" class="dark:bg-gray-900">25</option>
-                        <option value="50" class="dark:bg-gray-900">50</option>
-                    </select>
+                    <x-form.select-pagination model="attendancePerPage" page="attendancePage" />
                 </div>
             </div>
             <div class="flex items-center justify-between sm:justify-end gap-3">
