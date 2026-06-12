@@ -155,10 +155,22 @@
 
         <!-- Pagination Footer Controls -->
         <div x-show="slipsList.length > 0" class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-white/[0.03] rounded-b-2xl">
-            <div class="text-xs text-gray-500 dark:text-gray-400">
-                Menampilkan <span class="font-bold text-gray-700 dark:text-white" x-text="filteredSlips().length > 0 ? (slipsPage - 1) * slipsPerPage + 1 : 0"></span> 
-                sampai <span class="font-bold text-gray-700 dark:text-white" x-text="Math.min(slipsPage * slipsPerPage, filteredSlips().length)"></span> 
-                dari <span class="font-bold text-gray-700 dark:text-white" x-text="filteredSlips().length"></span> data
+            <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                <div>
+                    Menampilkan <span class="font-bold text-gray-700 dark:text-white" x-text="filteredSlips().length > 0 ? (slipsPage - 1) * slipsPerPage + 1 : 0"></span> 
+                    sampai <span class="font-bold text-gray-700 dark:text-white" x-text="Math.min(slipsPage * slipsPerPage, filteredSlips().length)"></span> 
+                    dari <span class="font-bold text-gray-700 dark:text-white" x-text="filteredSlips().length"></span> data
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span>Per halaman:</span>
+                    <select x-model.number="slipsPerPage" @change="slipsPage = 1" class="h-8 rounded-lg border border-gray-200 bg-white px-2 py-0.5 text-xs font-semibold outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-white/90 transition-colors">
+                        <option value="5" class="dark:bg-gray-900">5</option>
+                        <option value="10" class="dark:bg-gray-900">10</option>
+                        <option value="15" class="dark:bg-gray-900">15</option>
+                        <option value="25" class="dark:bg-gray-900">25</option>
+                        <option value="50" class="dark:bg-gray-900">50</option>
+                    </select>
+                </div>
             </div>
             <div class="flex items-center justify-between sm:justify-end gap-3">
                 <button type="button" 
