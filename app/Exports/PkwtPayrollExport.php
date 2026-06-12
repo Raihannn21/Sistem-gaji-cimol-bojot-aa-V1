@@ -31,37 +31,23 @@ class PkwtPayrollExport implements FromView, WithTitle, WithColumnWidths
         $selectedTeamIds = $period->periodTeams->pluck('team_id')->toArray();
         $employees = Employee::where('employment_type', 'PKWT')
             ->where(function ($q) use ($period, $selectedTeamIds) {
-                if ($period->status === 'Locked') {
-                    $q->whereHas('pkwtAttendances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    });
-                } else {
-                    $q->where(function($subQ) use ($selectedTeamIds) {
-                        $subQ->where('status', 'Aktif')
-                            ->whereIn('team_id', $selectedTeamIds);
-                    })
-                    ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    })
-                    ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
-                        $sub->where('pkwt_payroll_period_id', $period->id);
-                    });
-                }
+                $q->where(function($subQ) use ($selectedTeamIds, $period) {
+                    $subQ->where('status', 'Aktif')
+                        ->whereIn('team_id', $selectedTeamIds)
+                        ->where('created_at', '<=', \Carbon\Carbon::parse($period->end_date)->endOfDay());
+                })
+                ->orWhereHas('pkwtAttendances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOvertimes', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtRiskAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                })
+                ->orWhereHas('pkwtOtherAllowances', function ($sub) use ($period) {
+                    $sub->where('pkwt_payroll_period_id', $period->id);
+                });
             })
             ->distinct()
             ->get();
