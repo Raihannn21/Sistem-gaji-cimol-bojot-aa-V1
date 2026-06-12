@@ -83,8 +83,8 @@ class SummaryReportController extends Controller
             $endDate = Carbon::create($year, $num, 1)->endOfMonth();
 
             $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
-                ->whereYear('end_date', $year)
-                ->whereMonth('end_date', $num)
+                ->whereYear('start_date', $year)
+                ->whereMonth('start_date', $num)
                 ->get();
 
             $phlEmployeeIds = [];
@@ -110,8 +110,8 @@ class SummaryReportController extends Controller
             $globalPhlLemburTunjangan += ($phlLembur + $phlRisiko);
 
             $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'attendances.team', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
-                ->whereYear('end_date', $year)
-                ->whereMonth('end_date', $num)
+                ->whereYear('start_date', $year)
+                ->whereMonth('start_date', $num)
                 ->get();
 
             $pkwtEmployeeIds = [];

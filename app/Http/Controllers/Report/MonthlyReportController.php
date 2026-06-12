@@ -40,13 +40,13 @@ class MonthlyReportController extends Controller
         $endDate = Carbon::create($year, $monthNum, 1)->endOfMonth();
 
         $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
-            ->whereYear('end_date', $year)
-            ->whereMonth('end_date', $monthNum)
+            ->whereYear('start_date', $year)
+            ->whereMonth('start_date', $monthNum)
             ->get();
 
         $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
-            ->whereYear('end_date', $year)
-            ->whereMonth('end_date', $monthNum)
+            ->whereYear('start_date', $year)
+            ->whereMonth('start_date', $monthNum)
             ->get();
 
         $phlEmployeeIds = [];
@@ -160,13 +160,13 @@ class MonthlyReportController extends Controller
         $endDate = Carbon::create($year, $monthNum, 1)->endOfMonth();
 
         $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
-            ->whereYear('end_date', $year)
-            ->whereMonth('end_date', $monthNum)
+            ->whereYear('start_date', $year)
+            ->whereMonth('start_date', $monthNum)
             ->get();
 
         $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
-            ->whereYear('end_date', $year)
-            ->whereMonth('end_date', $monthNum)
+            ->whereYear('start_date', $year)
+            ->whereMonth('start_date', $monthNum)
             ->get();
 
         $phlEmployeeIds = [];
@@ -283,13 +283,13 @@ class MonthlyReportController extends Controller
         $endDate = Carbon::create($year, $monthNum, 1)->endOfMonth();
 
         $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
-            ->whereYear('end_date', $year)
-            ->whereMonth('end_date', $monthNum)
+            ->whereYear('start_date', $year)
+            ->whereMonth('start_date', $monthNum)
             ->get();
 
         $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
-            ->whereYear('end_date', $year)
-            ->whereMonth('end_date', $monthNum)
+            ->whereYear('start_date', $year)
+            ->whereMonth('start_date', $monthNum)
             ->get();
 
         $phlEmployeeIds = [];
