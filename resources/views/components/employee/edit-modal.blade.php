@@ -87,33 +87,98 @@
                             <x-form.input name="no_id" label="No. ID" x-model="selectedEmployee.id_no" @input="delete errors.no_id" />
                             <x-form.input name="nik" label="NIK" x-model="selectedEmployee.nik" />
 
-                            <div>
+                            <div x-data="{ open: false }" 
+                                 @click.away="open = false"
+                                 class="relative w-full">
                                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Jabatan
                                 </label>
-                                <div class="relative z-20 bg-transparent">
-                                    <select
-                                        name="jabatan"
-                                        x-model="selectedEmployee.role"
-                                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                                        <option value="PHL">PHL</option>
-                                        <option value="PKWT">PKWT</option>
-                                    </select>
-                                    <span class="pointer-events-none absolute top-1/2 right-4 z-30 -translate-y-1/2 text-gray-500 dark:text-gray-400">
-                                        <svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.79175 7.396L10.0001 12.6043L15.2084 7.396" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                
+                                <input type="hidden" name="jabatan" x-model="selectedEmployee.role">
+                                
+                                <div class="relative">
+                                    <button type="button" @click="open = !open"
+                                        class="flex h-11 w-full items-center justify-between rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 text-sm text-gray-800 dark:text-white outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:focus:border-brand-800 focus:outline-none shadow-theme-xs text-left cursor-pointer">
+                                        <span x-text="selectedEmployee.role || 'Pilih Jabatan'"></span>
+                                        <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-200" 
+                                             :class="{ 'rotate-180': open }"
+                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                         </svg>
-                                    </span>
+                                    </button>
+
+                                    <div x-show="open" x-transition x-cloak
+                                         class="absolute left-0 mt-2 w-full rounded-xl border border-gray-150 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900 z-50 bg-white">
+                                        <div class="max-h-60 overflow-y-auto custom-scrollbar">
+                                            <button type="button" 
+                                                @click="selectedEmployee.role = 'PHL'; open = false"
+                                                class="flex w-full items-center rounded-lg px-3 py-2 text-sm text-gray-750 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 transition-colors"
+                                                :class="selectedEmployee.role === 'PHL' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-500 font-medium' : ''">
+                                                PHL
+                                            </button>
+                                            <button type="button" 
+                                                @click="selectedEmployee.role = 'PKWT'; open = false"
+                                                class="flex w-full items-center rounded-lg px-3 py-2 text-sm text-gray-750 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 transition-colors"
+                                                :class="selectedEmployee.role === 'PKWT' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-500 font-medium' : ''">
+                                                PKWT
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
                             <x-form.input name="email" label="Email" type="email" x-model="selectedEmployee.email" />
                             <x-form.input name="phone" label="No. Telepon" x-model="selectedEmployee.phone" />
-                            <x-form.select name="team_id" label="Nomor Tim" placeholder="Pilih Tim" x-model="selectedEmployee.team_id">
-                                @foreach($teams as $team)
-                                    <option value="{{ $team->id }}">{{ $team->name }}</option>
-                                @endforeach
-                            </x-form.select>
+                            <div x-data="{ 
+                                    open: false,
+                                    getTeamName(id) {
+                                        @foreach($teams as $team)
+                                            if (id == '{{ $team->id }}') return '{{ $team->name }}';
+                                        @endforeach
+                                        return 'Pilih Tim';
+                                    }
+                                 }" 
+                                 @click.away="open = false"
+                                 class="relative w-full">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Nomor Tim
+                                </label>
+                                
+                                <input type="hidden" name="team_id" x-model="selectedEmployee.team_id">
+                                
+                                <div class="relative">
+                                    <button type="button" @click="open = !open"
+                                        class="flex h-11 w-full items-center justify-between rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 text-sm text-gray-800 dark:text-white outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:focus:border-brand-800 focus:outline-none shadow-theme-xs text-left cursor-pointer">
+                                        <span x-text="getTeamName(selectedEmployee.team_id)"></span>
+                                        <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-200" 
+                                             :class="{ 'rotate-180': open }"
+                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open" x-transition x-cloak
+                                         class="absolute left-0 mt-2 w-full rounded-xl border border-gray-150 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900 z-50 bg-white">
+                                        <div class="max-h-60 overflow-y-auto custom-scrollbar">
+                                            <button type="button" 
+                                                @click="selectedEmployee.team_id = ''; open = false"
+                                                class="flex w-full items-center rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 transition-colors"
+                                                :class="!selectedEmployee.team_id ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-500 font-medium' : ''">
+                                                Pilih Tim
+                                            </button>
+                                            
+                                            @foreach($teams as $team)
+                                                <button type="button" 
+                                                    @click="selectedEmployee.team_id = '{{ $team->id }}'; open = false"
+                                                    class="flex w-full items-center rounded-lg px-3 py-2 text-sm text-gray-750 hover:bg-gray-150 dark:text-gray-450 dark:hover:bg-white/5 transition-colors"
+                                                    :class="selectedEmployee.team_id == '{{ $team->id }}' ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-500 font-medium' : ''">
+                                                    {{ $team->name }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <x-form.input name="location" label="Lokasi" x-model="selectedEmployee.location" />
                             
                             <div>

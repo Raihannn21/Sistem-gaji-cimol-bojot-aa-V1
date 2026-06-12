@@ -8,6 +8,9 @@ use App\Models\PhlPayrollPeriod;
 use App\Models\PkwtPayrollPeriod;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Exports\SummaryPayrollReportExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SummaryReportController extends Controller
 {
@@ -18,6 +21,38 @@ class SummaryReportController extends Controller
         $currentYear = intval(Carbon::now()->format('Y'));
         $years = range(2025, max($currentYear, 2026) + 1);
 
+        $data = $this->calculateSummaryData($year);
+
+        return view('pages.reports.summary', array_merge([
+            'title' => 'Rekap PHL & PKWT',
+            'selectedYear' => $year,
+            'years' => $years,
+        ], $data));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $year = $request->get('year', Carbon::now()->format('Y'));
+        $data = $this->calculateSummaryData($year);
+        $data['selectedYear'] = $year;
+
+        $pdf = Pdf::loadView('exports.summary-payroll-report', $data);
+        $fileName = 'LAPORAN_REKAPITULASI_GAJI_TAHUNAN_' . $year . '.pdf';
+        return $pdf->stream($fileName);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $year = $request->get('year', Carbon::now()->format('Y'));
+        $data = $this->calculateSummaryData($year);
+        $data['selectedYear'] = $year;
+
+        $fileName = 'LAPORAN_REKAPITULASI_GAJI_TAHUNAN_' . $year . '.xlsx';
+        return Excel::download(new SummaryPayrollReportExport($data), $fileName);
+    }
+
+    private function calculateSummaryData($year)
+    {
         $monthsName = [
             1 => 'Januari',
             2 => 'Februari',
@@ -154,10 +189,7 @@ class SummaryReportController extends Controller
         $phlPokokPercent = $totalAnnualPhlCost > 0 ? ($globalPhlPokok / $totalAnnualPhlCost) * 100 : 0;
         $phlLemburTunjanganPercent = $totalAnnualPhlCost > 0 ? ($globalPhlLemburTunjangan / $totalAnnualPhlCost) * 100 : 0;
 
-        return view('pages.reports.summary', [
-            'title' => 'Rekap PHL & PKWT',
-            'selectedYear' => $year,
-            'years' => $years,
+        return [
             'summaryData' => $summaryData,
             'totalAnnualPkwtCost' => $totalAnnualPkwtCost,
             'totalAnnualPhlCost' => $totalAnnualPhlCost,
@@ -168,6 +200,6 @@ class SummaryReportController extends Controller
             'pkwtLemburTunjanganPercent' => $pkwtLemburTunjanganPercent,
             'phlPokokPercent' => $phlPokokPercent,
             'phlLemburTunjanganPercent' => $phlLemburTunjanganPercent
-        ]);
+        ];
     }
 }

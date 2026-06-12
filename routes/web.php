@@ -126,6 +126,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/employee/{id}/history', [EmployeeReportController::class, 'history'])->name('reports.employee.history');
         
         Route::get('/summary', [SummaryReportController::class, 'index'])->name('reports.summary');
+        Route::get('/summary/export-excel', [SummaryReportController::class, 'exportExcel'])->name('reports.summary.export-excel');
+        Route::get('/summary/export-pdf', [SummaryReportController::class, 'exportPdf'])->name('reports.summary.export-pdf');
     });
 
     // Pengaturan
