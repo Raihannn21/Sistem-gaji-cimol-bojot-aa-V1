@@ -4,7 +4,7 @@
         <th colspan="6" style="font-size: 16px; font-weight: bold; text-align: left;">CIMOL BOJOT AA</th>
     </tr>
     <tr>
-        <th colspan="6" style="font-size: 14px; font-weight: bold; text-align: left; color: #1e3a8a;">LAPORAN REKAPITULASI GAJI TAHUNAN (SUMMARY PKWT & PHL)</th>
+        <th colspan="6" style="font-size: 14px; font-weight: bold; text-align: left; color: #1e3a8a;">LAPORAN REKAPITULASI GAJI TAHUNAN (SUMMARY PKWT &amp; PHL)</th>
     </tr>
     <tr>
         <th colspan="6" style="font-size: 11px; text-align: left; color: #475569;">Tahun Laporan: {{ $selectedYear }}</th>
