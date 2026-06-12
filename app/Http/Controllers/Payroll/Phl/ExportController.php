@@ -42,13 +42,28 @@ class ExportController extends Controller
 
         $employees = Employee::where('employment_type', 'PHL')
             ->where(function ($q) use ($period) {
-                $q->where(function ($subQ) use ($period) {
-                    $subQ->where('status', 'Aktif')
-                        ->where('created_at', '<=', Carbon::parse($period->end_date)->endOfDay());
-                })
-                ->orWhereHas('phlAttendances', function ($sub) use ($period) {
-                    $sub->where('phl_payroll_period_id', $period->id);
-                });
+                if ($period->status === 'Locked') {
+                    $q->whereHas('phlAttendances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlOvertimes', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlRiskAllowances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    });
+                } else {
+                    $q->where('status', 'Aktif')
+                    ->orWhereHas('phlAttendances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlOvertimes', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlRiskAllowances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    });
+                }
             })
             ->distinct()
             ->get();
@@ -195,13 +210,28 @@ class ExportController extends Controller
         
         $employees = Employee::where('employment_type', 'PHL')
             ->where(function ($q) use ($period) {
-                $q->where(function ($subQ) use ($period) {
-                    $subQ->where('status', 'Aktif')
-                        ->where('created_at', '<=', Carbon::parse($period->end_date)->endOfDay());
-                })
-                ->orWhereHas('phlAttendances', function ($sub) use ($period) {
-                    $sub->where('phl_payroll_period_id', $period->id);
-                });
+                if ($period->status === 'Locked') {
+                    $q->whereHas('phlAttendances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlOvertimes', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlRiskAllowances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    });
+                } else {
+                    $q->where('status', 'Aktif')
+                    ->orWhereHas('phlAttendances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlOvertimes', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    })
+                    ->orWhereHas('phlRiskAllowances', function ($sub) use ($period) {
+                        $sub->where('phl_payroll_period_id', $period->id);
+                    });
+                }
             })
             ->distinct()
             ->get();
