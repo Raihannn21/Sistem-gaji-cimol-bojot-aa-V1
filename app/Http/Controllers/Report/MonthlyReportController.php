@@ -40,24 +40,14 @@ class MonthlyReportController extends Controller
         $endDate = Carbon::create($year, $monthNum, 1)->endOfMonth();
 
         $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
-            ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(function ($q2) use ($startDate, $endDate) {
-                        $q2->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
-                    });
-            })->get();
+            ->whereYear('end_date', $year)
+            ->whereMonth('end_date', $monthNum)
+            ->get();
 
         $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
-            ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(function ($q2) use ($startDate, $endDate) {
-                        $q2->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
-                    });
-            })->get();
+            ->whereYear('end_date', $year)
+            ->whereMonth('end_date', $monthNum)
+            ->get();
 
         $phlEmployeeIds = [];
         $pkwtEmployeeIds = [];
@@ -170,24 +160,14 @@ class MonthlyReportController extends Controller
         $endDate = Carbon::create($year, $monthNum, 1)->endOfMonth();
 
         $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
-            ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(function ($q2) use ($startDate, $endDate) {
-                        $q2->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
-                    });
-            })->get();
+            ->whereYear('end_date', $year)
+            ->whereMonth('end_date', $monthNum)
+            ->get();
 
         $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
-            ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(function ($q2) use ($startDate, $endDate) {
-                        $q2->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
-                    });
-            })->get();
+            ->whereYear('end_date', $year)
+            ->whereMonth('end_date', $monthNum)
+            ->get();
 
         $phlEmployeeIds = [];
         $pkwtEmployeeIds = [];
@@ -303,24 +283,14 @@ class MonthlyReportController extends Controller
         $endDate = Carbon::create($year, $monthNum, 1)->endOfMonth();
 
         $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
-            ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(function ($q2) use ($startDate, $endDate) {
-                        $q2->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
-                    });
-            })->get();
+            ->whereYear('end_date', $year)
+            ->whereMonth('end_date', $monthNum)
+            ->get();
 
         $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
-            ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(function ($q2) use ($startDate, $endDate) {
-                        $q2->where('start_date', '<=', $startDate)
-                            ->where('end_date', '>=', $endDate);
-                    });
-            })->get();
+            ->whereYear('end_date', $year)
+            ->whereMonth('end_date', $monthNum)
+            ->get();
 
         $phlEmployeeIds = [];
         $pkwtEmployeeIds = [];

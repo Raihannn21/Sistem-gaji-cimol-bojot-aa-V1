@@ -83,14 +83,9 @@ class SummaryReportController extends Controller
             $endDate = Carbon::create($year, $num, 1)->endOfMonth();
 
             $phlPeriods = PhlPayrollPeriod::with(['attendances.employee', 'overtimes', 'riskAllowances'])
-                ->where(function ($q) use ($startDate, $endDate) {
-                    $q->whereBetween('start_date', [$startDate, $endDate])
-                        ->orWhereBetween('end_date', [$startDate, $endDate])
-                        ->orWhere(function ($q2) use ($startDate, $endDate) {
-                            $q2->where('start_date', '<=', $startDate)
-                                ->where('end_date', '>=', $endDate);
-                        });
-                })->get();
+                ->whereYear('end_date', $year)
+                ->whereMonth('end_date', $num)
+                ->get();
 
             $phlEmployeeIds = [];
             $phlPokok = 0;
@@ -115,14 +110,9 @@ class SummaryReportController extends Controller
             $globalPhlLemburTunjangan += ($phlLembur + $phlRisiko);
 
             $pkwtPeriods = PkwtPayrollPeriod::with(['attendances.employee', 'attendances.team', 'overtimes', 'riskAllowances', 'otherAllowances', 'periodTeams'])
-                ->where(function ($q) use ($startDate, $endDate) {
-                    $q->whereBetween('start_date', [$startDate, $endDate])
-                        ->orWhereBetween('end_date', [$startDate, $endDate])
-                        ->orWhere(function ($q2) use ($startDate, $endDate) {
-                            $q2->where('start_date', '<=', $startDate)
-                                ->where('end_date', '>=', $endDate);
-                        });
-                })->get();
+                ->whereYear('end_date', $year)
+                ->whereMonth('end_date', $num)
+                ->get();
 
             $pkwtEmployeeIds = [];
             $pkwtPokok = 0;
