@@ -68,7 +68,7 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input type="text" x-model="searchQuery" placeholder="Nama atau ID..."
+                        <input type="text" x-model.debounce.150ms="searchQuery" placeholder="Nama atau ID..."
                             class="block h-12 w-full rounded-xl border border-gray-100 bg-gray-50/50 pl-12 pr-4 text-sm font-medium text-gray-700 outline-none transition-all focus:border-brand-500 focus:bg-white dark:border-gray-800 dark:bg-white/[0.02] dark:text-white">
                     </div>
 

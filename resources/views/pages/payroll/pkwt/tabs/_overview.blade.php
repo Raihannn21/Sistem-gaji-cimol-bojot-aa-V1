@@ -114,7 +114,7 @@
                     </svg>
                 </span>
                 <input type="text" 
-                       x-model="searchQuery" 
+                       x-model.debounce.150ms="searchQuery" 
                        placeholder="Cari nama atau ID..." 
                        class="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pr-4 text-xs text-gray-800 outline-none focus:border-brand-500 dark:border-gray-800 dark:bg-transparent dark:text-white dark:focus:border-brand-500 transition-colors"
                        style="padding-left: 2.75rem;">
