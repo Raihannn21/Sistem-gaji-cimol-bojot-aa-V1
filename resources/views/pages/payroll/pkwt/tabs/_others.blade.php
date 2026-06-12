@@ -40,70 +40,68 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800 font-medium text-sm">
-                    @php
-                        $groupedOthers = $period->otherAllowances->groupBy('employee_id');
-                    @endphp
-                    @forelse($groupedOthers as $employeeId => $allowances)
-                        @php
-                            $employee = $allowances->first()->employee;
-                            if (!$employee) continue;
-                            $allowanceCount = $allowances->count();
-                            $totalAmount = $allowances->sum('amount');
-                            
-                            $typesList = $allowances->pluck('allowance_type')->unique()->implode(', ');
-                            
-                            $detailItems = $allowances->map(function($a) {
-                                return [
-                                    'id' => $a->id,
-                                    'allowance_type' => $a->allowance_type,
-                                    'amount' => (int) $a->amount,
-                                    'note' => $a->note ?? '-',
-                                ];
-                            });
-                        @endphp
-                        <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors others-row"
-                            x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->no_id)) }}'.includes(searchQuery.toLowerCase())">
+                    <template x-for="item in paginatedOthers()" :key="item.employee_id">
+                        <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
                             <td class="px-6 py-4">
-                                <p class="font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
-                                <p class="text-xs text-gray-400">ID. {{ $employee->no_id }}</p>
+                                <p class="font-bold text-gray-800 dark:text-white/90" x-text="item.employee_name"></p>
+                                <p class="text-xs text-gray-400" x-text="'ID. ' + item.employee_no_id"></p>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-1">
-                                    <span class="inline-flex max-w-fit rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
-                                        {{ $allowanceCount }} Tunjangan
+                                    <span class="inline-flex max-w-fit rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-600 dark:bg-brand-500/10 dark:text-brand-400" x-text="item.allowance_count + ' Tunjangan'">
                                     </span>
-                                    <p class="text-xs text-gray-400 font-medium italic">{{ $typesList }}</p>
+                                    <p class="text-xs text-gray-400 font-medium italic" x-text="item.types_list"></p>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums whitespace-nowrap">
-                                Rp {{ number_format($totalAmount, 0, ',', '.') }}
+                            <td class="px-6 py-4 text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums whitespace-nowrap" x-text="formatRupiah(item.total_amount)">
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <button @click="showOthersDetailModal = true; 
-                                                selectedEmployee = { id: {{ $employee->id }}, name: '{{ addslashes($employee->name) }}', nrp: '{{ $employee->no_id }}' };
-                                                selectedEmployeeOthers = @js($detailItems);" 
+                                                selectedEmployee = { id: item.employee_id, name: item.employee_name, nrp: item.employee_no_id };
+                                                selectedEmployeeOthers = item.detail_items;" 
                                         class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-brand-500 transition-colors"
                                         title="Lihat Detail Tunjangan">
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </button>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-gray-400 italic">
-                                Belum ada data tunjangan lain-lain diinput untuk periode ini.
-                            </td>
-                        </tr>
-                    @endforelse
+                    </template>
                     
-                    <!-- Empty State for Search Results -->
-                    <tr x-show="searchQuery && document.querySelectorAll('.others-row[style*=\'display: none\']').length === document.querySelectorAll('.others-row').length">
-                        <td colspan="4" class="px-6 py-8 text-center text-gray-400 italic">
-                            Karyawan dengan nama atau ID tersebut tidak ditemukan di rekap tunjangan lain.
+                    <!-- Empty State -->
+                    <tr x-show="filteredOthers().length === 0">
+                        <td colspan="4" class="px-6 py-8 text-center text-gray-400 italic" x-text="searchQuery ? 'Karyawan dengan nama atau ID tersebut tidak ditemukan di rekap tunjangan lain.' : 'Belum ada data tunjangan lain-lain diinput untuk periode ini.'">
                         </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Pagination Footer Controls -->
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+                Menampilkan <span class="font-bold text-gray-700 dark:text-white" x-text="filteredOthers().length > 0 ? (othersPage - 1) * othersPerPage + 1 : 0"></span> 
+                sampai <span class="font-bold text-gray-700 dark:text-white" x-text="Math.min(othersPage * othersPerPage, filteredOthers().length)"></span> 
+                dari <span class="font-bold text-gray-700 dark:text-white" x-text="filteredOthers().length"></span> data
+            </div>
+            <div class="flex items-center justify-between sm:justify-end gap-3">
+                <button type="button" 
+                        @click="othersPage = Math.max(1, othersPage - 1)" 
+                        :disabled="othersPage === 1"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-800 dark:bg-transparent transition-colors shadow-theme-xs">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                
+                <span class="text-xs font-bold text-gray-600 dark:text-gray-400">
+                    Halaman <span x-text="othersPage"></span> dari <span x-text="othersTotalPages()"></span>
+                </span>
+                
+                <button type="button" 
+                        @click="othersPage = Math.min(othersTotalPages(), othersPage + 1)" 
+                        :disabled="othersPage === othersTotalPages()"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-800 dark:bg-transparent transition-colors shadow-theme-xs">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>

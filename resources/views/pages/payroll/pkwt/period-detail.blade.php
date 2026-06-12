@@ -1,5 +1,219 @@
 @extends('layouts.app')
 
+@php
+    $startDate = \Carbon\Carbon::parse($period->start_date);
+    $endDate = \Carbon\Carbon::parse($period->end_date);
+    $totalPeriodDays = $startDate->diffInDays($endDate) + 1;
+
+    // Pre-calculate overview items for Alpine.js client-side pagination
+    $overviewData = $employees->map(function ($employee) use ($period, $totalPeriodDays) {
+        $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
+        $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+        
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)
+            ->filter(function ($att) use ($offDates) {
+                if ($att->duration <= 0) {
+                    return false;
+                }
+                $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                return !in_array($dateStr, $offDates);
+            })
+            ->count();
+
+        $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+        $daysAbsent = max(0, $workDays - $daysWorked);
+
+        $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+        $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
+        $pokok = $daysWorked * $harian;
+
+        $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+        $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+        $tunjanganLain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
+
+        $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
+        $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
+
+        return [
+            'id' => $employee->id,
+            'name' => $employee->name,
+            'no_id' => $employee->no_id,
+            'days_worked' => $daysWorked,
+            'days_absent' => $daysAbsent,
+            'harian' => (int) $harian,
+            'pokok' => (int) $pokok,
+            'lembur' => (int) $lembur,
+            'risiko' => (int) $risiko,
+            'tunjangan_lain' => (int) $tunjanganLain,
+            'potongan' => (int) $potongan,
+            'total' => (int) $total,
+        ];
+    })->values();
+
+    // Pre-calculate attendances for Alpine.js client-side pagination
+    $attendanceData = $period->attendances->map(function ($attendance) {
+        return [
+            'id' => $attendance->id,
+            'employee_name' => $attendance->employee->name ?? 'Unknown',
+            'employee_no_id' => $attendance->employee->no_id ?? '-',
+            'date' => \Carbon\Carbon::parse($attendance->date)->format('Y-m-d'),
+            'date_formatted' => \Carbon\Carbon::parse($attendance->date)->format('d M Y'),
+            'scan_in' => $attendance->scan_in ? \Carbon\Carbon::parse($attendance->scan_in)->format('H:i') : '',
+            'scan_out' => $attendance->scan_out ? \Carbon\Carbon::parse($attendance->scan_out)->format('H:i') : '',
+            'late_time' => $attendance->late_time ?: '',
+            'early_time' => $attendance->early_time ?: '',
+            'duration' => (float) $attendance->duration,
+        ];
+    })->values();
+
+    // Pre-calculate overtimes for Alpine.js client-side pagination
+    $overtimesData = $period->overtimes->groupBy('employee_id')->map(function ($overtimes) {
+        $first = $overtimes->first();
+        $employee = $first ? $first->employee : null;
+        if (!$employee) return null;
+        $totalHours = $overtimes->sum('hours');
+        $totalAmount = $overtimes->sum('amount');
+        
+        $detailItems = $overtimes->map(function($o) {
+            return [
+                'id' => $o->id,
+                'date' => $o->date->format('d-m-Y'),
+                'raw_date' => $o->date->format('Y-m-d'),
+                'hours' => $o->hours,
+                'rate' => $o->hours > 0 ? (int)($o->amount / $o->hours) : 0,
+                'amount' => (int) $o->amount,
+                'note' => $o->note ?? '-',
+            ];
+        });
+
+        return [
+            'employee_id' => $employee->id,
+            'employee_name' => $employee->name,
+            'employee_no_id' => $employee->no_id,
+            'total_hours' => $totalHours,
+            'total_amount' => $totalAmount,
+            'detail_items' => $detailItems
+        ];
+    })->filter()->values();
+
+    // Pre-calculate risks for Alpine.js client-side pagination
+    $risksData = $period->riskAllowances->groupBy('employee_id')->map(function ($risks) {
+        $first = $risks->first();
+        $employee = $first ? $first->employee : null;
+        if (!$employee) return null;
+        $daysCount = $risks->count();
+        $totalAmount = $risks->sum('amount');
+        
+        $detailItems = $risks->map(function($r) {
+            return [
+                'id' => $r->id,
+                'date' => $r->date->format('d-m-Y'),
+                'raw_date' => $r->date->format('Y-m-d'),
+                'amount' => (int) $r->amount,
+                'note' => $r->note ?? '-',
+            ];
+        });
+
+        return [
+            'employee_id' => $employee->id,
+            'employee_name' => $employee->name,
+            'employee_no_id' => $employee->no_id,
+            'days_count' => $daysCount,
+            'total_amount' => $totalAmount,
+            'detail_items' => $detailItems
+        ];
+    })->filter()->values();
+
+    // Pre-calculate others for Alpine.js client-side pagination
+    $othersData = $period->otherAllowances->groupBy('employee_id')->map(function ($allowances) {
+        $first = $allowances->first();
+        $employee = $first ? $first->employee : null;
+        if (!$employee) return null;
+        $allowanceCount = $allowances->count();
+        $totalAmount = $allowances->sum('amount');
+        $typesList = $allowances->pluck('allowance_type')->unique()->implode(', ');
+        
+        $detailItems = $allowances->map(function($a) {
+            return [
+                'id' => $a->id,
+                'allowance_type' => $a->allowance_type,
+                'amount' => (int) $a->amount,
+                'note' => $a->note ?? '-',
+            ];
+        });
+
+        return [
+            'employee_id' => $employee->id,
+            'employee_name' => $employee->name,
+            'employee_no_id' => $employee->no_id,
+            'allowance_count' => $allowanceCount,
+            'types_list' => $typesList,
+            'total_amount' => $totalAmount,
+            'detail_items' => $detailItems
+        ];
+    })->filter()->values();
+
+    // Pre-calculate slips for Alpine.js client-side pagination
+    $slipsData = $employees->map(function ($employee) use ($period, $totalPeriodDays) {
+        $employeeAttendance = $period->attendances->where('employee_id', $employee->id)->first();
+        $resolvedTeam = ($period->status === 'Locked' && $employeeAttendance && $employeeAttendance->team_id)
+            ? $employeeAttendance->team
+            : $employee->team;
+        $teamName = $resolvedTeam ? $resolvedTeam->name : '-';
+        $resolvedTeamId = $resolvedTeam ? $resolvedTeam->id : $employee->team_id;
+
+        $periodTeam = $period->periodTeams->where('team_id', $resolvedTeamId)->first();
+        $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
+
+        $daysWorked = $period->attendances->where('employee_id', $employee->id)
+            ->filter(function ($att) use ($offDates) {
+                if ($att->duration <= 0) {
+                    return false;
+                }
+                $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
+                return !in_array($dateStr, $offDates);
+            })
+            ->count();
+        
+        $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
+        $daysAbsent = max(0, $workDays - $daysWorked);
+        
+        $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
+        $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
+        $pokok = $daysWorked * $harian;
+        
+        $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
+        $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
+        $lain_lain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
+        
+        $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
+        $total = max(0, $pokok + $lembur + $risiko + $lain_lain - $potongan);
+
+        return [
+            'employee_id' => $employee->id,
+            'employee_name' => $employee->name,
+            'employee_no_id' => $employee->no_id,
+            'days_worked' => $daysWorked,
+            'days_absent' => $daysAbsent,
+            'total_days' => $workDays,
+            'salary_monthly' => (int) ($employee->salary_monthly ?? 0),
+            'gaji_full' => (int) $totalMonthly,
+            'tarif_harian' => (int) $harian,
+            'pokok' => (int) $pokok,
+            'lembur' => (int) $lembur,
+            'risiko' => (int) $risiko,
+            'lain_lain' => (int) $lain_lain,
+            'bpjs_health' => (int) ($employee->bpjs_health ?? 0),
+            'bpjs_tk' => (int) ($employee->bpjs_tk ?? 0),
+            'pph21' => (int) ($employee->pph21 ?? 0),
+            'potongan_absen' => (int) ($daysAbsent * $harian),
+            'potongan' => (int) ($potongan + $daysAbsent * $harian),
+            'total' => (int) $total,
+            'team_name' => $teamName,
+        ];
+    })->values();
+@endphp
+
 @section('content')
     <div class="mx-auto max-w-screen-2xl" x-data="{ 
         activeTab: '{{ request()->query('tab', 'overview') }}',
@@ -41,6 +255,150 @@
         processing: false,
         emailSending: false,
         emailSendingEmployeeId: null,
+        
+        // Overview pagination
+        overviewPage: 1,
+        overviewPerPage: 15,
+        overviewList: @js($overviewData),
+        filteredOverview() {
+            let q = this.searchQuery.toLowerCase();
+            return this.overviewList.filter(item => 
+                !q || 
+                item.name.toLowerCase().includes(q) || 
+                item.no_id.toLowerCase().includes(q)
+            );
+        },
+        paginatedOverview() {
+            let start = (this.overviewPage - 1) * this.overviewPerPage;
+            return this.filteredOverview().slice(start, start + this.overviewPerPage);
+        },
+        overviewTotalPages() {
+            return Math.ceil(this.filteredOverview().length / this.overviewPerPage) || 1;
+        },
+
+        // Attendance pagination
+        attendancePage: 1,
+        attendancePerPage: 15,
+        attendanceList: @js($attendanceData),
+        filteredAttendance() {
+            let q = this.searchQuery.toLowerCase();
+            return this.attendanceList.filter(item => 
+                !q || 
+                item.employee_name.toLowerCase().includes(q) || 
+                item.employee_no_id.toLowerCase().includes(q)
+            );
+        },
+        paginatedAttendance() {
+            let start = (this.attendancePage - 1) * this.attendancePerPage;
+            return this.filteredAttendance().slice(start, start + this.attendancePerPage);
+        },
+        attendanceTotalPages() {
+            return Math.ceil(this.filteredAttendance().length / this.attendancePerPage) || 1;
+        },
+
+        // Overtime pagination
+        overtimePage: 1,
+        overtimePerPage: 15,
+        overtimeList: @js($overtimesData),
+        filteredOvertime() {
+            let q = this.searchQuery.toLowerCase();
+            return this.overtimeList.filter(item => 
+                !q || 
+                item.employee_name.toLowerCase().includes(q) || 
+                item.employee_no_id.toLowerCase().includes(q)
+            );
+        },
+        paginatedOvertime() {
+            let start = (this.overtimePage - 1) * this.overtimePerPage;
+            return this.filteredOvertime().slice(start, start + this.overtimePerPage);
+        },
+        overtimeTotalPages() {
+            return Math.ceil(this.filteredOvertime().length / this.overtimePerPage) || 1;
+        },
+
+        // Risk pagination
+        riskPage: 1,
+        riskPerPage: 15,
+        riskList: @js($risksData),
+        filteredRisk() {
+            let q = this.searchQuery.toLowerCase();
+            return this.riskList.filter(item => 
+                !q || 
+                item.employee_name.toLowerCase().includes(q) || 
+                item.employee_no_id.toLowerCase().includes(q)
+            );
+        },
+        paginatedRisk() {
+            let start = (this.riskPage - 1) * this.riskPerPage;
+            return this.filteredRisk().slice(start, start + this.riskPerPage);
+        },
+        riskTotalPages() {
+            return Math.ceil(this.filteredRisk().length / this.riskPerPage) || 1;
+        },
+
+        // Others pagination
+        othersPage: 1,
+        othersPerPage: 15,
+        othersList: @js($othersData),
+        filteredOthers() {
+            let q = this.searchQuery.toLowerCase();
+            return this.othersList.filter(item => 
+                !q || 
+                item.employee_name.toLowerCase().includes(q) || 
+                item.employee_no_id.toLowerCase().includes(q)
+            );
+        },
+        paginatedOthers() {
+            let start = (this.othersPage - 1) * this.othersPerPage;
+            return this.filteredOthers().slice(start, start + this.othersPerPage);
+        },
+        othersTotalPages() {
+            return Math.ceil(this.filteredOthers().length / this.othersPerPage) || 1;
+        },
+
+        // Slips pagination
+        slipsPage: 1,
+        slipsPerPage: 15,
+        slipsList: @js($slipsData),
+        filteredSlips() {
+            let q = this.searchQuery.toLowerCase();
+            return this.slipsList.filter(item => 
+                !q || 
+                item.employee_name.toLowerCase().includes(q) || 
+                item.employee_no_id.toLowerCase().includes(q)
+            );
+        },
+        paginatedSlips() {
+            let start = (this.slipsPage - 1) * this.slipsPerPage;
+            return this.filteredSlips().slice(start, start + this.slipsPerPage);
+        },
+        slipsTotalPages() {
+            return Math.ceil(this.filteredSlips().length / this.slipsPerPage) || 1;
+        },
+
+        formatRupiah(val) {
+            if (val === null || val === '') return 'Rp 0';
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
+        },
+
+        init() {
+            this.$watch('searchQuery', value => {
+                this.overviewPage = 1;
+                this.attendancePage = 1;
+                this.overtimePage = 1;
+                this.riskPage = 1;
+                this.othersPage = 1;
+                this.slipsPage = 1;
+            });
+            this.$watch('activeTab', value => {
+                this.overviewPage = 1;
+                this.attendancePage = 1;
+                this.overtimePage = 1;
+                this.riskPage = 1;
+                this.othersPage = 1;
+                this.slipsPage = 1;
+            });
+        },
         
         formatCurrency(el) {
             let val = el.value.replace(/\D/g, '');

@@ -147,89 +147,69 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                    @forelse($employees as $employee)
-                        @php
-                            $periodTeam = $period->periodTeams->where('team_id', $employee->team_id)->first();
-                            $offDates = $periodTeam ? ($periodTeam->off_dates ?? []) : [];
-                            
-                            $daysWorked = $period->attendances->where('employee_id', $employee->id)
-                                ->filter(function ($att) use ($offDates) {
-                                    if ($att->duration <= 0) {
-                                        return false;
-                                    }
-                                    $dateStr = $att->date instanceof \Carbon\Carbon ? $att->date->format('Y-m-d') : $att->date;
-                                    return !in_array($dateStr, $offDates);
-                                })
-                                ->count();
-                            
-                            $workDays = $periodTeam ? $periodTeam->work_days : ($totalPeriodDays ?: 1);
-
-                            $daysAbsent = max(0, $workDays - $daysWorked);
-
-                            $totalMonthly = ($employee->salary_monthly ?? 0) + ($employee->attendance_allowance ?? 0);
-                            $harian = $workDays > 0 ? ($totalMonthly / $workDays) : 0;
-                            $pokok = $daysWorked * $harian;
-
-                            $lembur = $period->overtimes->where('employee_id', $employee->id)->sum('amount');
-                            $risiko = $period->riskAllowances->where('employee_id', $employee->id)->sum('amount');
-                            $tunjanganLain = $period->otherAllowances->where('employee_id', $employee->id)->sum('amount');
-
-                            $potongan = ($employee->bpjs_health ?? 0) + ($employee->bpjs_tk ?? 0) + ($employee->pph21 ?? 0);
-                            $total = max(0, $pokok + $lembur + $risiko + $tunjanganLain - $potongan);
-                        @endphp
-                        <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors overview-row"
-                            x-show="!searchQuery || '{{ strtolower(addslashes($employee->name)) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($employee->no_id)) }}'.includes(searchQuery.toLowerCase())">
+                    <template x-for="item in paginatedOverview()" :key="item.id">
+                        <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.01] transition-colors">
                             <td class="px-6 py-4">
-                                <p class="text-sm font-bold text-gray-800 dark:text-white/90">{{ $employee->name }}</p>
-                                <p class="text-xs text-gray-400">ID. {{ $employee->no_id }}</p>
+                                <p class="text-sm font-bold text-gray-800 dark:text-white/90" x-text="item.name"></p>
+                                <p class="text-xs text-gray-400" x-text="'ID. ' + item.no_id"></p>
                             </td>
-                            <td
-                                class="px-6 py-4 text-sm text-center font-bold text-green-600 dark:text-green-400 tabular-nums">
-                                {{ $daysWorked }} Hari
+                            <td class="px-6 py-4 text-sm text-center font-bold text-green-600 dark:text-green-400 tabular-nums" x-text="item.days_worked + ' Hari'">
                             </td>
-                            <td class="px-6 py-4 text-sm text-center font-bold text-red-500 dark:text-red-400 tabular-nums">
-                                {{ $daysAbsent }} Hari
+                            <td class="px-6 py-4 text-sm text-center font-bold text-red-500 dark:text-red-400 tabular-nums" x-text="item.days_absent + ' Hari'">
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap">
-                                Rp {{ number_format($harian, 0, ',', '.') }}
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap" x-text="formatRupiah(item.harian)">
                             </td>
-                            <td
-                                class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums font-semibold whitespace-nowrap">
-                                Rp {{ number_format($pokok, 0, ',', '.') }}
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums font-semibold whitespace-nowrap" x-text="formatRupiah(item.pokok)">
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap">
-                                Rp {{ number_format($lembur, 0, ',', '.') }}
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap" x-text="formatRupiah(item.lembur)">
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap">
-                                Rp {{ number_format($risiko, 0, ',', '.') }}
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap" x-text="formatRupiah(item.risiko)">
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap">
-                                Rp {{ number_format($tunjanganLain, 0, ',', '.') }}
+                            <td class="px-6 py-4 text-sm text-right text-gray-600 dark:text-gray-400 tabular-nums whitespace-nowrap" x-text="formatRupiah(item.tunjangan_lain)">
                             </td>
-                            <td class="px-6 py-4 text-sm text-right text-red-600 dark:text-red-500 tabular-nums whitespace-nowrap">
-                                Rp {{ number_format($potongan, 0, ',', '.') }}
+                            <td class="px-6 py-4 text-sm text-right text-red-600 dark:text-red-500 tabular-nums whitespace-nowrap" x-text="formatRupiah(item.potongan)">
                             </td>
-                            <td
-                                class="px-6 py-4 text-sm text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums whitespace-nowrap">
-                                Rp {{ number_format($total, 0, ',', '.') }}
+                            <td class="px-6 py-4 text-sm text-right font-bold text-brand-600 dark:text-brand-500 tabular-nums whitespace-nowrap" x-text="formatRupiah(item.total)">
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="10" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                                Tidak ada karyawan PKWT yang ditemukan.
-                            </td>
-                        </tr>
-                    @endforelse
+                    </template>
                     
-                    <!-- Empty State for Search Results -->
-                    <tr x-show="searchQuery && document.querySelectorAll('.overview-row[style*=\'display: none\']').length === document.querySelectorAll('.overview-row').length">
+                    <!-- Empty State -->
+                    <tr x-show="filteredOverview().length === 0">
                         <td colspan="10" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400 italic">
                             Karyawan dengan nama atau ID tersebut tidak ditemukan.
                         </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Pagination Footer Controls -->
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+                Menampilkan <span class="font-bold text-gray-700 dark:text-white" x-text="filteredOverview().length > 0 ? (overviewPage - 1) * overviewPerPage + 1 : 0"></span> 
+                sampai <span class="font-bold text-gray-700 dark:text-white" x-text="Math.min(overviewPage * overviewPerPage, filteredOverview().length)"></span> 
+                dari <span class="font-bold text-gray-700 dark:text-white" x-text="filteredOverview().length"></span> data
+            </div>
+            <div class="flex items-center justify-between sm:justify-end gap-3">
+                <button type="button" 
+                        @click="overviewPage = Math.max(1, overviewPage - 1)" 
+                        :disabled="overviewPage === 1"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-800 dark:bg-transparent transition-colors shadow-theme-xs">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                
+                <span class="text-xs font-bold text-gray-600 dark:text-gray-400">
+                    Halaman <span x-text="overviewPage"></span> dari <span x-text="overviewTotalPages()"></span>
+                </span>
+                
+                <button type="button" 
+                        @click="overviewPage = Math.min(overviewTotalPages(), overviewPage + 1)" 
+                        :disabled="overviewPage === overviewTotalPages()"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-800 dark:bg-transparent transition-colors shadow-theme-xs">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>

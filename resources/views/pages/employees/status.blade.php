@@ -23,6 +23,31 @@
         search: '',
         errors: {},
         statusChanges: window.initialStatusChanges,
+        currentPage: 1,
+        perPage: 15,
+        init() {
+            this.$watch('search', value => this.currentPage = 1);
+        },
+        filteredStatusChanges() {
+            let filtered = this.statusChanges;
+            if (this.search) {
+                let q = this.search.toLowerCase();
+                filtered = filtered.filter(item => 
+                    (item.name && item.name.toLowerCase().includes(q)) || 
+                    (item.no_id && item.no_id.toLowerCase().includes(q)) || 
+                    (item.nik && item.nik.toLowerCase().includes(q)) || 
+                    (item.reason && item.reason.toLowerCase().includes(q))
+                );
+            }
+            return filtered;
+        },
+        paginatedStatusChanges() {
+            let start = (this.currentPage - 1) * this.perPage;
+            return this.filteredStatusChanges().slice(start, start + this.perPage);
+        },
+        totalPages() {
+            return Math.ceil(this.filteredStatusChanges().length / this.perPage) || 1;
+        },
         getStatusClass(type) {
             return type === 'Resign' 
                 ? 'bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500' 

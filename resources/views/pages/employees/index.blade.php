@@ -34,6 +34,38 @@
             onlyIncomplete: false,
             selectedEmployee: {},
             errors: @js($errors->any() ? $errors->getMessages() : (object)[]),
+            employees: @js($employees),
+            currentPage: 1,
+            perPage: 15,
+            init() {
+                this.$watch('search', value => this.currentPage = 1);
+                this.$watch('onlyIncomplete', value => this.currentPage = 1);
+            },
+            filteredEmployees() {
+                let filtered = this.employees;
+                if (this.search) {
+                    let q = this.search.toLowerCase();
+                    filtered = filtered.filter(e => 
+                        (e.name && e.name.toLowerCase().includes(q)) || 
+                        (e.id_no && e.id_no.toLowerCase().includes(q))
+                    );
+                }
+                if (this.onlyIncomplete) {
+                    filtered = filtered.filter(e => (e.completeness_percentage ?? 0) < 100);
+                }
+                return filtered;
+            },
+            paginatedEmployees() {
+                let start = (this.currentPage - 1) * this.perPage;
+                return this.filteredEmployees().slice(start, start + this.perPage);
+            },
+            totalPages() {
+                return Math.ceil(this.filteredEmployees().length / this.perPage) || 1;
+            },
+            formatRupiah(val) {
+                if (val === null || val === '') return 'Rp 0';
+                return 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
+            },
             getStatusClass(status) {
                 const classes = {
                     'Aktif': 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-500',

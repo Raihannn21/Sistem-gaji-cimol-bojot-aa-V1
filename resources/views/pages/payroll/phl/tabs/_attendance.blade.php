@@ -57,67 +57,49 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                     @forelse($period->attendances as $attendance)
-                        <tr x-show="!searchQuery || '{{ strtolower(addslashes($attendance->employee->name ?? '')) }}'.includes(searchQuery.toLowerCase()) || '{{ strtolower(addslashes($attendance->employee->no_id ?? '')) }}'.includes(searchQuery.toLowerCase())"
-                            class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors" x-cloak>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <template x-for="item in paginatedAttendance()" :key="item.id">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
-                                    <div
-                                        class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400 font-bold text-sm">
-                                        {{ substr($attendance->employee->name ?? '?', 0, 1) }}
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400 font-bold text-sm" x-text="item.employee_name.charAt(0)">
                                     </div>
                                     <div>
-                                        <p class="text-sm font-bold text-gray-800 dark:text-white">
-                                            {{ $attendance->employee->name ?? 'Unknown' }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">ID.
-                                            {{ $attendance->employee->no_id ?? '-' }}</p>
+                                        <p class="text-sm font-bold text-gray-800 dark:text-white" x-text="item.employee_name"></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400" x-text="'ID. ' + item.employee_no_id"></p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span
-                                    class="text-sm text-gray-700 dark:text-gray-300">{{ \Carbon\Carbon::parse($attendance->date)->format('d M Y') }}</span>
+                                <span class="text-sm text-gray-700 dark:text-gray-300" x-text="item.date_formatted"></span>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span
-                                    class="inline-flex items-center rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                                    {{ $attendance->scan_in ? \Carbon\Carbon::parse($attendance->scan_in)->format('H:i') : '-' }}
-                                </span>
+                                <span class="inline-flex items-center rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800 dark:bg-gray-800 dark:text-gray-200" x-text="item.scan_in || '-'"></span>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span
-                                    class="inline-flex items-center rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                                    {{ $attendance->scan_out ? \Carbon\Carbon::parse($attendance->scan_out)->format('H:i') : '-' }}
-                                </span>
+                                <span class="inline-flex items-center rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800 dark:bg-gray-800 dark:text-gray-200" x-text="item.scan_out || '-'"></span>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="text-sm font-semibold {{ $attendance->late_time && $attendance->late_time !== '-' ? 'text-red-500 font-bold' : 'text-gray-400 dark:text-gray-500' }}">
-                                    {{ $attendance->late_time ?: '-' }}
-                                </span>
+                                <span class="text-sm font-semibold" :class="item.late_time && item.late_time !== '-' ? 'text-red-500 font-bold' : 'text-gray-400 dark:text-gray-500'" x-text="item.late_time || '-'"></span>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="text-sm font-semibold {{ $attendance->early_time && $attendance->early_time !== '-' ? 'text-yellow-600 dark:text-yellow-450 font-bold' : 'text-gray-400 dark:text-gray-500' }}">
-                                    {{ $attendance->early_time ?: '-' }}
-                                </span>
+                                <span class="text-sm font-semibold" :class="item.early_time && item.early_time !== '-' ? 'text-yellow-600 dark:text-yellow-450 font-bold' : 'text-gray-400 dark:text-gray-500'" x-text="item.early_time || '-'"></span>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span
-                                    class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold {{ $attendance->duration >= 8 ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400' : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400' }}">
-                                    {{ $attendance->duration }} Jam
-                                </span>
+                                <span class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold" :class="item.duration >= 8 ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400' : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400'" x-text="item.duration + ' Jam'"></span>
                             </td>
                             @if($period->status !== 'Locked')
                                 <td class="px-6 py-4">
                                     <div class="flex items-center justify-center gap-2">
                                         <!-- Edit Button -->
                                         <button type="button" @click="selectedAttendance = {
-                                                        id: {{ $attendance->id }},
-                                                        employee_name: '{{ addslashes($attendance->employee->name ?? 'Unknown') }}',
-                                                        date: '{{ \Carbon\Carbon::parse($attendance->date)->format('d M Y') }}',
-                                                        scan_in: '{{ $attendance->scan_in ? \Carbon\Carbon::parse($attendance->scan_in)->format('H:i') : '' }}',
-                                                        scan_out: '{{ $attendance->scan_out ? \Carbon\Carbon::parse($attendance->scan_out)->format('H:i') : '' }}',
-                                                        late_time: '{{ $attendance->late_time ?? '' }}',
-                                                        early_time: '{{ $attendance->early_time ?? '' }}'
+                                                        id: item.id,
+                                                        employee_name: item.employee_name,
+                                                        date: item.date_formatted,
+                                                        scan_in: item.scan_in,
+                                                        scan_out: item.scan_out,
+                                                        late_time: item.late_time,
+                                                        early_time: item.early_time
                                                     }; showEditAttendanceModal = true;"
                                             class="p-1.5 text-gray-400 hover:text-brand-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                                             title="Edit Kehadiran">
@@ -129,8 +111,8 @@
 
                                         <!-- Delete Button -->
                                         <button type="button" @click="$dispatch('open-delete-modal', { 
-                                                        url: '/payroll/phl/periods/{{ $period->id }}/attendance/{{ $attendance->id }}',
-                                                        message: 'Apakah Anda yakin ingin menghapus data absensi karyawan {{ addslashes($attendance->employee->name ?? 'Unknown') }} pada tanggal {{ \Carbon\Carbon::parse($attendance->date)->format('d M Y') }}?'
+                                                        url: '/payroll/phl/periods/{{ $period->id }}/attendance/' + item.id,
+                                                        message: 'Apakah Anda yakin ingin menghapus data absensi karyawan ' + item.employee_name + ' pada tanggal ' + item.date_formatted + '?'
                                                     })"
                                             class="p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                                             title="Hapus Kehadiran">
@@ -143,37 +125,59 @@
                                 </td>
                             @endif
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="{{ $period->status !== 'Locked' ? 6 : 5 }}" class="px-6 py-32 text-center">
-                                <div class="flex flex-col items-center justify-center">
-                                    <div
-                                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 text-gray-300 dark:bg-white/5">
-                                        <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                        </svg>
-                                    </div>
-                                    <h4 class="text-base font-bold text-gray-800 dark:text-white/90">Belum Ada Data Absensi
-                                    </h4>
-                                    <p class="mx-auto mt-1 max-w-xs text-sm text-gray-500 dark:text-gray-400">Silakan import
-                                        file Excel absensi untuk memproses data kehadiran.</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
+                    </template>
 
-                    <!-- Single No Results Row outside the loop -->
-                    <tr x-show="searchQuery && Object.values($el.parentElement.children).filter(el => el.tagName === 'TR' && el.style.display !== 'none' && !el.classList.contains('no-results-row')).length === 0"
-                        class="no-results-row" x-cloak>
-                        <td colspan="{{ $period->status !== 'Locked' ? 6 : 5 }}"
-                            class="px-6 py-12 text-center text-sm text-gray-400 italic">
-                            Tidak ada karyawan dengan nama atau ID "<span x-text="searchQuery"
-                                class="font-bold"></span>" ditemukan dalam absensi.
+                    <!-- Empty State (No records at all) -->
+                    <tr x-show="attendanceList.length === 0">
+                        <td colspan="{{ $period->status !== 'Locked' ? 8 : 7 }}" class="px-6 py-32 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 text-gray-300 dark:bg-white/5">
+                                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </div>
+                                <h4 class="text-base font-bold text-gray-800 dark:text-white/90">Belum Ada Data Absensi</h4>
+                                <p class="mx-auto mt-1 max-w-xs text-sm text-gray-500 dark:text-gray-400">Silakan import file Excel absensi untuk memproses data kehadiran.</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Search Empty State -->
+                    <tr x-show="attendanceList.length > 0 && filteredAttendance().length === 0">
+                        <td colspan="{{ $period->status !== 'Locked' ? 8 : 7 }}" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400 italic">
+                            Tidak ada karyawan dengan nama atau ID "<span x-text="searchQuery" class="font-bold"></span>" ditemukan dalam absensi.
                         </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Pagination Footer Controls -->
+        <div x-show="attendanceList.length > 0" class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+                Menampilkan <span class="font-bold text-gray-700 dark:text-white" x-text="filteredAttendance().length > 0 ? (attendancePage - 1) * attendancePerPage + 1 : 0"></span> 
+                sampai <span class="font-bold text-gray-700 dark:text-white" x-text="Math.min(attendancePage * attendancePerPage, filteredAttendance().length)"></span> 
+                dari <span class="font-bold text-gray-700 dark:text-white" x-text="filteredAttendance().length"></span> data
+            </div>
+            <div class="flex items-center justify-between sm:justify-end gap-3">
+                <button type="button" 
+                        @click="attendancePage = Math.max(1, attendancePage - 1)" 
+                        :disabled="attendancePage === 1"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-800 dark:bg-transparent transition-colors shadow-theme-xs">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                
+                <span class="text-xs font-bold text-gray-600 dark:text-gray-400">
+                    Halaman <span x-text="attendancePage"></span> dari <span x-text="attendanceTotalPages()"></span>
+                </span>
+                
+                <button type="button" 
+                        @click="attendancePage = Math.min(attendanceTotalPages(), attendancePage + 1)" 
+                        :disabled="attendancePage === attendanceTotalPages()"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-800 dark:bg-transparent transition-colors shadow-theme-xs">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>

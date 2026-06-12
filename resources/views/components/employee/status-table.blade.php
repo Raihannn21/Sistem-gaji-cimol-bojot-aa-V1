@@ -25,13 +25,8 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                    <template x-for="item in statusChanges" :key="item.id">
-                        <tr x-show="!search || 
-                                    item.name.toLowerCase().includes(search.toLowerCase()) || 
-                                    item.no_id.toLowerCase().includes(search.toLowerCase()) || 
-                                    item.nik.toLowerCase().includes(search.toLowerCase()) || 
-                                    (item.reason && item.reason.toLowerCase().includes(search.toLowerCase()))"
-                            class="hover:bg-gray-50 dark:hover:bg-white/[0.01]">
+                    <template x-for="item in paginatedStatusChanges()" :key="item.id">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-white/[0.01]">
                             <td class="px-5 py-4">
                                 <div>
                                     <span class="block font-medium text-gray-800 text-theme-sm dark:text-white/90" x-text="item.name"></span>
@@ -66,8 +61,41 @@
                             </td>
                         </tr>
                     </template>
+                    <tr x-show="filteredStatusChanges().length === 0">
+                        <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400 italic">
+                            Tidak ada data resign atau SPHK yang ditemukan.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
+        </div>
+        
+        <!-- Pagination Footer Controls -->
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+                Menampilkan <span class="font-bold text-gray-700 dark:text-white" x-text="filteredStatusChanges().length > 0 ? (currentPage - 1) * perPage + 1 : 0"></span> 
+                sampai <span class="font-bold text-gray-700 dark:text-white" x-text="Math.min(currentPage * perPage, filteredStatusChanges().length)"></span> 
+                dari <span class="font-bold text-gray-700 dark:text-white" x-text="filteredStatusChanges().length"></span> data
+            </div>
+            <div class="flex items-center justify-between sm:justify-end gap-3">
+                <button type="button" 
+                        @click="currentPage = Math.max(1, currentPage - 1)" 
+                        :disabled="currentPage === 1"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-800 dark:bg-transparent transition-colors shadow-theme-xs">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                
+                <span class="text-xs font-bold text-gray-600 dark:text-gray-400">
+                    Halaman <span x-text="currentPage"></span> dari <span x-text="totalPages()"></span>
+                </span>
+                
+                <button type="button" 
+                        @click="currentPage = Math.min(totalPages(), currentPage + 1)" 
+                        :disabled="currentPage === totalPages()"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-500 disabled:opacity-50 disabled:pointer-events-none dark:border-gray-800 dark:bg-transparent transition-colors shadow-theme-xs">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
