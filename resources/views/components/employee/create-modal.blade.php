@@ -105,7 +105,7 @@
                             </div>
                             
                             <x-form.input name="bank_name" label="Nama Bank" placeholder="Contoh: BCA" />
-                            <x-form.input name="bank_account" label="Nomor Rekening" placeholder="12345678" />
+                            <x-form.input name="bank_account" label="Nomor Rekening" placeholder="12345678" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                         </div>
                     </div>
 

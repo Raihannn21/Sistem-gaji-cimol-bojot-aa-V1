@@ -62,8 +62,19 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
         }
         $this->processedNoIds[] = $noId;
 
+        $bankAccount = $data['bank_account'] ?? $data['nomor_rekening'] ?? $data['no_rek'] ?? null;
+        $employeeName = $data['nama'] ?? $data['name'] ?? $data['nama_lengkap'] ?? $data['employee_name'] ?? 'Tanpa Nama';
+
+        if ($bankAccount !== null && trim($bankAccount) !== '') {
+            $cleaned = preg_replace('/[^0-9]/', '', (string)$bankAccount);
+            if ($cleaned === '') {
+                throw new \Exception("Nomor rekening untuk karyawan '{$employeeName}' harus berupa angka.");
+            }
+            $bankAccount = $cleaned;
+        }
+
         $employeeData = [
-            'name' => $data['nama'] ?? $data['name'] ?? $data['nama_lengkap'] ?? $data['employee_name'] ?? 'Tanpa Nama',
+            'name' => $employeeName,
             'nik' => $data['nik'] ?? $data['nomor_induk_kependudukan'] ?? null,
             'email' => $data['email'] ?? $data['surel'] ?? null,
             'phone' => $data['phone'] ?? $data['telepon'] ?? $data['hp'] ?? $data['no_hp'] ?? null,
@@ -79,7 +90,7 @@ class EmployeesImport implements ToModel, WithHeadingRow, WithValidation, SkipsE
             'bpjs_tk' => ($type === 'PKWT') ? $bpjsTk : null,
             'pph21' => ($type === 'PKWT') ? $pph21 : null,
             'bank_name' => $data['bank_name'] ?? $data['nama_bank'] ?? $data['bank'] ?? null,
-            'bank_account' => $data['bank_account'] ?? $data['nomor_rekening'] ?? $data['no_rek'] ?? null,
+            'bank_account' => $bankAccount,
         ];
 
         $employee = Employee::where('no_id', $noId)->first();

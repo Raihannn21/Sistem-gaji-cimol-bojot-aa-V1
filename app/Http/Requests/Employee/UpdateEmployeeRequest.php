@@ -34,7 +34,7 @@ class UpdateEmployeeRequest extends FormRequest
             'bpjs_tk' => ['nullable', 'string'],
             'pph21' => ['nullable', 'string'],
             'bank_name' => ['nullable', 'string', 'max:100'],
-            'bank_account' => ['nullable', 'string', 'max:100'],
+            'bank_account' => ['nullable', 'regex:/^[0-9]+$/', 'max:100'],
         ];
     }
 
@@ -45,6 +45,7 @@ class UpdateEmployeeRequest extends FormRequest
             'no_id.required' => 'No. ID wajib diisi.',
             'no_id.unique' => 'No. ID sudah terdaftar.',
             'email.email' => 'Format email tidak valid.',
+            'bank_account.regex' => 'Nomor rekening harus berupa angka.',
         ];
     }
 }

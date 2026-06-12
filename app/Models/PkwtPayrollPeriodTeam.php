@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PkwtPayrollPeriodTeam extends Model
 {
+    public $timestamps = false;
+
     protected $fillable = [
         'pkwt_payroll_period_id',
         'team_id',

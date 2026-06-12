@@ -124,7 +124,7 @@
                             </div>
                             
                             <x-form.input name="bank_name" label="Nama Bank" x-model="selectedEmployee.bank_name" />
-                            <x-form.input name="bank_account" label="Nomor Rekening" x-model="selectedEmployee.bank_account" />
+                            <x-form.input name="bank_account" label="Nomor Rekening" x-model="selectedEmployee.bank_account" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                         </div>
                     </div>
 
