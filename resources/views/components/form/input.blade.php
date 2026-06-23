@@ -31,8 +31,8 @@
             name="{{ $name }}"
             placeholder="{{ $placeholder }}" 
             value="{{ $oldValue }}"
+            :class="(typeof errors !== 'undefined' && errors.{{ $name }}) ? 'border-red-500 ring-4 ring-red-500/10' : ''"
             {{ $attributes->merge([
-                'required' => $attributes->has('required'),
                 'class' => ($prefix ? 'pl-12' : 'px-4') . ' h-11 w-full rounded-lg border ' . ($hasError ? 'border-red-500 ring-4 ring-red-500/10' : 'border-gray-300 dark:border-gray-700') . ' bg-white dark:bg-dark-900 py-2.5 text-sm text-gray-800 outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:text-white/90 dark:placeholder:text-white/30 shadow-theme-xs'
             ]) }}
         >

@@ -42,7 +42,29 @@
             </div>
 
             <!-- Form -->
-            <form :action="`/payroll/pkwt/periods/{{ $period->id }}/risk/${selectedRiskId}`" method="POST" class="space-y-6">
+            <form :action="`/payroll/pkwt/periods/{{ $period->id }}/risk/${selectedRiskId}`" method="POST" class="space-y-6"
+                @submit="validateForm($event)"
+                novalidate
+                x-data="{
+                    errors: {},
+                    validateForm(e) {
+                        this.errors = {};
+                        let hasError = false;
+                        
+                        const amount = this.$el.querySelector('[name=amount]').value;
+
+                        if (!amount || parseFloat(String(amount).replace(/\D/g, '')) <= 0) {
+                            this.errors.amount = 'Nominal wajib diisi.';
+                            hasError = true;
+                        }
+
+                        if (hasError) {
+                            e.preventDefault();
+                            return false;
+                        }
+                        return true;
+                    }
+                }">
                 @csrf
                 @method('PUT')
 
@@ -50,7 +72,7 @@
                 <input type="hidden" name="employee_id" :value="selectedEmployee.id">
                 <input type="hidden" name="risk_date" :value="selectedRiskDate">
 
-                <x-form.input name="amount" label="Nominal Tunjangan (Rp)" prefix="Rp" data-currency placeholder="0" required x-model="selectedRiskAmount" @input="formatCurrency($event.target)" />
+                <x-form.input name="amount" label="Nominal Tunjangan (Rp)" prefix="Rp" data-currency placeholder="0" x-model="selectedRiskAmount" @input="formatCurrency($event.target); delete errors.amount;" />
 
                 <div>
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">

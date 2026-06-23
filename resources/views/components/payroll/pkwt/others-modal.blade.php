@@ -37,7 +37,31 @@
             </div>
 
             <!-- Form -->
-            <form action="{{ $period ? url('/payroll/pkwt/periods/' . $period->id . '/other-allowance') : '#' }}" method="POST" class="space-y-6 pb-32">
+            <form action="{{ $period ? url('/payroll/pkwt/periods/' . $period->id . '/other-allowance') : '#' }}" method="POST" class="space-y-6 pb-32"
+                @submit="validateForm($event)"
+                @change-employee_id.window="if($event.detail) delete errors.employee_id"
+                novalidate
+                x-data="{
+                    errors: {},
+                    validateForm(e) {
+                        this.errors = {};
+                        let hasError = false;
+                        
+                        const employee_id = this.$el.querySelector('[name=employee_id]').value;
+                        const allowance_type = this.$el.querySelector('[name=allowance_type]').value;
+                        const amount = this.$el.querySelector('[name=amount]').value;
+
+                        if (!employee_id) { this.errors.employee_id = 'Karyawan wajib dipilih.'; hasError = true; }
+                        if (!allowance_type.trim()) { this.errors.allowance_type = 'Jenis tunjangan wajib diisi.'; hasError = true; }
+                        if (!amount || parseFloat(String(amount).replace(/\D/g, '')) <= 0) { this.errors.amount = 'Nominal wajib diisi.'; hasError = true; }
+
+                        if (hasError) {
+                            e.preventDefault();
+                            return false;
+                        }
+                        return true;
+                    }
+                }">
                 @csrf
                 <div class="space-y-6">
                     <x-form.select-custom label="Pilih Karyawan" name="employee_id" placeholder="Cari nama atau ID...">
@@ -49,10 +73,13 @@
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Jenis Tunjangan</label>
-                            <input type="text" name="allowance_type" placeholder="Contoh: THR, Bonus, dll" required
-                                class="w-full rounded-xl border border-gray-200 bg-transparent px-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150">
+                            <input type="text" name="allowance_type" placeholder="Contoh: THR, Bonus, dll"
+                                @input="delete errors.allowance_type;"
+                                :class="errors.allowance_type ? 'border-red-500 ring-4 ring-red-500/10' : 'border-gray-200'"
+                                class="w-full rounded-xl border bg-transparent px-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150">
+                            <p x-show="errors.allowance_type" x-text="errors.allowance_type" class="mt-1.5 text-xs text-red-500 font-medium"></p>
                         </div>
-                        <x-form.input name="amount" label="Nominal (Rp)" prefix="Rp" placeholder="0" required @input="formatCurrency($event.target)" />
+                        <x-form.input name="amount" label="Nominal (Rp)" prefix="Rp" placeholder="0" @input="formatCurrency($event.target); delete errors.amount;" />
                     </div>
 
                     <div class="space-y-2">

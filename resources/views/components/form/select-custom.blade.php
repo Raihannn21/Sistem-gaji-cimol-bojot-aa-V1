@@ -90,6 +90,7 @@ class="relative w-full"
                 @focus="open = true"
                 @click.stop="open = true"
                 @input="open = true"
+                :class="(typeof errors !== 'undefined' && errors.{{ $name }}) ? 'border-red-500 ring-4 ring-red-500/10' : ''"
                 class="h-11 w-full rounded-lg border bg-white dark:bg-gray-900 px-4 pr-11 py-2.5 text-sm text-gray-800 dark:text-white outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:focus:border-brand-800 {{ $hasError ? 'border-red-500 ring-4 ring-red-500/10' : 'border-gray-300 dark:border-gray-700' }} shadow-theme-xs placeholder:text-gray-400 dark:placeholder:text-white/30"
                 autocomplete="off"
             >

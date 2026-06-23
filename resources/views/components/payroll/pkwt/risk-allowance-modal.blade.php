@@ -4,9 +4,14 @@
          x-data="{
             riskRates: @js($employees->pluck('risk_daily_amount', 'id')),
             amount: '',
+            errors: {},
             onEmployeeChange(val) {
+                if (this.errors.employee_id) {
+                    delete this.errors.employee_id;
+                }
                 if (this.riskRates[val]) {
                     this.amount = parseInt(this.riskRates[val]);
+                    if (this.errors.amount) delete this.errors.amount;
                     // Format the input field immediately
                     this.$nextTick(() => {
                         const input = this.$el.querySelector('[data-currency]');
@@ -15,9 +20,28 @@
                 } else {
                     this.amount = '';
                 }
+            },
+            validateForm(e) {
+                this.errors = {};
+                let hasError = false;
+                
+                const employee_id = this.$el.querySelector('[name=employee_id]').value;
+                const risk_date = this.$el.querySelector('[name=risk_date]').value;
+                const amount = this.$el.querySelector('[name=amount]').value;
+
+                if (!employee_id) { this.errors.employee_id = 'Karyawan wajib dipilih.'; hasError = true; }
+                if (!risk_date) { this.errors.risk_date = 'Tanggal wajib diisi.'; hasError = true; }
+                if (!amount || parseFloat(String(amount).replace(/\D/g, '')) <= 0) { this.errors.amount = 'Nominal wajib diisi.'; hasError = true; }
+
+                if (hasError) {
+                    e.preventDefault();
+                    return false;
+                }
+                return true;
             }
          }"
          @change-employee_id="onEmployeeChange($event.detail)"
+         @date-change.window="if($event.detail.dateStr) delete errors.risk_date"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0" 
          x-transition:enter-end="opacity-100"
@@ -54,7 +78,9 @@
             </div>
 
             <!-- Form -->
-            <form action="{{ $period ? url('/payroll/pkwt/periods/' . $period->id . '/risk') : '#' }}" method="POST" class="space-y-6 pb-32">
+            <form action="{{ $period ? url('/payroll/pkwt/periods/' . $period->id . '/risk') : '#' }}" method="POST" class="space-y-6 pb-32"
+                @submit="validateForm($event)"
+                novalidate>
                 @csrf
                 <div class="space-y-6">
                     <x-form.select-custom label="Pilih Karyawan" name="employee_id" placeholder="Cari nama atau ID...">
@@ -64,9 +90,9 @@
                     </x-form.select-custom>
 
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <x-form.date-picker label="Tanggal" name="risk_date" placeholder="Pilih Tanggal" dateFormat="d-m-Y" :static="true" required />
+                        <x-form.date-picker label="Tanggal" name="risk_date" placeholder="Pilih Tanggal" dateFormat="d-m-Y" :static="true" />
                         
-                        <x-form.input name="amount" label="Nominal (Rp)" prefix="Rp" data-currency placeholder="0" required x-model="amount" @input="formatCurrency($event.target)" />
+                        <x-form.input name="amount" label="Nominal (Rp)" prefix="Rp" data-currency placeholder="0" x-model="amount" @input="formatCurrency($event.target); delete errors.amount;" />
                     </div>
 
                     <div class="space-y-2">

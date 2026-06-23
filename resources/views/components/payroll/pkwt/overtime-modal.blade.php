@@ -30,10 +30,15 @@
 
             <!-- Form -->
             <form action="{{ $period ? url('/payroll/pkwt/periods/' . $period->id . '/overtime') : '#' }}" method="POST" class="space-y-6 pb-32"
+                @submit="validateForm($event)"
+                @change-employee_id.window="if($event.detail) delete errors.employee_id"
+                @date-change.window="if($event.detail.dateStr) delete errors.overtime_date"
+                novalidate
                 x-data="{
                     hours: '',
                     rate: '',
                     amount: 0,
+                    errors: {},
                     calculate() {
                         let h = parseFloat(this.hours) || 0;
                         let r = parseFloat(String(this.rate).replace(/\D/g, '')) || 0;
@@ -41,6 +46,26 @@
                     },
                     get formattedAmount() {
                         return new Intl.NumberFormat('id-ID').format(this.amount);
+                    },
+                    validateForm(e) {
+                        this.errors = {};
+                        let hasError = false;
+                        
+                        const employee_id = this.$el.querySelector('[name=employee_id]').value;
+                        const overtime_date = this.$el.querySelector('[name=overtime_date]').value;
+                        const hours = this.$el.querySelector('[name=hours]').value;
+                        const rate = this.$el.querySelector('[name=rate]').value;
+
+                        if (!employee_id) { this.errors.employee_id = 'Karyawan wajib dipilih.'; hasError = true; }
+                        if (!overtime_date) { this.errors.overtime_date = 'Tanggal lembur wajib diisi.'; hasError = true; }
+                        if (!hours || parseFloat(hours) <= 0) { this.errors.hours = 'Jumlah jam wajib diisi minimal 1.'; hasError = true; }
+                        if (!rate || parseFloat(String(rate).replace(/\D/g, '')) <= 0) { this.errors.rate = 'Nominal per jam wajib diisi.'; hasError = true; }
+
+                        if (hasError) {
+                            e.preventDefault();
+                            return false;
+                        }
+                        return true;
                     }
                 }">
                 @csrf
@@ -56,13 +81,15 @@
                             dateFormat="d-m-Y" :static="true" />
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah Jam</label>
-                            <input type="number" name="hours" x-model="hours" @input="calculate()" placeholder="Contoh: 4" required min="1"
-                                class="w-full rounded-xl border border-gray-200 bg-transparent px-4 py-3 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150">
+                            <input type="number" name="hours" x-model="hours" @input="calculate(); delete errors.hours;" placeholder="Contoh: 4" min="1"
+                                :class="errors.hours ? 'border-red-500 ring-4 ring-red-500/10' : 'border-gray-200'"
+                                class="w-full rounded-xl border bg-transparent px-4 py-3 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150">
+                            <p x-show="errors.hours" x-text="errors.hours" class="mt-1.5 text-xs text-red-500 font-medium"></p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                        <x-form.input name="rate" x-model="rate" label="Nominal Per Jam" prefix="Rp" placeholder="0" required @input="formatCurrency($event.target); calculate();" />
+                        <x-form.input name="rate" x-model="rate" label="Nominal Per Jam" prefix="Rp" placeholder="0" @input="formatCurrency($event.target); calculate(); delete errors.rate;" />
                         
                         <div class="space-y-2">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Hasil (Otomatis)</label>

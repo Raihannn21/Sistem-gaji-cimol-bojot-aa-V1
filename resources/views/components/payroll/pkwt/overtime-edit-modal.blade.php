@@ -37,7 +37,34 @@
             </div>
 
             <!-- Form -->
-            <form :action="`/payroll/pkwt/periods/{{ $period->id }}/overtime/${selectedOvertimeId}`" method="POST" class="space-y-6">
+            <form :action="`/payroll/pkwt/periods/{{ $period->id }}/overtime/${selectedOvertimeId}`" method="POST" class="space-y-6"
+                @submit="validateForm($event)"
+                novalidate
+                x-data="{
+                    errors: {},
+                    validateForm(e) {
+                        this.errors = {};
+                        let hasError = false;
+                        
+                        const hours = this.$el.querySelector('[name=hours]').value;
+                        const rate = this.$el.querySelector('[name=rate]').value;
+
+                        if (!hours || parseFloat(hours) <= 0) {
+                            this.errors.hours = 'Jumlah jam wajib diisi minimal 1.';
+                            hasError = true;
+                        }
+                        if (!rate || parseFloat(String(rate).replace(/\D/g, '')) <= 0) {
+                            this.errors.rate = 'Nominal per jam wajib diisi.';
+                            hasError = true;
+                        }
+
+                        if (hasError) {
+                            e.preventDefault();
+                            return false;
+                        }
+                        return true;
+                    }
+                }">
                 @csrf
                 @method('PUT')
 
@@ -50,11 +77,19 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Jumlah Jam Lembur
                         </label>
-                        <input type="number" name="hours" x-model="selectedOvertimeHours" @input="selectedOvertimeAmount = (parseFloat(selectedOvertimeHours) || 0) * (parseFloat(String(selectedOvertimeRate).replace(/\D/g, '')) || 0)" required min="1" class="w-full rounded-xl border border-gray-200 bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150" placeholder="Contoh: 4">
+                        <input type="number" name="hours" x-model="selectedOvertimeHours" 
+                            @input="selectedOvertimeAmount = (parseFloat(selectedOvertimeHours) || 0) * (parseFloat(String(selectedOvertimeRate).replace(/\D/g, '')) || 0); delete errors.hours;" 
+                            min="1" 
+                            :class="errors.hours ? 'border-red-500 ring-4 ring-red-500/10' : 'border-gray-200'"
+                            class="w-full rounded-xl border bg-transparent py-3 px-5 text-gray-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-gray-800 dark:text-white dark:focus:border-brand-500 transition duration-150" 
+                            placeholder="Contoh: 4">
+                        <p x-show="errors.hours" x-text="errors.hours" class="mt-1.5 text-xs text-red-500 font-medium"></p>
                     </div>
 
                     <div>
-                        <x-form.input name="rate" label="Nominal Per Jam" prefix="Rp" data-currency placeholder="0" required x-model="selectedOvertimeRate" @input="formatCurrency($event.target); selectedOvertimeAmount = (parseFloat(selectedOvertimeHours) || 0) * (parseFloat(String(selectedOvertimeRate).replace(/\D/g, '')) || 0)" />
+                        <x-form.input name="rate" label="Nominal Per Jam" prefix="Rp" data-currency placeholder="0" 
+                            x-model="selectedOvertimeRate" 
+                            @input="formatCurrency($event.target); selectedOvertimeAmount = (parseFloat(selectedOvertimeHours) || 0) * (parseFloat(String(selectedOvertimeRate).replace(/\D/g, '')) || 0); delete errors.rate;" />
                     </div>
                 </div>
 
