@@ -32,12 +32,32 @@
             <form id="createTeamForm" 
                   class="flex flex-col" 
                   method="POST" 
-                  action="{{ route('employees.teams.store') }}">
+                  action="{{ route('employees.teams.store') }}"
+                  @submit="validateForm($event)"
+                  @input="if($event.target.name === 'name') delete errors.name"
+                  novalidate
+                  x-data="{
+                      errors: {},
+                      validateForm(e) {
+                          this.errors = {};
+                          let hasError = false;
+                          
+                          const name = this.$el.querySelector('[name=name]').value;
+
+                          if (!name.trim()) { this.errors.name = 'Nama tim wajib diisi.'; hasError = true; }
+
+                          if (hasError) {
+                              e.preventDefault();
+                              return false;
+                          }
+                          return true;
+                      }
+                  }">
                 @csrf
                 
                 <div class="px-2 space-y-6">
                     <div class="grid grid-cols-1 gap-y-5">
-                        <x-form.input name="name" label="Nama Tim" placeholder="Contoh: Tim A" required />
+                        <x-form.input name="name" label="Nama Tim" placeholder="Contoh: Tim A" />
                     </div>
                 </div>
 

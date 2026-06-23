@@ -32,13 +32,33 @@
             <form id="editTeamForm" 
                   class="flex flex-col" 
                   method="POST" 
-                  :action="`/employees/teams/${selectedTeam.id}`">
+                  :action="`/employees/teams/${selectedTeam.id}`"
+                  @submit="validateForm($event)"
+                  @input="if($event.target.name === 'name') delete errors.name"
+                  novalidate
+                  x-data="{
+                      errors: {},
+                      validateForm(e) {
+                          this.errors = {};
+                          let hasError = false;
+                          
+                          const name = this.$el.querySelector('[name=name]').value;
+
+                          if (!name.trim()) { this.errors.name = 'Nama tim wajib diisi.'; hasError = true; }
+
+                          if (hasError) {
+                              e.preventDefault();
+                              return false;
+                          }
+                          return true;
+                      }
+                  }">
                 @csrf
                 @method('PUT')
 
                 <div class="px-2 space-y-6">
                     <div class="grid grid-cols-1 gap-y-5">
-                        <x-form.input name="name" label="Nama Tim" placeholder="Contoh: Tim A" x-model="selectedTeam.name" required />
+                        <x-form.input name="name" label="Nama Tim" placeholder="Contoh: Tim A" x-model="selectedTeam.name" />
                     </div>
                 </div>
 

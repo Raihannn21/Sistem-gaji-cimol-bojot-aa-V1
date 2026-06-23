@@ -35,7 +35,33 @@
                 </div>
 
                 <!-- Form Content -->
-                <form action="{{ route('employees.status.store') }}" method="POST" class="flex flex-col">
+                <form action="{{ route('employees.status.store') }}" method="POST" class="flex flex-col"
+                    @submit="validateForm($event)"
+                    @change-employee_id.window="if($event.detail) delete errors.employee_id"
+                    @change-type.window="if($event.detail) delete errors.type"
+                    @date-change.window="if($event.detail.dateStr) delete errors.effective_date"
+                    novalidate
+                    x-data="{
+                        errors: {},
+                        validateForm(e) {
+                            this.errors = {};
+                            let hasError = false;
+                            
+                            const employee_id = this.$el.querySelector('[name=employee_id]').value;
+                            const type = this.$el.querySelector('[name=type]').value;
+                            const effective_date = this.$el.querySelector('[name=effective_date]').value;
+
+                            if (!employee_id) { this.errors.employee_id = 'Karyawan wajib dipilih.'; hasError = true; }
+                            if (!type) { this.errors.type = 'Jenis status wajib dipilih.'; hasError = true; }
+                            if (!effective_date) { this.errors.effective_date = 'Tanggal efektif wajib diisi.'; hasError = true; }
+
+                            if (hasError) {
+                                e.preventDefault();
+                                return false;
+                            }
+                            return true;
+                        }
+                    }">
                     @csrf
                     
                     <div class="custom-scrollbar max-h-[458px] overflow-y-auto p-2 space-y-6">
@@ -61,6 +87,9 @@
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Alasan Pemberhentian</label>
                                 <textarea name="reason" placeholder="Masukkan alasan secara detail..." rows="3" class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm outline-none focus:border-brand-500 dark:border-gray-800 dark:text-white"></textarea>
+                                @error('reason')
+                                    <p class="mt-1.5 text-xs text-red-500 font-medium">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     </div>
