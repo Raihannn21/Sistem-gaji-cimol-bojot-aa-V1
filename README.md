@@ -10,47 +10,160 @@ pinned: false
 
 # Sistem Informasi Penggajian & Kehadiran - Cimol Bojot AA
 
-Aplikasi berbasis web modern untuk mengelola administrasi kehadiran, perhitungan lembur, tunjangan risiko, dan penggajian karyawan **Cimol Bojot AA**. Sistem ini mendukung klasifikasi karyawan bulanan kontrak (**PKWT**) dan harian (**PHL**).
+Sistem Informasi Penggajian dan Kehadiran berbasis web modern untuk mengelola administrasi kehadiran, perhitungan lembur, tunjangan risiko, slip gaji bulanan, serta pelaporan keuangan terintegrasi bagi karyawan **Cimol Bojot AA**. Sistem ini mendukung klasifikasi karyawan bulanan kontrak (**PKWT**) dan harian lepas (**PHL**).
 
-## 🚀 Fitur Utama
+📋 Tentang Project
+Sistem ini memfasilitasi HRD dan Finance dalam melakukan kalkulasi payroll bulanan secara otomatis berdasarkan impor data absensi dari Excel. Fitur utama mencakup manajemen periode gaji, pencatatan lembur & risiko, ekspor daftar transfer BCA Auto-Credit (siap unggah), pencetakan laporan bulanan/tahunan (PDF & Excel), serta Slip Gaji digital yang dapat dikirimkan langsung ke email masing-masing karyawan secara massal.
 
-*   📊 **Dashboard Analytics**: Pemantauan biaya gaji, lembur, rasio keterlambatan (*lateness rate*) terintegrasi, visualisasi rekrutmen/turnover karyawan, serta grafik tren disiplin kehadiran (ApexCharts).
-*   📅 **Konfigurasi Hari Kerja Efektif**: Pengaturan hari kerja aktif dan hari libur berbasis tim menggunakan kalender interaktif untuk perhitungan gaji pro-rata PKWT yang adil.
-*   ⏱️ **Pencatatan Kehadiran & Lembur**: Pencatatan data kehadiran (terlambat & pulang cepat) serta kalkulasi upah lembur otomatis untuk PKWT dan PHL dari file Excel.
-*   📄 **Slip Gaji & Laporan**: Unduh laporan rekapitulasi bulanan, laporan riwayat penggajian individu, slip gaji PDF karyawan, dan ekspor data ke Excel.
+🛠️ Tech Stack
+*   **Framework:** Laravel 12.x (PHP 8.2+)
+*   **Frontend CSS:** Tailwind CSS (dengan desain premium light/dark mode)
+*   **Frontend Logic:** Alpine.js (pencarian reaktif, modifikasi modal, client-side pagination)
+*   **Database:** PostgreSQL (Neon Cloud) / MySQL
+*   **Library Ekspor/Impor:** Maatwebsite Excel (Laravel Excel)
+*   **Library Rendering PDF:** Barryvdh DomPDF
+*   **Visualisasi Grafis:** ApexCharts (Analytics Dashboard)
+*   **Package Manager:** Composer (PHP) & NPM (NodeJS)
 
-## 🛠️ Teknologi yang Digunakan
+📦 Requirements
+*   Node.js >= 20.x
+*   NPM >= 10.x
+*   PHP >= 8.2 dengan ekstensi `GD`, `PDO_PGSQL`, `XML`, `ZIP`, `MBSTRING` aktif
+*   Composer >= 2.x
+*   Server Database PostgreSQL atau MySQL
 
-*   **Framework**: Laravel 12
-*   **Frontend**: Tailwind CSS, Alpine.js (desain responsif dark/light mode premium)
-*   **Database**: PostgreSQL (Neon) / MySQL
-*   **Library Utama**: Laravel Excel (import/export), DomPDF, ApexCharts (visualisasi grafik)
+🚀 Installation
+1. Clone Repository
+   ```bash
+   git clone https://github.com/Raihannn21/Sistem-gaji-cimol-bojot-aa-V1.git
+   cd Sistem-gaji-cimol-bojot-aa-V1
+   ```
 
-## 💻 Cara Menjalankan Secara Lokal
+2. Install Dependencies
+   ```bash
+   composer install
+   npm install
+   ```
 
-1.  **Clone repositori**:
-    ```bash
-    git clone https://github.com/Raihannn21/Sistem-gaji-cimol-bojot-aa-V1.git
-    cd Sistem-gaji-cimol-bojot-aa-V1
-    ```
-2.  **Instal PHP & Node dependencies**:
-    ```bash
-    composer install
-    npm install
-    ```
-3.  **Salin berkas konfigurasi lingkungan**:
-    ```bash
-    copy .env.example .env
-    ```
-4.  **Buat database baru** dan jalankan migrasi serta seeder:
-    ```bash
-    php artisan key:generate
-    php artisan migrate --seed
-    ```
-5.  **Jalankan aplikasi**:
-    ```bash
-    composer run dev
-    ```
-    Buka [http://localhost:8000](http://localhost:8000) di browser Anda. Akun default admin:
-    *   **Email**: `admin@cimolbojot.com`
-    *   **Password**: `password`
+3. Environment Configuration
+   Salin berkas contoh konfigurasi lingkungan:
+   ```bash
+   # Di Windows (PowerShell/CMD):
+   copy .env.example .env
+   # Di Linux/macOS:
+   cp .env.example .env
+   ```
+   Sesuaikan kredensial database Anda di berkas `.env` baru:
+   ```env
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=nama_database_anda
+   DB_USERNAME=username_database
+   DB_PASSWORD=password_database
+   ```
+
+4. Generate Key & Run Database Migration/Seeders
+   ```bash
+   php artisan key:generate
+   php artisan migrate --seed
+   ```
+
+🏃 Running the Application
+Development Server
+Jalankan server aplikasi PHP:
+```bash
+php artisan serve
+```
+Dan jalankan aset Vite untuk kompilasi CSS & JS:
+```bash
+npm run dev
+```
+Buka peramban Anda di alamat [http://localhost:8000](http://localhost:8000).
+
+Akun Administrator Default:
+*   **Email:** `admin@cimolbojot.com`
+*   **Password:** `password`
+
+Production Build
+Untuk membangun aset terkompresi produksi:
+```bash
+npm run build
+php artisan optimize
+```
+
+📁 Project Structure
+```
+Sistem-gaji-cimol-bojot-aa-V1/
+├── app/
+│   ├── Exports/               # Kelas penanganan ekspor data ke Excel
+│   │   ├── BcaPayrollExport.php         # Daftar transfer BCA (PHL)
+│   │   ├── PkwtBcaPayrollExport.php     # Daftar transfer BCA (PKWT)
+│   │   ├── PhlPayrollExport.php         # Rekap gaji PHL lengkap
+│   │   ├── PkwtPayrollExport.php        # Rekap gaji PKWT lengkap
+│   │   ├── SummaryPayrollReportExport.php # Laporan rekap tahunan
+│   │   └── MonthlyPayrollReportExport.php # Laporan rekap bulanan
+│   ├── Http/Controllers/      # Controller logika bisnis modular
+│   │   ├── Payroll/
+│   │   │   ├── Phl/           # Submodul Harian Lepas (PHL)
+│   │   │   │   ├── PeriodController.php
+│   │   │   │   ├── AttendanceController.php
+│   │   │   │   ├── OvertimeController.php
+│   │   │   │   ├── AllowanceController.php
+│   │   │   │   └── ExportController.php
+│   │   │   └── Pkwt/          # Submodul Karyawan Kontrak (PKWT)
+│   │   │       ├── PeriodController.php
+│   │   │       ├── AttendanceController.php
+│   │   │       ├── OvertimeController.php
+│   │   │       ├── AllowanceController.php
+│   │   │       └── ExportController.php
+│   │   └── Report/            # Controller untuk halaman komparasi & laporan
+│   │       ├── SummaryReportController.php
+│   │       └── MonthlyReportController.php
+│   └── Models/                # Model database Eloquent (Employee, Attendance, dll)
+├── public/                    # Aset statis publik (favicon, logo, dll)
+├── resources/
+│   ├── css/                   # Berkas stylesheet utama
+│   ├── js/                    # Berkas Javascript utama (Alpine.js integration)
+│   └── views/
+│       ├── components/        # Komponen Blade kustom (x-form.select-pagination, modal, toast)
+│       ├── exports/           # Templat HTML untuk render ekspor Excel & PDF
+│       ├── layouts/           # Templat layout aplikasi (sidebar, header, app)
+│       └── pages/             # Berkas halaman Blade view utama (payroll, reports, dll)
+└── routes/
+    └── web.php                # Definisi seluruh rute aplikasi
+```
+
+🔌 Fitur Utama & Integrasi
+*   📊 **Dashboard Analytics:** Visualisasi dinamis ApexCharts untuk melacak lateness rate (angka keterlambatan), tren disiplin absensi, total beban gaji bulanan/tahunan, serta rasio PKWT/PHL.
+*   🏦 **BCA Auto-Credit Transfer List:** Ekspor otomatis daftar transfer gaji bank BCA dalam format Excel yang ramah sistem bank (mengabaikan simbol mata uang dan format teks decimal corrupt).
+*   📧 **Batch Email Slip Gaji:** Pengiriman slip gaji individu PDF secara massal atau satuan melalui integrasi SMTP Mail Laravel langsung ke surel karyawan.
+*   📄 **Desain Ekspor PDF Korporat Formal:** Format laporan PDF bersih (Rekap Bulanan & Tahunan) tanpa elemen visual UI web, menggunakan kop surat ganda formal dan panel penandatanganan approval terstruktur.
+*   📅 **Kalender Kerja Tim Fleksibel:** Pengaturan jumlah hari kerja aktif bulanan dan pengecualian hari libur tim demi keakuratan sistem hitung gaji pro-rata PKWT.
+
+🔧 Development Tools
+1. **Lacak Rute Aplikasi**
+   ```bash
+   php artisan route:list
+   ```
+2. **Bersihkan Cache Konfigurasi & Rute**
+   ```bash
+   php artisan optimize:clear
+   ```
+3. **Penyelarasan Favicon Kustom**
+   Favicon diletakkan di `/public/favicon.ico` dan telah di-resize secara khusus (32x32px alpha transparent) dari logo utama agar tab peramban saat memuat PDF cetak tetap memuat logo Cimol Bojot AA secara konsisten.
+
+⚠️ Known Issues & Troubleshooting
+*   **Kesalahan XML Parser pada Ekspor Excel:** Pastikan tidak ada karakter ampersand mentah (`&`) pada berkas templat HTML ekspor Excel. Karakter ini harus ditulis sebagai entitas HTML aman (`&amp;`) untuk mencegah error *PhpOffice\PhpSpreadsheet\Reader\Exception*.
+*   **Format Nominal Rp di Excel BCA:** Nilai ratusan ribu rupiah dikirim ke Excel dalam format angka bulat murni dan dipetakan dengan *interface* `WithColumnFormatting` menggunakan format pola `#,##0` guna menghindari bug pembacaan desimal otomatis (seperti `122.500` dibaca `122,5` oleh Excel regional Indonesia).
+*   **Pengelompokan Bulan Laporan:** Laporan summary tahunan dan bulanan dikelompokkan secara unik berdasarkan **Tanggal Mulai (`start_date`)** dari periode payroll (contoh: periode 21 Maret s.d. 20 April akan terhitung unik di bulan Maret saja).
+
+🔐 Security
+*   **Rute Terproteksi:** Seluruh rute dilindungi oleh middleware `auth` untuk mencegah akses tidak sah.
+*   **Proteksi CSRF:** Semua form interaktif Alpine.js dilengkapi dengan token CSRF Laravel terenkripsi.
+*   **Penyimpanan Kredensial:** Data sensitif API dan koneksi database dilarang disimpan di dalam repositori git (selalu gunakan file `.env`).
+
+👨💻 Development Guidelines
+*   **Paginasi Komponen Kustom:** Seluruh tabel menggunakan pagination client-side berbasis Alpine.js dengan komponen pembantu kustom `<x-form.select-pagination>` untuk mengubah per-page limits secara reaktif.
+*   **Modularitas Controller:** Setiap fungsionalitas baru wajib memisahkan logika PHL dan PKWT di sub-controller tersendiri agar kode tetap modular dan mudah dipelihara.
+*   **Pesan Komitmen Git:** Harap menggunakan pesan commit yang deskriptif dan mencerminkan fitur/bug yang sedang dikerjakan.
