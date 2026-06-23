@@ -33,17 +33,40 @@
                 </div>
 
                 <!-- Form Content -->
-                <form action="{{ route('payroll.phl.periods.store') }}" method="POST" class="flex flex-col">
+                <form action="{{ route('payroll.phl.periods.store') }}" method="POST" class="flex flex-col"
+                    @submit="validateForm($event)"
+                    @input="if($event.target.name === 'title') delete errors.title"
+                    @date-change.window="if($event.detail.dateStr) delete errors.date_range"
+                    novalidate
+                    x-data="{
+                        errors: {},
+                        validateForm(e) {
+                            this.errors = {};
+                            let hasError = false;
+                            
+                            const title = this.$el.querySelector('[name=title]').value;
+                            const date_range = this.$el.querySelector('[name=date_range]').value;
+
+                            if (!title.trim()) { this.errors.title = 'Judul periode wajib diisi.'; hasError = true; }
+                            if (!date_range) { this.errors.date_range = 'Rentang tanggal wajib diisi.'; hasError = true; }
+
+                            if (hasError) {
+                                e.preventDefault();
+                                return false;
+                            }
+                            return true;
+                        }
+                    }">
                     @csrf
                     
                     <div class="custom-scrollbar max-h-[458px] overflow-y-auto p-2 space-y-6 pb-20">
                         <div class="space-y-5">
                                 <!-- Judul Periode -->
-                                <x-form.input label="Judul Periode" name="title" placeholder="Contoh: Gaji PHL Juli 2025" required />
-
+                                <x-form.input label="Judul Periode" name="title" placeholder="Contoh: Gaji PHL Juli 2025" />
+ 
                                 <!-- Rentang Tanggal -->
                                 <x-form.date-picker name="date_range" label="Rentang Tanggal" placeholder="Pilih Rentang Tanggal"
-                                    mode="range" dateFormat="d-m-Y" :static="true" required />
+                                    mode="range" dateFormat="d-m-Y" :static="true" />
 
                             <div class="rounded-xl bg-brand-50 p-4 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20">
                                 <div class="flex gap-3">
