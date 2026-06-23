@@ -167,3 +167,54 @@ Sistem-gaji-cimol-bojot-aa-V1/
 *   **Paginasi Komponen Kustom:** Seluruh tabel menggunakan pagination client-side berbasis Alpine.js dengan komponen pembantu kustom `<x-form.select-pagination>` untuk mengubah per-page limits secara reaktif.
 *   **Modularitas Controller:** Setiap fungsionalitas baru wajib memisahkan logika PHL dan PKWT di sub-controller tersendiri agar kode tetap modular dan mudah dipelihara.
 *   **Pesan Komitmen Git:** Harap menggunakan pesan commit yang deskriptif dan mencerminkan fitur/bug yang sedang dikerjakan.
+
+📖 Panduan Penggunaan Sistem (Workflow Penggajian)
+
+Berikut adalah alur kerja operasional penggunaan sistem informasi penggajian Cimol Bojot AA dari awal hingga proses pembayaran selesai:
+
+### 1. Pendaftaran & Manajemen Karyawan
+- Masuk ke menu **Data Karyawan** pada sidebar.
+- Daftarkan karyawan baru dengan mengisi data diri lengkap, jenis kontrak (**PKWT** atau **PHL**), Jabatan, Nomor Tim, Gaji Pokok (bulanan untuk PKWT, harian untuk PHL), serta informasi rekening bank BCA untuk tujuan transfer.
+- *Catatan:* Karyawan harus memiliki status **Aktif** agar masuk dalam perhitungan payroll periode baru.
+
+### 2. Membuat Periode Penggajian Baru
+- Pilih menu **Payroll PKWT** atau **Payroll PHL** sesuai kategori yang ingin diproses.
+- Klik tombol **Buat Periode Baru** dan tentukan:
+  - Judul Periode (misal: *Periode 21 Maret - 20 April 2026*).
+  - Tanggal Mulai dan Tanggal Selesai.
+- **Khusus PKWT (Hari Kerja Efektif):** 
+  - Sebelum memproses absensi, masuk ke **Setup Periode** untuk mengonfigurasi jumlah hari kerja aktif dan hari libur spesifik untuk masing-masing Tim pada periode tersebut. Konfigurasi ini penting untuk perhitungan upah harian pro-rata.
+
+### 3. Mengimpor Data Kehadiran Karyawan
+- Masuk ke detail periode yang baru dibuat dengan mengklik tombol **Detail / View**.
+- Masuk ke tab **Attendance / Absensi**, lalu klik tombol **Import Excel**.
+- Unggah file Excel rekap kehadiran yang sesuai dengan format templat absensi. Sistem secara otomatis memetakan nama, ID karyawan, menghitung jumlah hari kehadiran, keterlambatan, absensi, serta durasi jam kerja.
+
+### 4. Input Lembur & Tunjangan
+- **Lembur (Overtime):**
+  - Buka tab **Overtime / Lembur** pada detail periode.
+  - Klik **Tambah Lembur** untuk menginput jam lembur karyawan. Tarif nominal lembur akan terhitung otomatis sesuai ketentuan sistem atau dapat disesuaikan secara manual.
+- **Tunjangan Risiko & Lain-lain:**
+  - Buka tab **Risk Allowances / Tunjangan Risiko** (atau **Other Allowances** untuk PKWT).
+  - Masukkan nominal tunjangan risiko kerja harian atau tunjangan tambahan khusus periode untuk karyawan yang berhak menerimanya.
+
+### 5. Review & Validasi Payroll (Draft)
+- Masuk ke tab **Overview** pada detail periode untuk melihat rekapitulasi penggajian seluruh karyawan secara terpusat.
+- Periksa nominal *Take Home Pay* (Gaji Bersih) setelah dikurangi potongan BPJS Kesehatan, BPJS Ketenagakerjaan, dan PPh21 (untuk karyawan PKWT).
+- Pastikan tidak ada data yang janggal atau karyawan aktif yang tertinggal (karyawan tanpa catatan kehadiran akan otomatis bernilai Rp 0).
+
+### 6. Mengunci Periode (Lock Period)
+- Jika semua data nominal gaji, lembur, dan tunjangan sudah divalidasi dan benar, klik tombol **Lock / Kunci Periode**.
+- Status periode akan berubah menjadi **Locked (Terkunci / Sudah Dibayar)**.
+- *Penting:* Setelah periode dikunci, seluruh data di dalamnya bersifat permanen (read-only) dan tidak dapat diubah kembali untuk menjaga integritas data keuangan perusahaan.
+
+### 7. Proses Ekspor Laporan & Pembayaran
+Setelah periode dikunci, Anda dapat melakukan ekspor berikut untuk penyelesaian pembayaran:
+- **BCA Auto-Credit List (Format Excel):**
+  - Klik tombol **Export BCA** pada detail periode. Berkas Excel yang diunduh dapat langsung diunggah ke portal *BCA KlikBisnis* untuk mentransfer gaji ke rekening karyawan secara massal dan otomatis tanpa perlu input manual.
+- **Rekap Payroll (Excel / PDF):**
+  - Klik tombol ekspor laporan lengkap untuk mencetak rekam jejak pembukuan kas payroll dalam bentuk fisik (PDF) maupun arsip data (Excel).
+- **Batch Kirim Slip Gaji:**
+  - Masuk ke tab **Slips / Slip Gaji**.
+  - Klik **Kirim Email Massal** untuk mengirimkan dokumen slip gaji berformat PDF resmi langsung ke alamat email terdaftar masing-masing karyawan secara otomatis dalam sekali klik.
+
