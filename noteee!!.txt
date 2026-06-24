@@ -1,9 +1,0 @@
-1. jabatan itu pkwt atau phl (done)
-2. status aktif, resig, sphk (done)
-3. tambahan di data karyawan kalo misalnya phl itu input tunjangan risiko beda" (done)
-4. kalo pkwt Potongan / Bpjs Kesehatan / Bpjs TK/PPH 21/kehadiran input manual(done)
-5. untuk Tunjangan lainnya (bonus, THR) seperti addons
-6. tambah tab potongan, tunjangan risiko, Tunjangan lainnya (bonus, THR) ini bakalan perorang
-7. Laporan bulanan 
-8. di modal buka periode tambah judul
-9. Export excel Format BCA Bisnis letakkan di laporan phl dan pkwt
